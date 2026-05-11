@@ -43,3 +43,5 @@ omnichannel-pos-system/
 │
 ├── docker-compose.yml
 └── README.md
+
+Testing branch protection
