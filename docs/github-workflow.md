@@ -97,7 +97,7 @@ git checkout -b feature/docker-setup
 git checkout main
 ```
 
-Code directly on main.
+Coding directly on `main`.
 
 ---
 
