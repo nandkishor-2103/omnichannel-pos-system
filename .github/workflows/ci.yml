@@ -15,42 +15,42 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
     strategy:
       matrix:
-        node-version: [20.x, 22.x, 24.x]
+        node-version: [20.x, 22.x]
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "npm"
+
+      # FRONTEND
 
       - name: Install Frontend Dependencies
         working-directory: ./apps/client
-        run: npm install
-
-      - name: Install Backend Dependencies
-        working-directory: ./apps/server
         run: npm install
 
       - name: Build Frontend
         working-directory: ./apps/client
         run: npm run build
 
-      - name: Build Backend
-        working-directory: ./apps/server
-        run: npm run build
-
       - name: TypeScript Check Frontend
         working-directory: ./apps/client
         run: npx tsc --noEmit
+
+      # BACKEND
+
+      - name: Install Backend Dependencies
+        working-directory: ./apps/server
+        run: npm install
+
+      - name: Build Backend
+        working-directory: ./apps/server
+        run: npm run build
 
       - name: TypeScript Check Backend
         working-directory: ./apps/server
