@@ -475,7 +475,7 @@ Rules:
 
 # Handling Merge Conflicts
 
-If conflict happens:
+If a conflict happens:
 
 ## Pull latest develop
 
