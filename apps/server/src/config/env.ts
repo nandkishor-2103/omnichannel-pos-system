@@ -10,6 +10,8 @@ const requiredEnvVars = [
   "JWT_SECRET",
   "NODE_ENV",
   "CLIENT_URL",
+  "EMAIL_USER",
+  "EMAIL_PASS",
 ] as const;
 
 // Define a type that enforces all required environment variables
@@ -34,6 +36,8 @@ const ENV_VARS: EnvVars = {
   JWT_SECRET: process.env.JWT_SECRET as string,
   NODE_ENV: process.env.NODE_ENV as string,
   CLIENT_URL: process.env.CLIENT_URL as string,
+  EMAIL_USER: process.env.EMAIL_USER as string,
+  EMAIL_PASS: process.env.EMAIL_PASS as string,
 };
 
 export default ENV_VARS;
