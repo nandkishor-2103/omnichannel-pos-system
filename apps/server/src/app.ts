@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
+import cookieParser from "cookie-parser";
 
 import errorHandler from "./middleware/errorHandler.js";
 import authRoutes from "./routes/auth.routes.js";
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(morgan("dev"));
+app.use(cookieParser());
 
 // ===========🧑‍⚕️👩‍⚕️👨‍⚕️ Health Check Routes ===========
 app.get("/api/health", (req: express.Request, res: express.Response) => {
