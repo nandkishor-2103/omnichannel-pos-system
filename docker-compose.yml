@@ -1,22 +1,31 @@
 version: "3.9"
 
 services:
-  mongodb:
-    image: mongo
-    container_name: pos-mongodb
-    restart: always
+  client:
+    build:
+      context: ./apps/client
+    container_name: pos-client
+
     ports:
-      - "27017:27017"
+      - "5173:5173"
 
     volumes:
-      - mongo_data:/data/db
+      - ./apps/client:/app
+      - /app/node_modules
 
-  redis:
-    image: redis
-    container_name: pos-redis
-    restart: always
+    command: npm run dev -- --host
+
+  server:
+    build:
+      context: ./apps/server
+
+    container_name: pos-server
+
     ports:
-      - "6379:6379"
+      - "5000:5000"
 
-volumes:
-  mongo_data:
+    volumes:
+      - ./apps/server:/app
+      - /app/node_modules
+
+    command: npm run dev

@@ -1,13 +1,47 @@
+# =========================
+# Dependencies
+# =========================
+
 node_modules
+
+# =========================
+# Build Files
+# =========================
+
 dist
 build
-.env
 coverage
+
+# =========================
+# Environment Variables
+# =========================
+
+.env
+.env.local
+.env.development.local
+.env.production.local
+
+# =========================
+# Logs
+# =========================
+
+logs
+*.log
+
+# =========================
+# OS Files
+# =========================
 
 .DS_Store
 
-/apps/client/node_modules
-/apps/server/node_modules
+# =========================
+# VS Code
+# =========================
 
-/apps/client/dist
-/apps/server/dist
+.vscode
+
+# =========================
+# Docker
+# =========================
+
+docker-data
