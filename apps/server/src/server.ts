@@ -1,12 +1,14 @@
 import app from "./app.js";
 import ENV_VARS from "./config/env.js";
 import connectDB from "./config/db.js";
+import redisClient from "./config/redis.js";
 
 const PORT: number = Number(ENV_VARS.SERVER_PORT);
 
 async function startServer() {
   try {
     await connectDB();
+    await redisClient.connect();
 
     app.listen(PORT, () => {
       console.log(`[ SERVER ] 🌎 Server is running on port ${PORT}`);
