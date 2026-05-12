@@ -4,6 +4,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 
 import errorHandler from "./middleware/errorHandler.js";
+import authRoutes from "./routes/auth.routes.js";
 
 const app = express();
 
@@ -15,7 +16,7 @@ app.use(helmet());
 app.use(morgan("dev"));
 
 // ===========🧑‍⚕️👩‍⚕️👨‍⚕️ Health Check Routes ===========
-app.get("/health", (req: express.Request, res: express.Response) => {
+app.get("/api/health", (req: express.Request, res: express.Response) => {
   res.status(200).json({
     success: true,
     message: "Server is healthy",
@@ -24,7 +25,7 @@ app.get("/health", (req: express.Request, res: express.Response) => {
 });
 
 // ============ 📚 API Routes ===========
-
+app.use("/api/auth", authRoutes);
 
 // =========== 🚨 Global Error Handling Middleware ===========
 app.use(errorHandler);
