@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import errorHandler from "./middleware/errorHandler.js";
 import { authRoutes } from "./routes/auth.routes.js";
 import { userRoutes } from "./routes/user.routes.js";
+import { storeRoutes } from "./routes/store.routes.js";
 
 const app = express();
 
@@ -30,6 +31,8 @@ app.get("/api/health", (req: express.Request, res: express.Response) => {
 // ============ 📚 API Routes ===========
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/stores", storeRoutes);
+
 // =========== 🚨 Global Error Handling Middleware ===========
 app.use(errorHandler);
 
