@@ -5,7 +5,8 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 
 import errorHandler from "./middleware/errorHandler.js";
-import authRoutes from "./routes/auth.routes.js";
+import { authRoutes } from "./routes/auth.routes.js";
+import { userRoutes } from "./routes/user.routes.js";
 
 const app = express();
 
@@ -28,7 +29,7 @@ app.get("/api/health", (req: express.Request, res: express.Response) => {
 
 // ============ 📚 API Routes ===========
 app.use("/api/auth", authRoutes);
-
+app.use("/api/user", userRoutes);
 // =========== 🚨 Global Error Handling Middleware ===========
 app.use(errorHandler);
 
