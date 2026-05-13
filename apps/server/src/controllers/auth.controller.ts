@@ -10,6 +10,11 @@ import { storeOtp, getOtp, deleteOtp } from "../services/redis.service.js";
 import generateToken from "../utils/generateToken.js";
 import ENV_VAR from "../config/env.js";
 
+/**
+ * @desc    Signup a new user
+ * @route   POST /api/auth/signup
+ * @access  Public
+ */
 export const signup = asyncHandler(async (req: Request, res: Response) => {
   const { fullName, email, password, phone, role } = req.body;
 
@@ -80,6 +85,11 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
   );
 });
 
+/**
+ * @desc    Verify OTP for email verification
+ * @route   POST /api/auth/verify-otp
+ * @access  Public
+ */
 export const verifyOtp = asyncHandler(async (req: Request, res: Response) => {
   const { email, otp } = req.body;
 
@@ -122,6 +132,11 @@ export const verifyOtp = asyncHandler(async (req: Request, res: Response) => {
   );
 });
 
+/**
+ * @desc    Login a user
+ * @route   POST /api/auth/login
+ * @access  Public
+ */
 export const login = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body;
   if (!email || !password) {
@@ -176,7 +191,20 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
   );
 });
 
+/**
+ * @desc    Logout a user
+ * @route   POST /api/auth/logout
+ * @access  Public
+ */
 export const logout = asyncHandler(async (req: Request, res: Response) => {
+  const token = req.cookies.infotactToken;
+  if (!token) {
+    throw new ApiError({
+      statusCode: 400,
+      message: "Already logged out",
+    });
+  }
+
   res.clearCookie("infotactToken", {
     httpOnly: true,
     secure: ENV_VAR.NODE_ENV === "production",
@@ -187,32 +215,6 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
     new ApiResponse({
       statusCode: 200,
       message: "Logout successfully",
-    })
-  );
-});
-
-export const getProfile = asyncHandler(async (req: Request, res: Response) => {
-  const user = req.user;
-  if (!user) {
-    throw new ApiError({
-      statusCode: 404,
-      message: "User not found",
-    });
-  }
-
-  res.status(200).json(
-    new ApiResponse({
-      statusCode: 200,
-      message: "User profile retrieved successfully",
-      payload: {
-        user: {
-          id: user._id,
-          fullName: user.fullName,
-          email: user.email,
-          phone: user.phone,
-          role: user.role,
-        },
-      },
     })
   );
 });
