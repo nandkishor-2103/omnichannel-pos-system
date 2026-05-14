@@ -74,9 +74,7 @@ export const updateStoreController = asyncHandler(async (req: Request, res: Resp
       statusCode: 200,
       message: "Store updated successfully",
       payload: {
-        store: {
-          store: updatedStore,
-        },
+        store: updatedStore,
       },
     })
   );
