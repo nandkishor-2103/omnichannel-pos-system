@@ -1,0 +1,15 @@
+# Purpose: Run the Vite development server with live reload
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy package files first for better caching
+COPY package*.json ./
+
+# Install ALL dependencies including devDependencies
+RUN npm install
+
+EXPOSE 5173
+
+# --host zaruri hai docker me bahar se access ke liye
+CMD ["npm", "run", "dev", "--", "--host"]

@@ -1,0 +1,22 @@
+services:
+  client:
+    build:
+      context: ./apps/client
+      dockerfile: Dockerfile
+    container_name: pos-client-prod
+    restart: unless-stopped
+    ports:
+      - "80:5173"
+    env_file:
+      - ./apps/client/.env.production
+
+  server:
+    build:
+      context: ./apps/server
+      dockerfile: Dockerfile
+    container_name: pos-server-prod
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./apps/server/.env.production

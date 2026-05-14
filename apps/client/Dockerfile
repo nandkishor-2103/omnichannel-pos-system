@@ -1,23 +1,17 @@
-# Use an official Node.js runtime as a parent image
-FROM node:20-alpine
-
-# Set the working directory in the container
+# ---- Stage 1: Build the Application 🏗️ ----
+FROM node:20-alpine AS builder
 WORKDIR /app
-
-# Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
-
-# Install dependencies
-RUN npm install
-
-# Copy the rest of the application code to the working directory
+RUN npm ci
 COPY . .
-
-# Build the application
 RUN npm run build
 
-# Make port 5173 available to the world outside this container
+# ---- Stage 2: Serve the Application 🚀 ----
+FROM node:20-alpine
+WORKDIR /app
+RUN npm install -g serve
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+COPY --from=builder /app/dist ./dist
+USER appuser
 EXPOSE 5173
-
-# Define the command to run the application
-CMD ["npm", "run", "dev", "--", "--host"]
+CMD ["serve", "-s", "dist", "-l", "5173"]
