@@ -1,31 +1,39 @@
-version: "3.9"
+networks:
+  frontend-net:
+  backend-net:
 
 services:
   client:
     build:
       context: ./apps/client
+      dockerfile: Dockerfile.dev
     container_name: pos-client
-
+    restart: unless-stopped
     ports:
       - "5173:5173"
-
+    env_file:
+      - ./apps/client/.env
     volumes:
       - ./apps/client:/app
       - /app/node_modules
-
+    networks:
+      - frontend-net
     command: npm run dev -- --host
 
   server:
     build:
       context: ./apps/server
-
+      dockerfile: Dockerfile.dev
     container_name: pos-server
-
+    restart: unless-stopped
     ports:
       - "5000:5000"
-
+    env_file:
+      - ./apps/server/.env
     volumes:
       - ./apps/server:/app
-      - /app/node_modules
-
+      - /app/node_modules  
+    networks:
+      - frontend-net
+      - backend-net
     command: npm run dev

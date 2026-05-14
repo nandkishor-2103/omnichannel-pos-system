@@ -9,16 +9,21 @@ const requiredEnvVars = [
   "REDIS_URL",
   "JWT_SECRET",
   "NODE_ENV",
-  "CLIENT_URL",
+  //   "CLIENT_URL",
   "EMAIL_USER",
   "EMAIL_PASS",
 ] as const;
 
+const optionalEnvVars = ["CLIENT_URL"] as const;
+
 // Define a type that enforces all required environment variables
-type EnvVarKeys = (typeof requiredEnvVars)[number];
+type RequiredEnvVarKeys = (typeof requiredEnvVars)[number];
+type OptionalEnvVarKeys = (typeof optionalEnvVars)[number];
 
 type EnvVars = {
-  [K in EnvVarKeys]: string;
+  [K in RequiredEnvVarKeys]: string;
+} & {
+  [K in OptionalEnvVarKeys]?: string; //? = optional
 };
 
 const missingEnvVars = requiredEnvVars.filter((varName) => !process.env[varName]);

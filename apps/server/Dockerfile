@@ -1,23 +1,27 @@
-# Use an official Node.js runtime as a parent image
-FROM node:20-alpine
-
-# Set the working directory in the container
+# ---- Stage 1: Install Production Dependencies 📦 ----
+FROM node:20-alpine AS deps
 WORKDIR /app
-
-# Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
+RUN npm ci --omit=dev
 
-# Install dependencies
-RUN npm install
-
-# Copy the rest of the application code to the working directory
+# ---- Stage 2: Build the Application 🏗️ ----
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
 COPY . .
-
-# Build the application
 RUN npm run build
 
-# Make port 5000 available to the world outside this container
+# ---- Stage 3: Run the Application 🚢 ----
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+COPY --from=builder /app/dist ./dist
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+USER appuser
 EXPOSE 5000
-
-# Define the command to run the application
-CMD ["npm", "start"]
+HEALTHCHECK --interval=30s --timeout=3s \
+CMD wget -qO- http://localhost:5000/health || exit 1
+CMD ["node", "dist/server.js"]

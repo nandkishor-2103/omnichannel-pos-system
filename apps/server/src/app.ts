@@ -3,6 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
+import ENV_VARS from "./config/env.js";
 
 import errorHandler from "./middleware/errorHandler.js";
 import { authRoutes } from "./routes/auth.routes.js";
@@ -12,7 +13,14 @@ import { storeRoutes } from "./routes/store.routes.js";
 const app = express();
 
 // ========== 🛡️ Middleware ===========
-app.use(cors());
+app.use(
+  cors({
+    // In production, allow only the specified client URL. In development, allow localhost:5173.
+    origin:
+      ENV_VARS.NODE_ENV === "production" ? ENV_VARS.CLIENT_URL : "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
@@ -23,7 +31,15 @@ app.use(cookieParser());
 app.get("/api/health", (req: express.Request, res: express.Response) => {
   res.status(200).json({
     success: true,
-    message: "Server is healthy",
+    message: "Ding! Server is healthy",
+    status: "OK",
+  });
+});
+
+app.get("/health", (req: express.Request, res: express.Response) => {
+  res.status(200).json({
+    success: true,
+    message: "Pong! Server is healthy",
     status: "OK",
   });
 });
