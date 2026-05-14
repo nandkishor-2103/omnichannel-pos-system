@@ -157,7 +157,6 @@ export const addEmployeeValidation = [
     .notEmpty()
     .withMessage("Role is required")
     .isIn([
-      "ROLE_STORE_ADMIN",
       "ROLE_STORE_MANAGER",
       "ROLE_BRANCH_MANAGER",
       "ROLE_BRANCH_ADMIN",
