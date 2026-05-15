@@ -149,7 +149,7 @@ export const updateProductService = async (
 export const deleteProductService = async (
   productId: string,
   user: Express.User
-): Promise<void> => {
+): Promise<boolean> => {
   const product = await Product.findById(productId);
 
   if (!product) {
