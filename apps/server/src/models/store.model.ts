@@ -1,4 +1,4 @@
-import mongoose, { Model, Schema } from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
 import type { HydratedDocument } from "mongoose";
 
 export interface IStoreContact {
@@ -8,6 +8,7 @@ export interface IStoreContact {
 }
 
 export interface IStore {
+  _id: mongoose.Types.ObjectId;
   brand: string;
 
   storeAdmin: mongoose.Types.ObjectId;
@@ -89,6 +90,6 @@ const storeSchema = new Schema<IStore>(
   }
 );
 
-const Store: Model<IStore> = mongoose.model<IStore>("Store", storeSchema);
+const Store = mongoose.model<IStore>("Store", storeSchema);
 
 export default Store;
