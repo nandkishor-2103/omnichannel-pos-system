@@ -9,6 +9,7 @@ import errorHandler from "./middleware/errorHandler.js";
 import { authRoutes } from "./routes/auth.routes.js";
 import { userRoutes } from "./routes/user.routes.js";
 import { storeRoutes } from "./routes/store.routes.js";
+import { productRoutes } from "./routes/product.route.js";
 
 const app = express();
 
@@ -48,6 +49,7 @@ app.get("/health", (req: express.Request, res: express.Response) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/stores", storeRoutes);
+app.use("/api/products", productRoutes);
 
 // =========== 🚨 Global Error Handling Middleware ===========
 app.use(errorHandler);
