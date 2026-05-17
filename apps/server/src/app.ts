@@ -11,6 +11,7 @@ import { userRoutes } from "./routes/user.routes.js";
 import { storeRoutes } from "./routes/store.routes.js";
 import { productRoutes } from "./routes/product.route.js";
 import { categoryRoutes } from "./routes/category.route.js";
+import { branchRoutes } from "./routes/branch.routes.js";
 
 const app = express();
 
@@ -52,6 +53,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/stores", storeRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/branches", branchRoutes);
 // =========== 🚨 Global Error Handling Middleware ===========
 app.use(errorHandler);
 
