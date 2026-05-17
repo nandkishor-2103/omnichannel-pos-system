@@ -8,13 +8,11 @@ pos-server  | > server@1.0.0 dev
 pos-server  | > tsx watch src/server.ts
 pos-server  | 
 pos-client  | 
-pos-client  |   VITE v8.0.12  ready in 535 ms
+pos-client  |   VITE v8.0.12  ready in 489 ms
 pos-client  | 
 pos-client  |   ➜  Local:   http://localhost:5173/
 pos-client  |   ➜  Network: http://172.18.0.2:5173/
-pos-server  | ◇ injected env (0) from .env // tip: ⌘ enable debugging { debug: true }
+pos-server  | ◇ injected env (0) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
 pos-server  | [MONGODB]🍃 Connected to MongoDB successfully!
 pos-server  | [REDIS] 🚀 Connected to Redis successfully!
 pos-server  | [ SERVER ] 🌎 Server is running on port 5000
-pos-server  | [0mGET /api/health [36m304[0m 1.518 ms - -[0m
-pos-server  | [0mGET /health [36m304[0m 1.052 ms - -[0m
