@@ -1,32 +1,41 @@
+# **Product Requirements Document (PRD)**
 
-# Product Requirements Document (PRD)
+---
 
-# Omnichannel Retail POS & Inventory Management System
+# **1. Product Overview**
 
-# 1. Product Overview
+---
 
-## Product Name
+## **Product Name**
+
+---
+
 POS (Point of Sale) System
 
-## Project Type
-Cloud-Native Omnichannel Retail POS & Inventory Management Platform
+## **Version**
 
-## Version
+---
+
 1.0.0
 
-## Project Alignment
+## **Project Alignment**
+
+---
+
 This project is fully aligned with:
-- Project 1 from the SDE MERN Internship Specification PDF
+
 - MERN architecture requirements
-- Cloud-native system design
 - Omnichannel retail workflows
 - Enterprise-grade software engineering practices
 
 ---
 
-# 2. Executive Problem Statement
+# **2. Executive Problem Statement**
+
+---
 
 Retail businesses transitioning from offline to digital operations often face:
+
 - Inventory mismatches
 - Slow billing systems
 - Overselling problems
@@ -35,81 +44,90 @@ Retail businesses transitioning from offline to digital operations often face:
 - Poor synchronization between stores
 
 The objective of this system is to provide:
+
 - Real-time inventory synchronization
 - Fast POS billing
 - Multi-store management
 - Subscription-based SaaS onboarding
 - Analytics dashboards
-- Offline-capable retail operations
 
 ---
 
-# 3. Business Objectives
+# **3. Business Objectives**
 
-## Primary Goals
+---
+
+## **Primary Goals**
+
+---
+
 - Automate retail billing operations
 - Maintain inventory consistency
 - Support omnichannel retail operations
 - Provide centralized business dashboards
 - Enable multi-store scalability
 
-## Secondary Goals
-- Improve cashier efficiency
-- Reduce operational errors
-- Improve reporting accuracy
-- Enable cloud-native retail management
+## **Secondary Goals**
 
 ---
 
-# 4. Tech Stack (Aligned with SDE MERN PDF)
+- Improve cashier efficiency
+- Reduce operational errors
+- Improve reporting accuracy
 
-| Layer | Technology |
-|---|---|
+---
+
+# **4. Tech Stack**
+
+---
+
+| **Layer** | **Technology** |
+| --- | --- |
 | Frontend | React.js |
 | Styling | Tailwind CSS |
 | Backend | Node.js |
 | API Framework | Express.js |
 | Language | TypeScript |
 | Database | MongoDB |
-| ODM | Mongoose |
+| ODM (Object-Document Mapper) | Mongoose |
 | Cache Layer | Redis |
-| Authentication | JWT + bcrypt |
+| Authentication | JWT + bcryptjs |
 | State Management | Redux Toolkit |
-| Testing | Jest / Vitest |
-| E2E Testing | Playwright |
+| Testing | Postman |
 | Deployment | Docker |
 | CI/CD | GitHub Actions |
 | Hosting | AWS / Render / Vercel |
 
 ---
 
-# 5. System Architecture
+# **5. System Architecture**
 
-## High-Level Architecture
+---
 
-```text
+## **High-Level Architecture**
+
+---
+
+```
 Frontend (React + Tailwind)
         ↓
-REST APIs / WebSockets
+    REST APIs
         ↓
 Backend Services (Node.js + Express + TypeScript)
         ↓
 MongoDB + Redis
 ```
 
-## Architecture Principles
-- Decoupled architecture
-- Headless backend APIs
-- Real-time inventory synchronization
-- Redis caching
-- Scalable cloud-native infrastructure
-- Offline-first POS operations
+---
+
+# **6. Core Features**
 
 ---
 
-# 6. Core Features
+## **POS Features**
 
-## POS Features
+---
+
 - POS terminal
 - Product search
 - Cart management
@@ -120,25 +138,37 @@ MongoDB + Redis
 - Shift summary
 - Download bill
 
-## Inventory Features
+## **Inventory Features**
+
+---
+
 - Real-time inventory tracking
 - Stock synchronization
 - Inventory updates
 
-## Store Features
-- Multi-store support
+## **Store Features**
+
+---
+
+- Multi-store suppor
 - Branch dashboard
 - Store dashboard
 - Employee management
 - Store onboarding
 - Subscription plans
 
-## Analytics Features
+## **Analytics Features**
+
+---
+
 - Sales charts
 - Revenue reports
 - Product performance analytics
 
-## Authentication Features
+## **Authentication Features**
+
+---
+
 - Login
 - Signup
 - Forgot password
@@ -147,184 +177,132 @@ MongoDB + Redis
 
 ---
 
-# 7. Authentication Module
-
-## Endpoints
-
-| Method | Endpoint |
-|---|---|
-| POST | /auth/signup |
-| POST | /auth/login |
-| POST | /auth/forgot-password |
-| POST | /auth/reset-password |
-| GET | /auth/current-user |
+# **7. Authentication Module**
 
 ---
 
-# 8. User Module
-
-## Endpoints
-
-| Method | Endpoint |
-|---|---|
-| GET | /api/user/profile |
-| GET | /api/users/:id |
+## **Endpoints**
 
 ---
 
-# 9. Store Module
-
-## Store Endpoints
-
-| Method | Endpoint |
-|---|---|
-| POST | /api/stores |
-| GET | /api/stores/:id |
-| PUT | /api/stores/:id |
-| DELETE | /api/stores |
-| GET | /api/stores/admin |
-| GET | /api/stores/employee |
-| GET | /api/stores/:storeId/employee/list |
-| POST | /api/stores/add/employee |
-| GET | /api/stores |
-| PUT | /api/stores/:storeId/moderate |
+| **Method** | **Endpoint** | **Description** |
+| --- | --- | --- |
+| `POST`✅ | `/auth/signup` | Register a new user (e.g. admin, cashier) |
+| `POST`✅ | `/auth/login`  | Login with email & password |
+| `POST`❌ | `/auth/forgot-password` | Forgot Password |
+| `POST`❌ | `/auth/reset-password` | Reset Password |
+| `POST` ✅ | `/auth/logout` | Logout user profile |
+| `POST` ✅ | `/auth/verify-otp` | Verify email using OTP |
 
 ---
 
-# 10. Product Module
-
-## Product Endpoints
-
-| Method | Endpoint |
-|---|---|
-| POST | /api/products |
-| GET | /api/products/:id |
-| PATCH | /api/products/:id |
-| DELETE | /api/products/:id |
-| GET | /api/products/store/:storeId |
-| GET | /api/products/store/:storeId/search |
+# **8. User Module**
 
 ---
 
-# 11. Category Module
-
-## Category Endpoints
-
-| Method | Endpoint |
-|---|---|
-| POST | /api/categories |
-| GET | /api/categories/store/:storeId |
-| PUT | /api/categories/:id |
-| DELETE | /api/categories/:id |
+## **Endpoints**
 
 ---
 
-# 12. Inventory Module
-
-## Inventory Endpoints
-
-| Method | Endpoint |
-|---|---|
-| POST | /api/inventory/add |
-| POST | /api/inventory/transfer |
-| GET | /api/inventory/store/:storeId |
+| **Method** | **Endpoint** | **Description** |
+| --- | --- | --- |
+| `GET`✅ | `/api/user/profile` | Get current looged in user profile |
+| `GET`✅ | `/api/users/:id` | Get user by ID |
 
 ---
 
-# 13. Sales Module
-
-## Sales Endpoints
-
-| Method | Endpoint |
-|---|---|
-| POST | /api/sales |
-| GET | /api/sales |
-| GET | /api/sales/:id |
+# **9. Store Module**
 
 ---
 
-# 14. Security Requirements
-
-- JWT Authentication
-- bcrypt Password Hashing
-- RBAC Authorization
-- Secure Environment Variables
-- Redis Caching
-- Protected APIs
+## **Endpoints:** 🔐 Protected Routes (some with role restrictions)
 
 ---
 
-# 15. Testing Strategy
-
-## Testing Tools
-- Jest
-- Vitest
-- Playwright
-
-## Testing Types
-- Unit Testing
-- Integration Testing
-- End-to-End Testing
-
----
-
-# 16. CI/CD Pipeline
-
-## GitHub Actions Workflow
-- Install dependencies
-- Run linting
-- Run tests
-- Build application
-- Deploy automatically
+| Method | Endpoint | Description | Access |
+| --- | --- | --- | --- |
+| `POST` ✅ | `/api/stores/` | ✅ **Create a store** – Requires JWT token | `STORE_ADMIN` |
+| `GET` ✅ | `/api/stores/:id` | 🔍 **Get store by ID** | `SUPER_ADMIN` , `STORE_ADMIN` , `STORE_MANAGER` , `BRANCH_MANAGER` , `BRANCH_ADMIN` |
+| `PUT` ✅ | `/api/stores/:id` | ✏️ **Update store info** | `STORE_ADMIN` |
+| `DELETE` ✅ | `/api/stores/` | ❌ **Delete store of the logged-in admin** | `STORE_ADMIN` |
+| `GET` ✅ | `/api/stores/admin` | 🧑‍💼 **Get store created by current admin** | `STORE_ADMIN` |
+| `GET` ✅ | `/api/stores/employee` | 👥 **Get store associated with logged-in employee** | `STORE_MANAGER` , `BRANCH_MANAGER` , `BRANCH_ADMIN` , `BRANCH_CASHIER` |
+| `GET` ✅ | `/api/stores/:storeId/employee/list` | 📋 **List all employees in a store** (Only Manager/Admin) | `STORE_ADMIN` , `STORE_MANAGER` |
+| `POST` ✅ | `/api/stores/add/employee` | ➕ **Add employee to store** (Only Manager/Admin) | `STORE_ADMIN` , `STORE_MANAGER` |
+| `GET` ✅ | `/api/stores/` | 🌍 **Get all stores** (optional filter by status) | `SUPER_ADMIN` |
+| `PUT` ✅ | `/api/stores/:storeId/moderate?action=APPROVED` | ⚖️ **Approve or decline a store** | `SUPER_ADMIN` |
 
 ---
 
-# 17. Four-Week Roadmap
-
-## Week 1
-- Project setup
-- Docker setup
-- Authentication
-- Schema design
-
-## Week 2
-- Product APIs
-- Store APIs
-- Inventory APIs
-- Redis caching
-
-## Week 3
-- POS frontend
-- Dashboard UI
-- API integration
-
-## Week 4
-- Testing
-- CI/CD
-- Deployment
-- Documentation
+# **10. Product Module**
 
 ---
 
-# 18. Future Enhancements
-
-- Barcode scanner integration
-- QR code support
-- Offline-first POS
-- Mobile app support
-- AI analytics
+## **Product Endpoints**
 
 ---
 
-# 19. Conclusion
+| Method | Endpoint | Purpose | Access |
+| --- | --- | --- | --- |
+| `POST` ✅ | `/api/products/` | Create new product *(Store Admin, Store Manager)* | `STORE_MANAGER`, `STORE_ADMIN` |
+| `GET` ✅ | `/api/products/:id` | Get product by ID (authenticated user can access) | Only authenticated user can access |
+| `PATCH` ✅ | `/api/products/:id` | Update product by ID *(Store Admin, Store Manager)* | `STORE_MANAGER`, `STORE_ADMIN` |
+| `DELETE` ✅ | `/api/products/:id` | Delete product by ID *(Store Admin, Store Manager)* | `STORE_MANAGER`, `STORE_ADMIN` |
+| `GET` ✅ | `/api/products/store/:storeId` | Get all products of a store (authenticated user can access) | Only authenticated user can access |
+| `GET` ✅ | `/api/products/store/:storeId/search?q=xyz` | Search products in a store (authenticated user can access) | Only authenticated user can access |
 
-The POS System is a scalable omnichannel retail platform aligned with the SDE MERN internship specification for Project 1.
+---
 
-The platform provides:
-- Fast POS operations
-- Real-time inventory management
-- Multi-store support
-- Secure authentication
-- Enterprise-grade architecture
-- CI/CD automation
-- Cloud-native deployment
+# **11. Category Module**
+
+---
+
+## **Category Endpoints**
+
+---
+
+| HTTP Method | Endpoint | Description | Access |
+| --- | --- | --- | --- |
+| `POST` ✅ | `/api/categories/` | Create a new category for a store. | `STORE_MANAGER`, `STORE_ADMIN` |
+| `GET` ✅ | `/api/categories/store/:storeId` | Fetch all categories belonging to a specific store. | Public |
+| `PUT` ✅ | `/api/categories/:id` | Update category details by category ID. | `STORE_MANAGER`, `STORE_ADMIN` |
+| `DELETE` ✅ | `/api/categories/:id` | Delete a category by ID. | `STORE_MANAGER`, `STORE_ADMIN` |
+
+---
+
+# 12. Branch **Module**
+
+---
+
+## Branch Endpoints
+
+---
+
+| Method | Endpoint | Description | Access |
+| --- | --- | --- | --- |
+| `POST` ✅ | `/api/branches/` | Create a new branch (requires authorization). | `STORE_MANAGER`, `STORE_ADMIN` |
+| `GET` ✅ | `/api/branches/:id` | Retrieve details of a branch by its ID. | Only authenticated user can access |
+| `GET` ✅ | `/api/branches/store/:storeId` | Get all branches associated with a specific store. | `STORE_MANAGER`, `STORE_ADMIN` |
+| `PUT` ✅ | `/api/branches/:id` | Update an existing branch (requires authorization). | `STORE_MANAGER`, `STORE_ADMIN` |
+| `DELETE` ✅ | `/api/branches/:id` | Delete a branch by its ID. | `STORE_MANAGER`, `STORE_ADMIN` |
+
+---
+
+# **13. Inventory Module**
+
+---
+
+## **Inventory Endpoints**
+
+---
+
+| HTTP Method | Endpoint | Description | Access |
+| --- | --- | --- | --- |
+| `POST` ✅ | `/api/inventories/` | Create a new inventory record (Store Manager only). | `STORE_MANAGER` |
+| `PUT` ✅ | `/api/inventories/:id` | Update inventory quantity for a specific record (Store Manager only). | `STORE_MANAGER` |
+| `DELETE` ✅ | `/api/inventories/:id` | Delete an inventory record (Store Manager only). | `STORE_MANAGER` |
+| `GET` ✅ | `/api/inventories/:id` | Get inventory details by inventory ID. | Authenticated user can access |
+| `GET` ✅ | `/api/inventories/product/:productId` | Get inventory record for a specific product (across all branches). | Authenticated user can access |
+| `GET` ✅ | `/api/inventories/branch/:branchId` | Get all inventory records for a specific branch. | Authenticated user can access |
+
+---
