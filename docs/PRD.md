@@ -306,3 +306,23 @@ MongoDB + Redis
 | `GET` ✅ | `/api/inventories/branch/:branchId` | Get all inventory records for a specific branch. | Authenticated user can access |
 
 ---
+
+# 14. Employee Module
+
+---
+
+## **Employee Endpoints**
+
+---
+
+| Method | Endpoint | Description | Access Roles |
+| --- | --- | --- | --- |
+| `POST` | `/api/employees/store/:storeId` | Create an employee and assign to a store | `ROLE_STORE_ADMIN`, `ROLE_STORE_MANAGER` |
+| `POST` | `/api/employees/branch/:branchId` | Create an employee and assign to a branch | `ROLE_BRANCH_ADMIN`, `ROLE_BRANCH_MANAGER` |
+| `PUT` | `/api/employees/:employeeId:` | Update employee details | Store/Branch Admins and Managers |
+| `DELETE` | `/api/employees/:employeeId` | Delete an employee by ID | `ROLE_STORE_ADMIN`, `ROLE_BRANCH_ADMIN` |
+| `GET` | `/api/employees/:employeeId` | Get employee details by ID | Store/Branch Admins and Managers |
+| `GET` | `/api/employees/store/:storeId` | List all employees under a store | `ROLE_STORE_ADMIN`, `ROLE_STORE_MANAGER` |
+| `GET` | `/api/employees/branch/:branchId?role=MANAGER` | List all employees under a branch, optionally filter by role | `ROLE_BRANCH_ADMIN`, `ROLE_BRANCH_MANAGER` |
+
+---
