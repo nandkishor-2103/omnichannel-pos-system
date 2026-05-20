@@ -16,7 +16,7 @@ export const isAuthenticated = asyncHandler(
     if (!token) {
       throw new ApiError({
         statusCode: 401,
-        message: "Unauthorized",
+        message: "Unauthorized, Please login!",
       });
     }
 
