@@ -20,7 +20,7 @@ export default function POSHeader() {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 cursor-pointer">
           <Avatar>
             <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
             <AvatarFallback>CN</AvatarFallback>

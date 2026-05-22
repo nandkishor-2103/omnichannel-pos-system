@@ -15,7 +15,7 @@ type ProductCardProps = {
 
 export default function ProductCard({ product }: ProductCardProps) {
   return (
-    <Card className="py-4">
+    <Card className="py-4 hover:scale-105 transition-transform duration-300 hover:cursor-pointer hover:bg-muted">
       <CardContent>
         <div className="bg-muted mb-2 flex aspect-square items-center justify-center rounded-md">
           <img
