@@ -146,7 +146,11 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 
-  const user = await User.findOne({ email }).select("+password");
+  const user = await User.findOne({ email })
+    .select("+password")
+    .populate("store", "brand")
+    .populate("branch", "name");
+
   if (!user) {
     throw new ApiError({
       statusCode: 400,
@@ -185,6 +189,8 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
           email: user.email,
           phone: user.phone,
           role: user.role,
+          storeId: user.store,
+          branchId: user.branch,
         },
       },
     })
