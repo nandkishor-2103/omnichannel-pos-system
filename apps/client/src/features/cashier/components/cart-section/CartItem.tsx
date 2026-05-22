@@ -15,7 +15,7 @@ type CartItemProps = {
 
 export default function CartItem({ item }: CartItemProps) {
   return (
-    <Card className="border-l-4 border-l-green-800">
+    <Card className="border-l-4 border-l-green-800 hover:scale-103 transition-transform duration-300 hover:cursor-pointer hover:bg-muted">
       <CardContent className="p-3">
         <div className="flex items-center justify-between">
           <div className="flex-1">
