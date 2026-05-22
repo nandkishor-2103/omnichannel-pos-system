@@ -337,10 +337,31 @@ MongoDB + Redis
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
-| `POST` | `/api/customers` | ✅ Create a new customer. |
-| `PUT` | `/api/customers/:id` | ✏️ Update an existing customer by ID. |
-| `DELETE` | `/api/customers/:id` | 🗑 Delete a customer by ID. |
-| `GET` | `/api/customers/:id` | 🔍 Get a specific customer by ID. |
-| `GET` | `/api/customers` | 📋 Fetch all customers from the system. |
+| `POST` ✅ | `/api/customers` | ✅ Create a new customer. |
+| `PUT` ✅ | `/api/customers/:id` | ✏️ Update an existing customer by ID. |
+| `DELETE` ✅ | `/api/customers/:id` | 🗑 Delete a customer by ID. |
+| `GET` ✅ | `/api/customers/:id` | 🔍 Get a specific customer by ID. |
+| `GET` ✅ | `/api/customers` | 📋 Fetch all customers from the system. |
+
+---
+
+# 16. Order Module
+
+---
+
+## Order Endpoints
+
+---
+
+| Endpoint | HTTP Method | Access Role | Description |
+| --- | --- | --- | --- |
+| `/api/orders` ✅ | `POST` | `ROLE_BRANCH_CASHIER` | Create a new order using details like items, customer, and payment type. |
+| `/api/orders/:id` ✅ | `GET` | Public | Get order details by order ID. |
+| `/api/orders/branch/:branchId` ✅ | `GET` | Public | Get orders for a branch with optional filters: `customerId`, `cashierId`, `paymentType`, `status`. |
+| `/api/orders/cashier/:cashierId` ✅ | `GET` | Public | Fetch all orders created by a specific cashier. |
+| `/api/orders/today/branch/:branchId` ✅  | `GET` | Public | Fetch today's orders for a specific branch. |
+| `/api/orders/customer/:customerId` ✅ | `GET` | Public | Get all orders placed by a specific customer. |
+| `/api/orders/recent/:branchId` ✅ | `GET` | `ROLE_BRANCH_MANAGER`, `ROLE_BRANCH_ADMIN` | Get top 5 most recent orders of a branch. |
+| `/api/orders/:id` | `DELETE` | `ROLE_STORE_MANAGER`, `ROLE_STORE_ADMIN` | Delete an order by ID. |
 
 ---
