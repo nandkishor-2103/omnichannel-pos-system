@@ -53,7 +53,7 @@ export default function HeldOrdersDialog({
                       {new Date(order.timestamp).toLocaleTimeString()}
                     </p>
                   </div>
-                  <Button size="sm" onClick={() => handleResumeOrder(order)}>
+                  <Button size="sm" className="bg-green-700 text-white cursor-pointer" onClick={() => handleResumeOrder(order)}>
                     <Play className="w-4 h-4 mr-1" />
                     Resume
                   </Button>
