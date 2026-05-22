@@ -15,6 +15,7 @@ import { branchRoutes } from "./routes/branch.routes.js";
 import { inventoryRoutes } from "./routes/inventory.route.js";
 import { employeeRoutes } from "./routes/employee.routes.js";
 import { customerRoutes } from "./routes/customer.routes.js";
+import { orderRoutes } from "./routes/order.routes.js";
 
 
 
@@ -62,6 +63,7 @@ app.use("/api/branches", branchRoutes);
 app.use("/api/inventories", inventoryRoutes);
 app.use("/api/employees", employeeRoutes);
 app.use("/api/customers", customerRoutes);
+app.use("/api/orders", orderRoutes);
 // =========== 🚨 Global Error Handling Middleware ===========
 app.use(errorHandler);
 
