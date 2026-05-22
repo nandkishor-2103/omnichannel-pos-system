@@ -362,6 +362,6 @@ MongoDB + Redis
 | `/api/orders/today/branch/:branchId` ✅  | `GET` | Public | Fetch today's orders for a specific branch. |
 | `/api/orders/customer/:customerId` ✅ | `GET` | Public | Get all orders placed by a specific customer. |
 | `/api/orders/recent/:branchId` ✅ | `GET` | `ROLE_BRANCH_MANAGER`, `ROLE_BRANCH_ADMIN` | Get top 5 most recent orders of a branch. |
-| `/api/orders/:id` | `DELETE` | `ROLE_STORE_MANAGER`, `ROLE_STORE_ADMIN` | Delete an order by ID. |
+| `/api/orders/:id` ✅ | `DELETE` | `ROLE_STORE_MANAGER`, `ROLE_STORE_ADMIN` | Delete an order by ID. |
 
 ---
