@@ -1,12 +1,22 @@
+// import CreateOrder from "@/features/cashier/pages/CreateOrderPage";
+// import OrderHistoryPage from "./features/cashier/pages/OrderHistoryPage";
+import RefundPage from "./features/cashier/pages/RefundPage";
+
 // import CreateOrderPage from "@/features/cashier/pages/CreateOrderPage";
-import  CustomerLookupPage from "./features/cashier/pages/CustomerLookupPage";
+// import  CustomerLookupPage from "./features/cashier/pages/CustomerLookupPage";
+
+// import ShiftReportPage from "./features/cashier/pages/ShiftReportPage";
 
 export default function App() {
-
   return (
     <>
-        {/* <CreateOrderPage /> */}
-        <CustomerLookupPage/>
+      {/*<CreateOrder />*/}
+      {/* <OrderHistoryPage/> */}
+
+      {/* <CreateOrderPage /> */}
+      {/* <CustomerLookupPage/> */}
+      {/* <ShiftReportPage /> */}
+      <RefundPage />
     </>
   );
 }
