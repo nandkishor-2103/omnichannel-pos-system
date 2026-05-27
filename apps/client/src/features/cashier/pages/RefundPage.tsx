@@ -13,21 +13,10 @@ export default function RefundPage() {
   const [showReturnReceiptDialog, setShowReturnReceiptDialog] = useState(false);
 
   return (
-    <div className="h-screen overflow-hidden bg-muted/30">
-      {/* Header */}
-      <div className="sticky top-0 z-20 border-b bg-background/90 backdrop-blur">
-        <div className="px-6 py-3">
-          <h1 className="text-3xl font-bold tracking-tight">Return / Refund</h1>
-
-          <p className="mt-1 text-sm text-muted-foreground">
-            Manage customer returns and refunds
-          </p>
-        </div>
-      </div>
-
+    <div className=" overflow-hidden bg-muted/30">
       {/* Content */}
       {!selectedOrder ? (
-        <div className=" p-6">
+        <div className="p-2">
           <OrderTable onViewOrderDetails={setSelectedOrder} />
         </div>
       ) : (
