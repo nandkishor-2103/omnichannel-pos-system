@@ -8,7 +8,7 @@ import TopSellingItemsCard from "../components/shift-report/TopSellingItemsCard"
 
 export default function ShiftReportPage() {
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-full flex flex-col">
       <ShiftReportHeader />
       <div className="flex-1 overflow-auto p-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
