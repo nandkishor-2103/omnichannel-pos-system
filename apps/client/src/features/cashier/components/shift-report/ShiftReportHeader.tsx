@@ -17,7 +17,7 @@ export default function ShiftReportHeader() {
   const isShiftActive = !shiftData.cashier.shiftEndTime;
 
   return (
-    <div className="border-b bg-card px-5 py-4 shadow-sm">
+    <div className="border-b bg-card px-3 py-2 shadow-sm">
       <div className="flex items-center justify-between">
         {/* Left Section */}
         <div>

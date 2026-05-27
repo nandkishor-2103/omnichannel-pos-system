@@ -536,10 +536,10 @@ export default function OrderTable({ onViewOrderDetails }: Props) {
   return (
     <div className="rounded-2xl border bg-background shadow-sm">
       {/* Header */}
-      <div className="border-b p-5">
+      <div className="border-b px-4 py-1">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h2 className="text-2xl font-bold">Orders</h2>
+            <h2 className="text-2xl font-bold">Return/Refund</h2>
 
             <p className="text-sm text-muted-foreground">Select an order for refund</p>
           </div>
@@ -554,7 +554,7 @@ export default function OrderTable({ onViewOrderDetails }: Props) {
       </div>
 
       {/* Scrollable Table */}
-      <div className="h-[560px] overflow-y-auto">
+      <div className="h-[640px] overflow-y-auto px-2">
         <Table>
           <TableHeader >
             <TableRow>

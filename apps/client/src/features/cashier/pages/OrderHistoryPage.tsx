@@ -14,7 +14,7 @@ import { DownloadIcon } from "lucide-react";
 import OrderDetails from "@/features/cashier/components/order-history/OrderDetails";
 import OrderTable from "@/features/cashier/components/order-history/OrderTable";
 
-import type {Order} from "../types/order"
+import type { Order } from "../types/order";
 
 export default function OrderHistoryPage() {
   const [showOrderInvoiceDialog, setShowOrderInvoiceDialog] = useState(false);
@@ -27,18 +27,8 @@ export default function OrderHistoryPage() {
   }
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-muted/20">
-      <div className="border-b bg-background px-6 py-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Order History</h1>
-
-          <p className="text-sm text-muted-foreground">
-            View and manage all customer orders
-          </p>
-        </div>
-      </div>
-
-      <div className="flex-1 px-3 py-3">
+    <div className="flex flex-col overflow-hidden bg-muted/20">
+      <div className="flex-1 px-2 py-1">
         <div className="rounded-2xl border bg-background shadow-sm">
           <OrderTable onViewOrderDetails={handleViewOrderDetails} />
         </div>

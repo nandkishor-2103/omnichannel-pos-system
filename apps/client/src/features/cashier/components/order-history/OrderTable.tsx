@@ -522,9 +522,9 @@ const orders: Order[] = [
 export default function OrderTable({ onViewOrderDetails }: OrderTableProps) {
   return (
     <div className="rounded-xl border bg-card shadow-sm">
-      <div className="flex items-center justify-between border-b px-2 py-3">
+      <div className="flex items-center justify-between border-b px-4 py-1">
         <div>
-          <h2 className="text-2xl font-bold">Recent Orders</h2>
+          <h2 className="text-2xl font-bold">Order History</h2>
 
           <p className="text-sm text-muted-foreground">
             View and manage recent customer orders
@@ -536,30 +536,30 @@ export default function OrderTable({ onViewOrderDetails }: OrderTableProps) {
         </Badge>
       </div>
 
-      <div className="max-h-[calc(100vh-210px)] overflow-y-auto">
+      <div className="max-h-[calc(100vh-135px)] overflow-y-auto">
         <Table className="table-fixed">
           <TableHeader className="sticky top-0 z-20 bg-background">
             <TableRow>
-              <TableHead className="w-30 px-2">Order ID</TableHead>
+              <TableHead className="w-30 px-4">Order ID</TableHead>
 
-              <TableHead className="w-30 px-2">Date / Time</TableHead>
+              <TableHead className="w-30 px-4">Date / Time</TableHead>
 
-              <TableHead className="w-45 px-2">Customer</TableHead>
+              <TableHead className="w-45 px-4">Customer</TableHead>
 
-              <TableHead className="w-30 px-2">Amount</TableHead>
+              <TableHead className="w-30 px-4">Amount</TableHead>
 
-              <TableHead className="w-32.5 px-2">Payment Type</TableHead>
+              <TableHead className="w-32.5 px-4">Payment Type</TableHead>
 
-              <TableHead className="w-32.5 px-2">Status</TableHead>
+              <TableHead className="w-32.5 px-4">Status</TableHead>
 
-              <TableHead className="w-25 px-2 text-right">Action</TableHead>
+              <TableHead className="w-25 px-4 text-right">Action</TableHead>
             </TableRow>
           </TableHeader>
 
           <TableBody>
             {orders.map((order) => (
               <TableRow key={order.id} className="h-12 hover:bg-muted/40">
-                <TableCell className="px-2 font-medium">#{order.id}</TableCell>
+                <TableCell className="px-4 font-medium">#{order.id}</TableCell>
 
                 <TableCell className="px-2 text-muted-foreground">
                   {order.createdAt}
