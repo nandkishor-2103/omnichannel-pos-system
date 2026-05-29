@@ -17,10 +17,9 @@ type DataItem = {
 };
 
 const data: DataItem[] = [
-  { name: "Cabbage", value: 40, percentage: 40 },
-  { name: "Broccoli", value: 30, percentage: 30 },
-  { name: "Carrots", value: 20, percentage: 20 },
-  { name: "Spinach", value: 10, percentage: 10 },
+  { name: "UPI", value: 50, percentage: 50 },
+  { name: "CASH", value: 30, percentage: 30 },
+  { name: "CARD", value: 20, percentage: 20 },
 ];
 
 const COLORS: string[] = ["#10b981", "#3b82f6", "#f59e0b", "#8b5cf6"];
@@ -37,15 +36,14 @@ const config = data.reduce<Record<string, { label: string; color: string }>>(
   {}
 );
 
-
-export default function TopProducts() {
+export default function PaymentMethodsChart() {
   return (
     <Card className="rounded-2xl border border-border/50 shadow-sm">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-lg font-semibold text-foreground">
-              Product Performance
+              Payment Method
             </CardTitle>
 
             <p className="mt-1 text-sm text-muted-foreground">
