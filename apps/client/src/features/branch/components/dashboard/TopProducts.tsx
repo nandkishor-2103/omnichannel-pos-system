@@ -82,7 +82,7 @@ export default function TopProducts() {
                   <ChartTooltipContent
                     active={active}
                     payload={payload}
-                    formatter={(value) => [`${value}%`, " Sales Percentage"]}
+                    formatter={(value) => [`${value}%`, " Sales"]}
                   />
                 )}
               />
