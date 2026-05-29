@@ -81,6 +81,177 @@ const initialOrders: Order[] = [
     paymentType: "UPI",
     status: "COMPLETED",
   },
+  {
+    id: "ORD-1009",
+    customer: "Karan Joshi",
+    cashier: "Ravi Kumar",
+    createdAt: "2026-05-28",
+    totalAmount: 1750,
+    paymentType: "CARD",
+    status: "COMPLETED",
+  },
+  {
+    id: "ORD-1010",
+    customer: "Meera Nair",
+    cashier: "Suresh Patel",
+    createdAt: "2026-05-28",
+    totalAmount: 430,
+    paymentType: "CASH",
+    status: "PENDING",
+  },
+  {
+    id: "ORD-1011",
+    customer: "Arjun Malhotra",
+    cashier: "Ravi Kumar",
+    createdAt: "2026-05-29",
+    totalAmount: 2990,
+    paymentType: "UPI",
+    status: "COMPLETED",
+  },
+  {
+    id: "ORD-1012",
+    customer: "Sneha Kulkarni",
+    cashier: "Suresh Patel",
+    createdAt: "2026-05-29",
+    totalAmount: 760,
+    paymentType: "CARD",
+    status: "CANCELLED",
+  },
+  {
+    id: "ORD-1013",
+    customer: "Rohan Das",
+    cashier: "Ravi Kumar",
+    createdAt: "2026-05-30",
+    totalAmount: 1340,
+    paymentType: "CASH",
+    status: "COMPLETED",
+  },
+  {
+    id: "ORD-1014",
+    customer: "Pooja Chavan",
+    cashier: "Suresh Patel",
+    createdAt: "2026-05-30",
+    totalAmount: 845,
+    paymentType: "UPI",
+    status: "PENDING",
+  },
+  {
+    id: "ORD-1015",
+    customer: "Dev Patel",
+    cashier: "Ravi Kumar",
+    createdAt: "2026-05-31",
+    totalAmount: 2100,
+    paymentType: "CARD",
+    status: "COMPLETED",
+  },
+  {
+    id: "ORD-1016",
+    customer: "Ishita Roy",
+    cashier: "Suresh Patel",
+    createdAt: "2026-06-01",
+    totalAmount: 1120,
+    paymentType: "UPI",
+    status: "COMPLETED",
+  },
+  {
+    id: "ORD-1017",
+    customer: "Manoj Yadav",
+    cashier: "Ravi Kumar",
+    createdAt: "2026-06-01",
+    totalAmount: 650,
+    paymentType: "CASH",
+    status: "PENDING",
+  },
+  {
+    id: "ORD-1018",
+    customer: "Kavya Iyer",
+    cashier: "Suresh Patel",
+    createdAt: "2026-06-02",
+    totalAmount: 2780,
+    paymentType: "CARD",
+    status: "COMPLETED",
+  },
+  {
+    id: "ORD-1019",
+    customer: "Aditya Rao",
+    cashier: "Ravi Kumar",
+    createdAt: "2026-06-02",
+    totalAmount: 940,
+    paymentType: "UPI",
+    status: "CANCELLED",
+  },
+  {
+    id: "ORD-1020",
+    customer: "Nikita Shah",
+    cashier: "Suresh Patel",
+    createdAt: "2026-06-03",
+    totalAmount: 1890,
+    paymentType: "CARD",
+    status: "COMPLETED",
+  },
+  {
+    id: "ORD-1021",
+    customer: "Harsh Vardhan",
+    cashier: "Ravi Kumar",
+    createdAt: "2026-06-03",
+    totalAmount: 520,
+    paymentType: "CASH",
+    status: "PENDING",
+  },
+  {
+    id: "ORD-1022",
+    customer: "Simran Kaur",
+    cashier: "Suresh Patel",
+    createdAt: "2026-06-04",
+    totalAmount: 1430,
+    paymentType: "UPI",
+    status: "COMPLETED",
+  },
+  {
+    id: "ORD-1023",
+    customer: "Yash Thakur",
+    cashier: "Ravi Kumar",
+    createdAt: "2026-06-04",
+    totalAmount: 870,
+    paymentType: "CARD",
+    status: "CANCELLED",
+  },
+  {
+    id: "ORD-1024",
+    customer: "Tanvi Mishra",
+    cashier: "Suresh Patel",
+    createdAt: "2026-06-05",
+    totalAmount: 2560,
+    paymentType: "UPI",
+    status: "COMPLETED",
+  },
+  {
+    id: "ORD-1025",
+    customer: "Akash Jain",
+    cashier: "Ravi Kumar",
+    createdAt: "2026-06-05",
+    totalAmount: 730,
+    paymentType: "CASH",
+    status: "PENDING",
+  },
+  {
+    id: "ORD-1026",
+    customer: "Ritika Sen",
+    cashier: "Suresh Patel",
+    createdAt: "2026-06-06",
+    totalAmount: 1680,
+    paymentType: "CARD",
+    status: "COMPLETED",
+  },
+  {
+    id: "ORD-1027",
+    customer: "Varun Kapoor",
+    cashier: "Ravi Kumar",
+    createdAt: "2026-06-06",
+    totalAmount: 990,
+    paymentType: "UPI",
+    status: "CANCELLED",
+  },
 ];
 
 export default function Orders() {
@@ -130,7 +301,7 @@ export default function Orders() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight">Orders</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Orders</h1>
 
         <Button
           variant="outline"
@@ -143,16 +314,16 @@ export default function Orders() {
         </Button>
       </div>
 
-
-
-      <OrdersTable
-        orders={orders}
-        loading={loading}
-        onViewDetails={handleViewDetails}
-        onPrintInvoice={handlePrintInvoice}
-        getStatusColor={getStatusColor}
-        getPaymentIcon={getPaymentIcon}
-      />
+      <div className="h-[550px] overflow-y-auto">
+        <OrdersTable
+          orders={orders}
+          loading={loading}
+          onViewDetails={handleViewDetails}
+          onPrintInvoice={handlePrintInvoice}
+          getStatusColor={getStatusColor}
+          getPaymentIcon={getPaymentIcon}
+        />
+      </div>
 
       <OrderDetailsDialog
         open={showDetails}
