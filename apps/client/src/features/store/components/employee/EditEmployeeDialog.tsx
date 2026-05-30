@@ -11,9 +11,8 @@ import {
 
 import { Edit } from "lucide-react";
 
-
+import EmployeeForm from "./EmployeeForm";
 import type { EmployeeFormValues } from "../../types/employee";
-import EmployeeForm from "@/features/store/components/employee/EmployeeForm";
 
 const roles: string[] = [
   "ROLE_BRANCH_ADMIN",
