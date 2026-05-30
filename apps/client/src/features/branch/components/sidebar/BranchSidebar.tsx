@@ -1,20 +1,10 @@
-import type { ReactNode } from "react";
-
 import { NavLink } from "react-router-dom";
 
-import {
-  CreditCard,
-  FileText,
-  LayoutDashboard,
-  LogOutIcon,
-  Package,
-  Settings,
-  ShoppingBag,
-  UserCircle,
-  Users,
-} from "lucide-react";
+
 
 import { Button } from "@/components/ui/button.tsx";
+import type { ReactNode } from "react";
+import { LayoutDashboard, LogOutIcon } from "lucide-react";
 
 type NavItem = {
   path: string;
@@ -22,60 +12,17 @@ type NavItem = {
   icon: ReactNode;
 };
 
-const navItems: NavItem[] = [
-  {
-    name: "Dashboard",
-    path: "/branch/dashboard",
-    icon: <LayoutDashboard className="h-5 w-5" />,
-  },
-  {
-    name: "Orders",
-    path: "/branch/orders",
-    icon: <ShoppingBag className="h-5 w-5" />,
-  },
-  {
-    name: "Transactions",
-    path: "/branch/transactions",
-    icon: <CreditCard className="h-5 w-5" />,
-  },
-  {
-    name: "Inventory",
-    path: "/branch/inventory",
-    icon: <Package className="h-5 w-5" />,
-  },
-  {
-    name: "Employees",
-    path: "/branch/employees",
-    icon: <Users className="h-5 w-5" />,
-  },
-  {
-    name: "Customers",
-    path: "/branch/customers",
-    icon: <UserCircle className="h-5 w-5" />,
-  },
-  {
-    name: "Reports",
-    path: "/branch/reports",
-    icon: <FileText className="h-5 w-5" />,
-  },
-  {
-    name: "Settings",
-    path: "/branch/settings",
-    icon: <Settings className="h-5 w-5" />,
-  },
-];
-
 type BranchDetails = {
   name: string;
   address: string;
 };
 
-const branch: BranchDetails = {
-  name: "Downtown Store",
-  address: "123 Main St, Cityville",
+type BranchSidebarProps = {
+  branch?: BranchDetails;
+  navItems: NavItem[];
 };
 
-export default function BranchSidebar() {
+export default function BranchSidebar({ branch, navItems }: BranchSidebarProps) {
   return (
     <aside className="flex h-full w-72 flex-col border-r border-border/60 bg-sidebar px-2 shadow-xl">
       {/* TOP SECTION */}
@@ -108,7 +55,7 @@ export default function BranchSidebar() {
 
       {/* NAVIGATION */}
       <nav className="flex-1 overflow-y-auto px-2 py-2">
-        <div className="space-y-3">
+        <div className="space-y-1">
           {navItems.map((item) => (
             <NavLink
               key={item.path}

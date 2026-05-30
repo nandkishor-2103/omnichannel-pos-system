@@ -7,10 +7,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import EmployeeForm from "@/features/store/components/employee/EmployeeForm";
 
 import { Plus } from "lucide-react";
-
+import EmployeeForm from "./EmployeeForm";
 
 const roles: string[] = [
   "ROLE_BRANCH_ADMIN",
