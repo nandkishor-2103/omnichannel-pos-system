@@ -4,6 +4,8 @@ import StoreDashboard from "@/features/store/components/dashboard/StoreDashboard
 import StoreDashboardLayout from "@/features/store/components/dashboard/StoreDashboardLayout";
 import StoreEmployee from "@/features/store/components/employee/StoreEmployee";
 import Products from "@/features/store/components/product/Products";
+import StoreInfo from "@/features/store/components/store-info/StoreInfo";
+import Upgrade from "@/features/store/components/upgrade/Upgrade";
 import { Route, Routes } from "react-router";
 
 export default function StoreRoutes() {
@@ -20,8 +22,8 @@ export default function StoreRoutes() {
         <Route path="alerts" element={<Branches />} />
         <Route path="sales" element={<Branches />} />
         <Route path="reports" element={<Branches />} />
-        <Route path="upgrade" element={<Branches />} />
-        <Route path="settings" element={<Branches />} />
+        <Route path="upgrade" element={<Upgrade />} />
+        <Route path="settings" element={<StoreInfo />} />
       </Route>
     </Routes>
   );
