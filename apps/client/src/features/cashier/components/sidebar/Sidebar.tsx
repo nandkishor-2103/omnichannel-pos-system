@@ -1,10 +1,13 @@
 import type { ReactNode } from "react";
 
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
-import { LayoutDashboard, X } from "lucide-react";
+import { LayoutDashboard, X, LogOutIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { useAppDispatch } from "@/app/store/hooks";
+import { logout } from "@/app/store/auth/authThunk";
+import { toast } from "sonner";
 
 type NavItem = {
   path: string;
@@ -19,6 +22,21 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ navItems, onClose }: SidebarProps) {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    const resultAction = await dispatch(logout());
+
+    if (logout.fulfilled.match(resultAction)) {
+      toast.success("Logged out successfully");
+
+      navigate("/login", { replace: true });
+    } else {
+      toast.error((resultAction.payload as string) || "Failed to logout");
+    }
+  };
+
   return (
     <aside className="flex h-full w-72 flex-col border-r border-border bg-sidebar shadow-2xl">
       {/* TOP SECTION */}
@@ -74,6 +92,18 @@ export default function Sidebar({ navItems, onClose }: SidebarProps) {
           ))}
         </div>
       </nav>
+      {/* FOOTER */}
+      <div className="border-t border-border/60 p-4">
+        <Button
+          className="h-11 w-full cursor-pointer rounded-xl"
+          variant="default"
+          onClick={handleLogout}
+        >
+          <LogOutIcon className="h-4 w-4" />
+
+          <span className="font-medium">Logout</span>
+        </Button>
+      </div>
     </aside>
   );
 }

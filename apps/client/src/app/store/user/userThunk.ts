@@ -1,18 +1,25 @@
 import { api } from "@/lib/axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import type { User } from "../user/userTypes";
+import type { UserProfileResponse } from "../user/userTypes";
+import type { User } from "@/types/user";
+import { getTestLoadingDelay } from "@/config/appConfig";
+
+
 
 // ========== Get User Profile ==========
 export const getUserProfile = createAsyncThunk<User, void, { rejectValue: string }>(
   "user/getProfile",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await api.get<User>("/users/profile");
+      // Simulate loading delay
+      await getTestLoadingDelay();
 
-      console.log("User profile success", res.data);
+      const res = await api.get<UserProfileResponse>("/user/profile");
 
-      return res.data;
+      //   console.log("User profile success", res.data);
+
+      return res.data.payload.user;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         return rejectWithValue(
@@ -30,7 +37,7 @@ export const getAllCustomers = createAsyncThunk<User[], void, { rejectValue: str
   "user/getCustomers",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await api.get<User[]>("/users/customer");
+      const res = await api.get<User[]>("/user/customer");
 
       console.log("All customers success", res.data);
 
@@ -52,7 +59,7 @@ export const getAllCashiers = createAsyncThunk<User[], void, { rejectValue: stri
   "user/getCashiers",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await api.get<User[]>("/users/cashier");
+      const res = await api.get<User[]>("/user/cashier");
 
       console.log("All cashiers success", res.data);
 
@@ -74,7 +81,7 @@ export const getUserById = createAsyncThunk<User, string, { rejectValue: string 
   "user/getById",
   async (userId, { rejectWithValue }) => {
     try {
-      const res = await api.get<User>(`/users/${userId}`);
+      const res = await api.get<User>(`/user/${userId}`);
 
       console.log("User by ID success", res.data);
 
@@ -92,11 +99,11 @@ export const getUserById = createAsyncThunk<User, string, { rejectValue: string 
 );
 
 // ========== Logout ==========
-export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
+/* export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
   "user/logout",
   async (_, { rejectWithValue }) => {
     try {
-      await api.post("/users/logout");
+      await api.post("/auth/logout");
 
       console.log("Logout success");
 
@@ -109,4 +116,4 @@ export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
       return rejectWithValue("Something went wrong");
     }
   }
-);
+); */

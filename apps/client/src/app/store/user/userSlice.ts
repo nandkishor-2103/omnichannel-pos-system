@@ -5,7 +5,7 @@ import {
   getAllCustomers,
   getUserById,
   getUserProfile,
-  logout,
+//   logout,
 } from "./userThunk";
 
 import type { UserState } from "../user/userTypes";
@@ -92,7 +92,7 @@ const userSlice = createSlice({
       })
 
       // Logout
-      .addCase(logout.fulfilled, (state) => {
+     /*  .addCase(logout.fulfilled, (state) => {
         state.userProfile = null;
         state.selectedUser = null;
         state.users = [];
@@ -100,7 +100,7 @@ const userSlice = createSlice({
         state.cashiers = [];
         state.loading = false;
         state.error = null;
-      });
+      }); */
   },
 });
 

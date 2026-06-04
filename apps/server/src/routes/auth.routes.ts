@@ -5,7 +5,7 @@ const router = Router();
 
 router.post("/signup", signup);
 router.post("/verify-otp", verifyOtp);
-router.post("/login", login);
+router.post("/signin", login);
 router.post("/logout", logout);
 
 export { router as authRoutes };
