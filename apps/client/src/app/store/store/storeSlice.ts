@@ -49,7 +49,7 @@ const storeSlice = createSlice({
 
       .addCase(createStore.fulfilled, (state, action) => {
         state.loading = false;
-        state.store = action.payload.store;
+        state.store = action.payload.payload.store;
       })
 
       .addCase(createStore.rejected, (state, action) => {
@@ -60,7 +60,7 @@ const storeSlice = createSlice({
       // GET BY ID
 
       .addCase(getStoreById.fulfilled, (state, action) => {
-        state.store = action.payload.store;
+        state.store = action.payload.payload.store;
       })
 
       // GET ALL
@@ -72,7 +72,7 @@ const storeSlice = createSlice({
       // UPDATE
 
       .addCase(updateStore.fulfilled, (state, action) => {
-        state.store = action.payload.store;
+        state.store = action.payload.payload.store;
       })
 
       // DELETE
@@ -84,13 +84,13 @@ const storeSlice = createSlice({
       // ADMIN
 
       .addCase(getStoreByAdmin.fulfilled, (state, action) => {
-        state.store = action.payload.store;
+        state.store = action.payload.payload.store;
       })
 
       // EMPLOYEE
 
       .addCase(getStoreByEmployee.fulfilled, (state, action) => {
-        state.store = action.payload.store;
+        state.store = action.payload.payload.store;
       })
 
       // EMPLOYEES
@@ -106,13 +106,13 @@ const storeSlice = createSlice({
       // MODERATE
 
       .addCase(moderateStore.fulfilled, (state, action) => {
-        const updatedStore = action.payload.store;
+        const updatedStore = action.payload.payload.store;
 
         state.stores = state.stores.map((store) =>
-          store._id === updatedStore._id ? updatedStore : store
+          store.id === updatedStore.id ? updatedStore : store
         );
 
-        if (state.store?._id === updatedStore._id) {
+        if (state.store?.id === updatedStore.id) {
           state.store = updatedStore;
         }
       });

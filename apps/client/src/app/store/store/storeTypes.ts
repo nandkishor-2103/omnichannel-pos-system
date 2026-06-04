@@ -1,17 +1,20 @@
 export interface Store {
-  _id: string;
-  name: string;
-  email?: string;
-  phone?: string;
-  address?: string;
+  id: string;
+  brand: string;
+  description?: string;
+  storeType?: string;
   status?: "PENDING" | "APPROVED" | "REJECTED" | "BLOCKED";
   createdAt?: string;
   updatedAt?: string;
 }
 
 export interface StoreResponse {
-  store: Store;
-  message?: string;
+  statusCode: number;
+  success: boolean;
+  message: string;
+  payload: {
+    store: Store;
+  };
 }
 
 export interface StoresResponse {

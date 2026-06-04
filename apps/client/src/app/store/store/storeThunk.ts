@@ -41,6 +41,7 @@ export const getStoreById = createAsyncThunk<
 >("store/getById", async (id, { rejectWithValue }) => {
   try {
     const res = await api.get<StoreResponse>(`/stores/${id}`);
+    // console.log("Store by ID fulfilled:", res.data);
 
     return res.data;
   } catch (error) {

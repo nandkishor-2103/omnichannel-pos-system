@@ -1,8 +1,12 @@
-export interface User {
-  _id: string;
-  name: string;
-  email: string;
-  role?: string;
+import type { User } from "@/types/user";
+
+export interface UserProfileResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  payload: {
+    user: User;
+  };
 }
 
 export interface UserState {

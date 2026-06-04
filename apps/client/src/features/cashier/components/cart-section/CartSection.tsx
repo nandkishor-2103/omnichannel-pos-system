@@ -68,7 +68,7 @@ export default function CartSection() {
     <>
       <div className="w-2/5 flex flex-col bg-card border-r overflow-hidden">
         {/* Cart Header */}
-        <div className="p-4 border-b bg-muted shrink-0">
+        <div className="px-4 py-2.5 border-b bg-muted shrink-0">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold flex items-center">
               <ShoppingCart className="mr-2" />
@@ -77,6 +77,7 @@ export default function CartSection() {
 
             <div className="flex space-x-2">
               <Button
+                className="cursor-pointer"
                 onClick={() => setShowHeldOrderDialog(true)}
                 variant="outline"
                 size="sm"
@@ -84,7 +85,7 @@ export default function CartSection() {
                 <Pause className="w-4 h-4 mr-1" /> Held
               </Button>
 
-              <Button variant="outline" size="sm">
+              <Button className="cursor-pointer" variant="outline" size="sm">
                 <Trash2 className="w-4 h-4 mr-1" />
                 Clear
               </Button>

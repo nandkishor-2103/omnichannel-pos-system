@@ -7,7 +7,20 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 
+import { signin } from "@/app/store/auth/authThunk";
+import { toast } from "sonner";
+
+import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
+import { useNavigate } from "react-router";
+import type { UserRole } from "./types/types";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
+
 export default function Login() {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const loading = useAppSelector((state) => state.auth.loading);
+
   const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
@@ -19,11 +32,32 @@ export default function Login() {
     password: "",
   });
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log("Login Form Submitted...\n");
-    console.log(formData);
+    const resultAction = await dispatch(signin(formData));
+
+    if (signin.fulfilled.match(resultAction)) {
+      toast.success("Login Successful");
+
+      const { user } = resultAction.payload.payload;
+
+      const roleRoutes: Record<UserRole, string> = {
+        ROLE_ADMIN: "/super-admin/dashboard",
+
+        ROLE_STORE_ADMIN: "/store/dashboard",
+        ROLE_STORE_MANAGER: "/store/dashboard",
+
+        ROLE_BRANCH_ADMIN: "/branch/dashboard",
+        ROLE_BRANCH_MANAGER: "/branch/dashboard",
+
+        ROLE_BRANCH_CASHIER: "/cashier",
+      };
+
+      navigate(roleRoutes[user.role] ?? "/");
+    } else {
+      toast.error((resultAction.payload as string) ?? "Login failed");
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,7 +67,7 @@ export default function Login() {
     });
   };
 
-  const handleForgotPassword = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleForgotPassword = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     console.log("Forgot Password Form Submitted...\n");
@@ -144,8 +178,12 @@ export default function Login() {
               </div>
 
               {/* Login Button */}
-              <Button type="submit" className="h-11 w-full cursor-pointer font-medium">
-                Sign In
+              <Button
+                type="submit"
+                disabled={loading}
+                className="h-11 w-full cursor-pointer font-medium disabled:opacity-100 disabled:cursor-not-allowed"
+              >
+                {loading ? <LoadingSpinner size={16} text="Signing In..." /> : "Sign In"}
               </Button>
             </form>
 
