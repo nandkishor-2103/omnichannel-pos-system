@@ -1,10 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { signin, signup } from "./authThunk";
+import { signin, signup, logout } from "./authThunk";
 import type { AuthState } from "./authTypes";
+import { getUserProfile } from "../user/userThunk";
 
 const initialState: AuthState = {
   user: null,
   loading: false,
+  initialized: false,
   error: null,
 };
 
@@ -13,10 +15,11 @@ const authSlice = createSlice({
   initialState,
 
   reducers: {
-    logout: (state) => {
+    clearAuth: (state) => {
       state.user = null;
       state.error = null;
       state.loading = false;
+      state.initialized = false;
     },
   },
 
@@ -46,16 +49,51 @@ const authSlice = createSlice({
 
       .addCase(signin.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user;
+        state.user = action.payload.payload.user;
       })
 
       .addCase(signin.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload ?? "Signin failed";
+      })
+
+      // ======== LOGOUT ==========
+      .addCase(logout.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(logout.fulfilled, (state) => {
+        state.loading = false;
+        state.initialized = true;
+        state.user = null;
+        state.error = null;
+      })
+
+      .addCase(logout.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // ======== GET USER PROFILE ==========
+
+      .addCase(getUserProfile.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(getUserProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.initialized = true;
+        state.user = action.payload;
+      })
+
+      .addCase(getUserProfile.rejected, (state) => {
+        state.loading = false;
+        state.initialized = true;
+        state.user = null;
       });
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { clearAuth } = authSlice.actions;
 
 export default authSlice.reducer;

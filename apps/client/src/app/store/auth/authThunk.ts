@@ -2,7 +2,8 @@ import { api } from "@/lib/axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-import type {SignInResponse, SignUpResponse} from "./authTypes"
+import type { SignInResponse, SignUpResponse } from "./authTypes";
+import { getTestLoadingDelay } from "@/config/appConfig";
 
 // ==================== SignUp Start ====================
 type SignUpPayload = {
@@ -11,13 +12,15 @@ type SignUpPayload = {
   password: string;
 };
 
-
 export const signup = createAsyncThunk<
   SignUpResponse,
   SignUpPayload,
   { rejectValue: string }
 >("auth/signup", async (userData, { rejectWithValue }) => {
   try {
+    // Simulate loading delay
+    await getTestLoadingDelay();
+
     const res = await api.post<SignUpResponse>("/auth/signup", userData);
 
     console.log("SignUp success", res.data);
@@ -45,9 +48,12 @@ export const signin = createAsyncThunk<
   { rejectValue: string }
 >("auth/signin", async (loginData, { rejectWithValue }) => {
   try {
+    // Simulate loading delay
+    await getTestLoadingDelay();
+
     const res = await api.post<SignInResponse>("/auth/signin", loginData);
 
-    console.log("SignIn success", res.data);
+    // console.log("SignIn success", res.data);
 
     return res.data;
   } catch (error) {
@@ -59,3 +65,23 @@ export const signin = createAsyncThunk<
   }
 });
 // ==================== SignIn End ====================
+
+// ========== Logout ==========
+export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
+  "auth/logout",
+  async (_, { rejectWithValue }) => {
+    try {
+      await api.post("/auth/logout");
+
+      console.log("Logout success");
+
+      return;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        return rejectWithValue(error.response?.data?.message ?? "Failed to logout");
+      }
+
+      return rejectWithValue("Something went wrong");
+    }
+  }
+);

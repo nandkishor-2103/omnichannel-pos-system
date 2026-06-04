@@ -129,12 +129,12 @@ export default function ProductSection() {
 
   return (
     <div className="w-2/5 flex flex-col bg-card border-r">
-      <div className="p-4 border-b bg-muted">
+      <div className="px-4 py-2 border-b bg-muted">
         <div className="relative">
           <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 
           <Input
-            className="p-5 pl-10 focus-visible:ring-green-500"
+            className="p-3 pl-10 focus-visible:ring-green-500"
             value={searchTerm}
             type="text"
             onChange={handleSearchChange}
@@ -143,9 +143,9 @@ export default function ProductSection() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between p-2 border-b">
-        <span>{2} products found</span>
-        <Button variant="outline" size="sm" className="text-xs">
+      <div className="flex items-center justify-between px-2 py-1 border-b">
+        <span className="text-sm">{5} products found</span>
+        <Button variant="outline" size="sm" className="text-xs cursor-pointer">
           <Barcode className="mr-1 h-4 w-4" />
           Scan
         </Button>

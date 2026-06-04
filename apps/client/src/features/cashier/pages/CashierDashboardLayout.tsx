@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 
 import { Clock, ReceiptIcon, RotateCcw, ShoppingCartIcon } from "lucide-react";
 
@@ -11,6 +11,8 @@ import POSHeader from "../components/Header/POSHeader";
 import { SidebarProvider } from "@/context/hook/SidebarProvider";
 
 import { useSidebar } from "@/context/hook/useSidebar";
+import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
+import { getStoreById } from "@/app/store/store/storeThunk";
 
 type NavItem = {
   path: string;
@@ -46,6 +48,16 @@ const navItems: NavItem[] = [
 
 function LayoutContent() {
   const { sidebarOpen, setSidebarOpen } = useSidebar();
+
+  const storeId = useAppSelector((state) => state.auth.user?.store);
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (storeId) {
+      dispatch(getStoreById(storeId));
+    }
+  }, [dispatch, storeId]);
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
