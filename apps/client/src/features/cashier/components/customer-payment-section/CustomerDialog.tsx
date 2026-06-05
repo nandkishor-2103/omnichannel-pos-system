@@ -17,70 +17,62 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CustomerForm from "./CustomerForm";
 import { SearchIcon } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
+import { getAllCustomers, searchCustomer } from "@/app/store/customer/customerThunk";
 
-type Customer = {
-  id: number;
-  fullName: string;
-  phone: string;
-  email: string;
-};
+import type { Customer } from "../../../../app/store/customer/customerTypes";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
+import { clearSearchResults } from "@/app/store/customer/customerSlice";
 
 type CustomerDialogProps = {
   showCustomerDialog: boolean;
   setShowCustomerDialog: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const customers: Customer[] = [
-  {
-    id: 1,
-    fullName: "John Doe",
-    phone: "9876543210",
-    email: "john.doe@example.com",
-  },
-
-  {
-    id: 2,
-    fullName: "Jane Doe",
-    phone: "1234567890",
-    email: "jane.doe@example.com",
-  },
-
-  {
-    id: 3,
-    fullName: "Bob Doe",
-    phone: "0987654321",
-    email: "bob.doe@example.com",
-  },
-
-  {
-    id: 4,
-    fullName: "Alice Doe",
-    phone: "0987654321",
-    email: "alice.doe@example.com",
-  },
-
-  {
-    id: 5,
-    fullName: "Charlie Doe",
-    phone: "0987654321",
-    email: "charlie.doe@example.com",
-  },
-];
-
 export default function CustomerDialog({
   showCustomerDialog,
   setShowCustomerDialog,
 }: CustomerDialogProps) {
   const [showCustomerForm, setShowCustomerForm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const dispatch = useAppDispatch();
+
+  const customers = useAppSelector((state) => state.customer.customers);
+  const loading = useAppSelector((state) => state.customer.loading);
+  const searchResults = useAppSelector((state) => state.customer.searchResults);
 
   function handleSelectCustomer(customer: Customer): void {
     console.log(`Selected customer: ${customer.fullName}`);
 
     setShowCustomerDialog(false);
   }
+
+  // Get All Customer of Branch
+  useEffect(() => {
+    dispatch(getAllCustomers());
+  }, [dispatch]);
+
+  // Search Customer of Branch
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const query = searchTerm.trim();
+
+      if (query.length >= 2) {
+        dispatch(searchCustomer(query));
+      } else {
+        dispatch(clearSearchResults());
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm, dispatch]);
+
+  const displayedCustomers =
+    searchTerm.trim().length >= 2 ? searchResults : customers.slice(0, 5);
 
   return (
     <Dialog open={showCustomerDialog} onOpenChange={setShowCustomerDialog}>
@@ -105,42 +97,56 @@ export default function CustomerDialog({
             <Input
               className="pl-10 focus-visible:ring-green-500"
               placeholder="Search Customers..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
 
-        <div className="max-h-96 overflow-y-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-1/2">Name</TableHead>
-                <TableHead className="w-1/2">Phone</TableHead>
-                <TableHead className="w-1/2">Email</TableHead>
-                <TableHead className="w-1/2">Action</TableHead>
-              </TableRow>
-            </TableHeader>
+        {loading ? (
+          <LoadingSpinner size={16} text="Searching customers..." />
+        ) : (
+          <div className="max-h-96 overflow-y-auto">
+            <div className="mb-2 flex items-center justify-between">
+              <p className="text-xs text-muted-foreground">
+                {searchTerm.trim()
+                  ? `${searchResults.length} customer(s) found`
+                  : "Recent customers"}
+              </p>
+            </div>
 
-            <TableBody>
-              {customers.map((customer) => (
-                <TableRow key={customer.id}>
-                  <TableCell>{customer.fullName}</TableCell>
-                  <TableCell>{customer.phone}</TableCell>
-                  <TableCell>{customer.email}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="default"
-                      size="sm"
-                      className="bg-green-700 hover:bg-green-800 text-white cursor-pointer"
-                      onClick={() => handleSelectCustomer(customer)}
-                    >
-                      Select
-                    </Button>
-                  </TableCell>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-1/2">Name</TableHead>
+                  <TableHead className="w-1/2">Phone</TableHead>
+                  <TableHead className="w-1/2">Email</TableHead>
+                  <TableHead className="w-1/2">Action</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
+
+              <TableBody>
+                {displayedCustomers.map((customer) => (
+                  <TableRow key={customer._id}>
+                    <TableCell>{customer.fullName}</TableCell>
+                    <TableCell>{customer.phone}</TableCell>
+                    <TableCell>{customer.email}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="bg-green-700 hover:bg-green-800 text-white cursor-pointer"
+                        onClick={() => handleSelectCustomer(customer)}
+                      >
+                        Select
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
 
         {/* Footer */}
         <DialogFooter>

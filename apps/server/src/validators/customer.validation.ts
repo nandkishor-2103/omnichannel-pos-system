@@ -7,13 +7,15 @@ const validate = (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
+    const formattedErrors = errors.array().map((error) => ({
+      field: "path" in error ? error.path : "unknown",
+      message: error.msg,
+    }));
+
     throw new ApiError({
       statusCode: 400,
-      message: "Validation failed",
-      errors: errors.array().map((error) => ({
-        field: error.type,
-        message: error.msg,
-      })),
+      message: formattedErrors[0]?.message,
+      errors: formattedErrors,
     });
   }
 
@@ -29,7 +31,7 @@ export const createCustomerValidator = [
     .withMessage("Full name must be between 3 and 50 characters"),
 
   body("email")
-    .optional()
+    .optional({ values: "falsy" })
     .trim()
     .toLowerCase()
     .isEmail()
@@ -53,7 +55,7 @@ export const updateCustomerValidator = [
     .withMessage("Full name must be between 3 and 50 characters"),
 
   body("email")
-    .optional()
+    .optional({ values: "falsy" })
     .trim()
     .toLowerCase()
     .isEmail()
