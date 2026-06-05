@@ -1,31 +1,51 @@
 export interface Customer {
   _id: string;
-  name: string;
+  fullName: string;
   email: string;
   phone: string;
-  address?: string;
+  branch: string;
+
   createdAt?: string;
   updatedAt?: string;
 }
 
 export interface CustomerResponse {
-  customer: Customer;
-  message?: string;
+  statusCode: number;
+  success: boolean;
+  message: string;
+
+  payload: {
+    customer: Customer;
+  };
 }
 
 export interface CustomersResponse {
-  customers: Customer[];
-  message?: string;
+  statusCode: number;
+  success: boolean;
+  message: string;
+
+  payload: {
+    customers: Customer[];
+  };
 }
 
 export interface CreateCustomerPayload {
-  name: string;
+  fullName: string;
   email: string;
   phone: string;
-  address?: string;
 }
 
 export interface UpdateCustomerPayload {
   id: string;
-  customer: Partial<CreateCustomerPayload>;
+
+  customerData: Partial<CreateCustomerPayload>;
+}
+
+export interface CustomerState {
+  customers: Customer[];
+  searchResults: Customer[];
+  customer: Customer | null;
+  selectedCustomer: Customer | null;
+  loading: boolean;
+  error: string | null;
 }

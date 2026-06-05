@@ -1,17 +1,54 @@
+export interface StoreContact {
+  address: string;
+  phone: string;
+  email: string;
+}
+
+export interface StoreInfo {
+  _id: string;
+  brand: string;
+  storeAdmin: string;
+  description: string;
+  storeType: string;
+  status: "PENDING" | "APPROVED" | "REJECTED" | "BLOCKED";
+  contact: StoreContact;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BranchManager {
+  _id: string;
+  fullName: string;
+  email: string;
+}
+
 export interface Branch {
   _id: string;
   name: string;
   address: string;
+
   phone?: string;
   email?: string;
-  storeId: string;
+
+  workingDays?: string[];
+
+  openTime?: string;
+  closeTime?: string;
+
+  store?: StoreInfo;
+  manager?: BranchManager;
+
   createdAt?: string;
   updatedAt?: string;
 }
 
 export interface BranchResponse {
-  branch: Branch;
-  message?: string;
+  statusCode: number;
+  success: boolean;
+  message: string;
+  payload: {
+    branch: Branch;
+  };
 }
 
 export interface BranchesResponse {

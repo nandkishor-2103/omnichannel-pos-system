@@ -8,6 +8,7 @@ import type {
   CreateCustomerPayload,
   UpdateCustomerPayload,
 } from "./customerTypes";
+import { getTestLoadingDelay } from "@/config/appConfig";
 
 // ================= CREATE CUSTOMER =================
 
@@ -17,6 +18,7 @@ export const createCustomer = createAsyncThunk<
   { rejectValue: string }
 >("customer/create", async (customerData, { rejectWithValue }) => {
   try {
+    await getTestLoadingDelay();
     const res = await api.post<CustomerResponse>("/customers", customerData);
 
     console.log("✅ Customer created:", res.data);
@@ -24,10 +26,10 @@ export const createCustomer = createAsyncThunk<
     return res.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.log("❌ Create customer failed:", error.response?.data);
-
       return rejectWithValue(
-        error.response?.data?.message ?? "Failed to create customer"
+        error.response?.data?.errors?.[0]?.message ||
+          error.response?.data?.message ||
+          "Failed to create customer"
       );
     }
 
@@ -41,9 +43,10 @@ export const updateCustomer = createAsyncThunk<
   CustomerResponse,
   UpdateCustomerPayload,
   { rejectValue: string }
->("customer/update", async ({ id, customer }, { rejectWithValue }) => {
+>("customer/update", async ({ id, customerData }, { rejectWithValue }) => {
   try {
-    const res = await api.put<CustomerResponse>(`/customers/${id}`, customer);
+    await getTestLoadingDelay();
+    const res = await api.put<CustomerResponse>(`/customers/${id}`, customerData);
 
     console.log("✅ Customer updated:", res.data);
 
@@ -67,6 +70,7 @@ export const deleteCustomer = createAsyncThunk<string, string, { rejectValue: st
   "customer/delete",
   async (id, { rejectWithValue }) => {
     try {
+      await getTestLoadingDelay();
       await api.delete(`/customers/${id}`);
 
       console.log("✅ Customer deleted:", id);
@@ -94,6 +98,7 @@ export const getCustomerById = createAsyncThunk<
   { rejectValue: string }
 >("customer/getById", async (id, { rejectWithValue }) => {
   try {
+    await getTestLoadingDelay();
     const res = await api.get<CustomerResponse>(`/customers/${id}`);
 
     console.log("✅ Customer fetched:", res.data);
@@ -118,6 +123,7 @@ export const getAllCustomers = createAsyncThunk<
   { rejectValue: string }
 >("customer/getAll", async (_, { rejectWithValue }) => {
   try {
+    await getTestLoadingDelay();
     const res = await api.get<CustomersResponse>("/customers");
 
     console.log("✅ Customers fetched:", res.data);
@@ -144,6 +150,7 @@ export const searchCustomer = createAsyncThunk<
   { rejectValue: string }
 >("customer/search", async (query, { rejectWithValue }) => {
   try {
+    await getTestLoadingDelay();
     const res = await api.get<CustomersResponse>(
       `/customers/search?q=${encodeURIComponent(query)}`
     );

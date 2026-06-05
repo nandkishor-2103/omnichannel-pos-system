@@ -9,6 +9,7 @@ import type {
   UpdateProductPayload,
   SearchProductsPayload,
 } from "./productTypes";
+import { getTestLoadingDelay } from "@/config/appConfig";
 
 // ================= CREATE PRODUCT =================
 
@@ -101,6 +102,8 @@ export const getProductsByStore = createAsyncThunk<
   try {
     const res = await api.get<ProductsResponse>(`/products/store/${storeId}`);
 
+    // console.log("Get Store Products: ", res.data)
+
     return res.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -119,9 +122,13 @@ export const searchProducts = createAsyncThunk<
   { rejectValue: string }
 >("product/search", async ({ query, storeId }, { rejectWithValue }) => {
   try {
+    // Simulate loading delay
+    await getTestLoadingDelay();
     const res = await api.get<ProductsResponse>(
       `/products/store/${storeId}/search?q=${encodeURIComponent(query)}`
     );
+
+    console.log("Search products: ", res.data);
 
     return res.data;
   } catch (error) {

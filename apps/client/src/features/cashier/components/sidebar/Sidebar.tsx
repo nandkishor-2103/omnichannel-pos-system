@@ -1,13 +1,14 @@
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 
 import { NavLink, useNavigate } from "react-router-dom";
 
-import { LayoutDashboard, X, LogOutIcon } from "lucide-react";
+import { LayoutDashboard, X, LogOutIcon, MapPin, Store, Clock } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { useAppDispatch } from "@/app/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
 import { logout } from "@/app/store/auth/authThunk";
 import { toast } from "sonner";
+import { getBranchById } from "@/app/store/branch/branchThunk";
 
 type NavItem = {
   path: string;
@@ -25,6 +26,9 @@ export default function Sidebar({ navItems, onClose }: SidebarProps) {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
+  const userProfile = useAppSelector((state) => state.user.userProfile);
+  const branch = useAppSelector((state) => state.branch.branch);
+
   const handleLogout = async () => {
     const resultAction = await dispatch(logout());
 
@@ -36,6 +40,14 @@ export default function Sidebar({ navItems, onClose }: SidebarProps) {
       toast.error((resultAction.payload as string) || "Failed to logout");
     }
   };
+
+  useEffect(() => {
+    const branchId = userProfile?.branch;
+
+    if (!branchId) return;
+
+    dispatch(getBranchById(branchId));
+  }, [dispatch, userProfile?.branch]);
 
   return (
     <aside className="flex h-full w-72 flex-col border-r border-border bg-sidebar shadow-2xl">
@@ -62,6 +74,60 @@ export default function Sidebar({ navItems, onClose }: SidebarProps) {
         >
           <X size={20} />
         </Button>
+      </div>
+
+      {/* BRANCH INFO */}
+      <div className="border-b border-border/60 p-4">
+        <div className="rounded-2xl bg-gradient-to-r from-primary/10 to-primary/5 p-4">
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+              <Store className="h-5 w-5 text-primary" />
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <h3 className="truncate text-sm font-semibold text-sidebar-foreground">
+                {branch?.name || "Branch"}
+              </h3>
+
+              <p className="text-xs font-medium text-primary">
+                {branch?.store?.brand || "Store"}
+              </p>
+
+              <div className="mt-3 space-y-2">
+                <div className="flex items-start gap-2">
+                  <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+
+                  <p className="line-clamp-2 text-xs text-muted-foreground">
+                    {branch?.address || "Address not available"}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+
+                  <p className="text-xs text-muted-foreground">
+                    {branch?.openTime && branch?.closeTime
+                      ? `${new Date(`2000-01-01T${branch.openTime}`).toLocaleTimeString(
+                          "en-IN",
+                          {
+                            hour: "numeric",
+                            minute: "2-digit",
+                            hour12: true,
+                          }
+                        )} - ${new Date(
+                          `2000-01-01T${branch.closeTime}`
+                        ).toLocaleTimeString("en-IN", {
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        })}`
+                      : "Business Hours"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* NAVIGATION */}

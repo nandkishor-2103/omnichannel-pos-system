@@ -50,7 +50,7 @@ const productSlice = createSlice({
 
       .addCase(createProduct.fulfilled, (state, action) => {
         state.loading = false;
-        state.products.push(action.payload.product);
+        state.products.push(action.payload.payload.product);
       })
 
       .addCase(createProduct.rejected, (state, action) => {
@@ -61,13 +61,13 @@ const productSlice = createSlice({
       // GET BY ID
 
       .addCase(getProductById.fulfilled, (state, action) => {
-        state.product = action.payload.product;
+        state.product = action.payload.payload.product;
       })
 
       // UPDATE
 
       .addCase(updateProduct.fulfilled, (state, action) => {
-        const updatedProduct = action.payload.product;
+        const updatedProduct = action.payload.payload.product;
 
         const index = state.products.findIndex((p) => p._id === updatedProduct._id);
 
@@ -93,7 +93,7 @@ const productSlice = createSlice({
       // GET BY STORE
 
       .addCase(getProductsByStore.fulfilled, (state, action) => {
-        state.products = action.payload.products;
+        state.products = action.payload.payload.products;
       })
 
       // SEARCH
@@ -104,12 +104,12 @@ const productSlice = createSlice({
 
       .addCase(searchProducts.fulfilled, (state, action) => {
         state.loading = false;
-        state.searchResults = action.payload.products;
+        state.searchResults = action.payload.payload.products;
       })
 
       .addCase(searchProducts.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload ?? "Search failed";
+        state.error = action.payload;
       });
   },
 });

@@ -42,8 +42,8 @@ const branchSlice = createSlice({
       .addCase(createBranch.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.branch = action.payload.branch;
-        state.branches.push(action.payload.branch);
+        state.branch = action.payload.payload.branch;
+        state.branches.push(action.payload.payload.branch);
       })
       .addCase(createBranch.rejected, (state, action) => {
         state.loading = false;
@@ -57,7 +57,7 @@ const branchSlice = createSlice({
       })
       .addCase(getBranchById.fulfilled, (state, action) => {
         state.loading = false;
-        state.branch = action.payload.branch;
+        state.branch = action.payload.payload.branch;
       })
       .addCase(getBranchById.rejected, (state, action) => {
         state.loading = false;
@@ -84,7 +84,7 @@ const branchSlice = createSlice({
       .addCase(updateBranch.fulfilled, (state, action) => {
         state.loading = false;
 
-        const updatedBranch = action.payload.branch;
+        const updatedBranch = action.payload.payload.branch;
 
         state.branch = updatedBranch;
 

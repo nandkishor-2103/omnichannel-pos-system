@@ -9,17 +9,12 @@ import {
   updateCustomer,
 } from "./customerThunk";
 
-import type { Customer } from "./customerTypes";
-
-interface CustomerState {
-  customers: Customer[];
-  selectedCustomer: Customer | null;
-  loading: boolean;
-  error: string | null;
-}
+import type { CustomerState } from "./customerTypes";
 
 const initialState: CustomerState = {
   customers: [],
+  searchResults: [],
+  customer: null,
   selectedCustomer: null,
   loading: false,
   error: null,
@@ -33,6 +28,7 @@ const customerSlice = createSlice({
   reducers: {
     clearCustomerState: (state) => {
       state.customers = [];
+      state.customer = null;
       state.selectedCustomer = null;
       state.error = null;
       state.loading = false;
@@ -40,6 +36,10 @@ const customerSlice = createSlice({
 
     clearSelectedCustomer: (state) => {
       state.selectedCustomer = null;
+    },
+
+    clearSearchResults: (state) => {
+      state.searchResults = [];
     },
   },
 
@@ -56,7 +56,7 @@ const customerSlice = createSlice({
       .addCase(createCustomer.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.customers.unshift(action.payload.customer);
+        state.customers.unshift(action.payload.payload.customer);
       })
 
       .addCase(createCustomer.rejected, (state, action) => {
@@ -74,7 +74,7 @@ const customerSlice = createSlice({
       .addCase(updateCustomer.fulfilled, (state, action) => {
         state.loading = false;
 
-        const updatedCustomer = action.payload.customer;
+        const updatedCustomer = action.payload.payload.customer;
 
         const index = state.customers.findIndex(
           (customer) => customer._id === updatedCustomer._id
@@ -131,7 +131,7 @@ const customerSlice = createSlice({
       .addCase(getCustomerById.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.selectedCustomer = action.payload.customer;
+        state.selectedCustomer = action.payload.payload.customer;
       })
 
       .addCase(getCustomerById.rejected, (state, action) => {
@@ -149,7 +149,7 @@ const customerSlice = createSlice({
       .addCase(getAllCustomers.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.customers = action.payload.customers;
+        state.customers = action.payload.payload.customers;
       })
 
       .addCase(getAllCustomers.rejected, (state, action) => {
@@ -167,7 +167,7 @@ const customerSlice = createSlice({
       .addCase(searchCustomer.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.customers = action.payload.customers;
+        state.searchResults = action.payload.payload.customers;
       })
 
       .addCase(searchCustomer.rejected, (state, action) => {
@@ -177,6 +177,6 @@ const customerSlice = createSlice({
   },
 });
 
-export const { clearCustomerState, clearSelectedCustomer } = customerSlice.actions;
+export const { clearCustomerState, clearSelectedCustomer, clearSearchResults } = customerSlice.actions;
 
 export default customerSlice.reducer;

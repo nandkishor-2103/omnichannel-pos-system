@@ -1,35 +1,61 @@
-export interface Product {
+export interface ProductCategory {
   _id: string;
   name: string;
-  sku?: string;
-  barcode?: string;
+}
+
+export interface Product {
+  _id: string;
+
+  name: string;
+  sku: string;
+
   description?: string;
-  price: number;
-  stock?: number;
-  categoryId?: string;
-  storeId?: string;
+
+  mrp: number;
+  sellingPrice: number;
+
+  brand?: string;
+  image?: string;
+
+  category?: ProductCategory;
+
+  store?: string;
+
   createdAt?: string;
   updatedAt?: string;
 }
 
 export interface ProductResponse {
-  product: Product;
-  message?: string;
+  statusCode: number;
+  success: boolean;
+  message: string;
+  payload: {
+    product: Product;
+  };
 }
 
 export interface ProductsResponse {
-  products: Product[];
-  message?: string;
+  statusCode: number;
+  success: boolean;
+  message: string;
+  payload: {
+    products: Product[];
+  };
 }
 
 export interface CreateProductPayload {
   name: string;
-  price: number;
-  sku?: string;
-  barcode?: string;
+  sku: string;
+
   description?: string;
-  stock?: number;
-  categoryId?: string;
+
+  mrp: number;
+  sellingPrice: number;
+
+  brand?: string;
+  image?: string;
+
+  categoryId: string;
 }
 
 export interface UpdateProductPayload {
@@ -39,13 +65,14 @@ export interface UpdateProductPayload {
 
 export interface SearchProductsPayload {
   query: string;
-  storeId: string;
+  storeId: string | undefined;
 }
 
 export interface ProductState {
   products: Product[];
   product: Product | null;
   searchResults: Product[];
+
   loading: boolean;
-  error: string | null;
+  error: string | undefined | null;
 }
