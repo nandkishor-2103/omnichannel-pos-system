@@ -39,7 +39,7 @@ export const getBranchById = createAsyncThunk<
   try {
     const res = await api.get<BranchResponse>(`/branches/${id}`);
 
-    console.log("Get branch success:", res.data);
+    // console.log("Get branch success:", res.data);
 
     return res.data;
   } catch (error) {

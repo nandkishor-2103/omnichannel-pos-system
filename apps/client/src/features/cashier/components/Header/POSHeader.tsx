@@ -10,11 +10,12 @@ import { useAppSelector } from "@/app/store/hooks";
 export default function POSHeader() {
   const { setSidebarOpen } = useSidebar();
 
-  const user = useAppSelector((state) => state.auth.user);
+  const userProfile = useAppSelector((state) => state.user.userProfile);
+
   const storeName = useAppSelector((state) => state.store.store?.brand);
 
-  const fallbackInitials = user?.fullName
-    ? user.fullName
+  const fallbackInitials = userProfile?.fullName
+    ? userProfile.fullName
         .split(" ")
         .map((n) => n[0])
         .join("")
@@ -22,9 +23,9 @@ export default function POSHeader() {
         .slice(0, 2)
     : "??";
 
-  const avatarUrl = user?.fullName
+  const avatarUrl = userProfile?.fullName
     ? `https://api.dicebear.com/10.x/notionists/svg?seed=${encodeURIComponent(
-        user.fullName
+        userProfile.fullName
       )}`
     : undefined;
 
@@ -82,9 +83,7 @@ export default function POSHeader() {
               Store
             </p>
 
-            <h2 className="text-base font-bold">
-              {storeName || "DMart"}
-            </h2>
+            <h2 className="text-base font-bold">{storeName || "Unknown"}</h2>
 
             <p className="text-xs text-muted-foreground">
               {new Date().toLocaleDateString("en-US", {
@@ -101,13 +100,9 @@ export default function POSHeader() {
               Terminal
             </p>
 
-            <h2 className="text-base font-bold">
-              POS Terminal
-            </h2>
+            <h2 className="text-base font-bold">POS Terminal</h2>
 
-            <p className="text-xs text-muted-foreground">
-              Create New Order
-            </p>
+            <p className="text-xs text-muted-foreground">Create New Order</p>
           </div>
         </div>
       </div>
@@ -115,18 +110,14 @@ export default function POSHeader() {
       {/* Right */}
       <div className="flex items-center gap-3 rounded-2xl border bg-card px-3 py-2 shadow-sm transition-all hover:shadow-md cursor-pointer">
         <Avatar className="h-10 w-10 border border-primary ">
-          <AvatarImage src={avatarUrl} alt={user?.fullName} />
+          <AvatarImage src={avatarUrl} alt={userProfile?.fullName} />
           <AvatarFallback>{fallbackInitials}</AvatarFallback>
         </Avatar>
 
         <div className="hidden md:block">
-          <p className="text-sm font-semibold text-foreground">
-            {user?.fullName}
-          </p>
+          <p className="text-sm font-semibold text-foreground">{userProfile?.fullName}</p>
 
-          <p className="text-xs text-muted-foreground">
-            {user?.email}
-          </p>
+          <p className="text-xs text-muted-foreground">{userProfile?.email}</p>
         </div>
       </div>
     </header>

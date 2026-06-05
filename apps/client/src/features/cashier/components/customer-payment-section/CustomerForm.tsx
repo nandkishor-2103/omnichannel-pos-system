@@ -1,8 +1,13 @@
+import { createCustomer } from "@/app/store/customer/customerThunk";
+import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Form, Formik } from "formik";
 import { MailIcon, PhoneIcon, UserIcon } from "lucide-react";
+import type { CreateCustomerPayload } from "../../../../app/store/customer/customerTypes";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
+import { toast } from "sonner";
 
 type FormikValues = {
   fullName: string;
@@ -25,6 +30,40 @@ export default function CustomerForm({
   showCustomerForm,
   setShowCustomerForm,
 }: CustomerFormProps) {
+  const dispatch = useAppDispatch();
+  const loading = useAppSelector((state) => state.customer.loading);
+
+  // Creating customer
+  const handleCreateCustomer = async (value: CreateCustomerPayload) => {
+    const fullName = value.fullName.trim();
+    const phone = value.phone.trim();
+
+    if (!fullName) {
+      toast.error("Customer name is required");
+      return;
+    }
+
+    if (!phone) {
+      toast.error("Phone number is required");
+      return;
+    }
+
+    const payload = {
+      ...value,
+      fullName,
+      phone,
+      ...(value.email?.trim() ? { email: value.email.trim() } : {}),
+    };
+
+    const resultAction = await dispatch(createCustomer(payload));
+
+    if (createCustomer.fulfilled.match(resultAction)) {
+      toast.success("Customer created successfully");
+    } else {
+      toast.error((resultAction.payload as string) ?? "Failed to create customer");
+    }
+  };
+
   return (
     <Dialog open={showCustomerForm} onOpenChange={setShowCustomerForm}>
       <DialogContent className="min-w-md">
@@ -35,7 +74,7 @@ export default function CustomerForm({
         <Formik
           initialValues={initialValues}
           onSubmit={(values) => {
-            console.log(`Form Submitted: ${values}`);
+            handleCreateCustomer(values);
           }}
         >
           {({ values, handleChange, handleBlur }) => (
@@ -110,7 +149,11 @@ export default function CustomerForm({
                 className="cursor-pointer"
                 disabled={!values.fullName || !values.phone}
               >
-                Add Customer
+                {loading ? (
+                  <LoadingSpinner size={16} text="Adding Customer..." />
+                ) : (
+                  "Add Customer"
+                )}
               </Button>
             </Form>
           )}

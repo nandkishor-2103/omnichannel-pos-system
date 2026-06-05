@@ -11,15 +11,13 @@ import { signin } from "@/app/store/auth/authThunk";
 import { toast } from "sonner";
 
 import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
-import { useNavigate } from "react-router";
+import { Navigate, useNavigate } from "react-router-dom";
 import type { UserRole } from "./types/types";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 
 export default function Login() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-
-  const loading = useAppSelector((state) => state.auth.loading);
 
   const [showForgotPassword, setShowForgotPassword] = useState(false);
 
@@ -32,6 +30,25 @@ export default function Login() {
     password: "",
   });
 
+  const loading = useAppSelector((state) => state.auth.loading);
+  const user = useAppSelector((state) => state.auth.user);
+
+  const roleRoutes: Record<UserRole, string> = {
+    ROLE_ADMIN: "/super-admin/dashboard",
+
+    ROLE_STORE_ADMIN: "/store/dashboard",
+    ROLE_STORE_MANAGER: "/store/dashboard",
+
+    ROLE_BRANCH_ADMIN: "/branch/dashboard",
+    ROLE_BRANCH_MANAGER: "/branch/dashboard",
+
+    ROLE_BRANCH_CASHIER: "/cashier",
+  };
+
+  if (user) {
+    return <Navigate to={roleRoutes[user.role]} replace />;
+  }
+
   const handleLogin = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -40,21 +57,9 @@ export default function Login() {
     if (signin.fulfilled.match(resultAction)) {
       toast.success("Login Successful");
 
-      const { user } = resultAction.payload.payload;
+      const loggedInUser = resultAction.payload.payload.user;
 
-      const roleRoutes: Record<UserRole, string> = {
-        ROLE_ADMIN: "/super-admin/dashboard",
-
-        ROLE_STORE_ADMIN: "/store/dashboard",
-        ROLE_STORE_MANAGER: "/store/dashboard",
-
-        ROLE_BRANCH_ADMIN: "/branch/dashboard",
-        ROLE_BRANCH_MANAGER: "/branch/dashboard",
-
-        ROLE_BRANCH_CASHIER: "/cashier",
-      };
-
-      navigate(roleRoutes[user.role] ?? "/");
+      navigate(roleRoutes[loggedInUser.role] ?? "/");
     } else {
       toast.error((resultAction.payload as string) ?? "Login failed");
     }

@@ -13,6 +13,42 @@
   display: none;
 }
 
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* Smooth scrolling containers */
+* {
+  scroll-behavior: smooth;
+}
+
+/* Better scrolling performance */
+.scroll-smooth,
+.overflow-y-auto,
+.overflow-auto {
+  -webkit-overflow-scrolling: touch;
+  will-change: scroll-position;
+}
+
+/* Hardware acceleration */
+.transform-gpu {
+  transform: translate3d(0, 0, 0);
+}
+
+/* Smooth animations */
+*,
+*::before,
+*::after {
+  backface-visibility: hidden;
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
