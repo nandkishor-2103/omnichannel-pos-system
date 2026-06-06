@@ -26,6 +26,7 @@ import { getAllCustomers, searchCustomer } from "@/app/store/customer/customerTh
 import type { Customer } from "../../../../app/store/customer/customerTypes";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { clearSearchResults } from "@/app/store/customer/customerSlice";
+import { setSelectedCustomer } from "@/app/store/cart/cartSlice";
 
 type CustomerDialogProps = {
   showCustomerDialog: boolean;
@@ -46,7 +47,9 @@ export default function CustomerDialog({
   const searchResults = useAppSelector((state) => state.customer.searchResults);
 
   function handleSelectCustomer(customer: Customer): void {
-    console.log(`Selected customer: ${customer.fullName}`);
+    // console.log(`Selected customer: ${customer.fullName}`);
+
+    dispatch(setSelectedCustomer(customer))
 
     setShowCustomerDialog(false);
   }

@@ -2,6 +2,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 
 import type { Product } from "../../../../app/store/product/productTypes";
+import { useAppDispatch } from "@/app/store/hooks";
+import { addToCart } from "@/app/store/cart/cartSlice";
 
 type ProductCardProps = {
   product: Product;
@@ -12,8 +14,25 @@ export default function ProductCard({ product }: ProductCardProps) {
     ((product.mrp - product.sellingPrice) / product.mrp) * 100
   );
 
+  const dispatch = useAppDispatch();
+
+  const handleAddProductToCart = () => {
+    dispatch(
+      addToCart({
+        id: product._id,
+        name: product.name,
+        sku: product.sku,
+        sellingPrice: product.sellingPrice,
+        quantity: 1,
+      })
+    );
+  };
+
   return (
-    <Card className="cursor-pointer py-4 transition-all duration-200 hover:scale-[1.02] hover:bg-muted hover:shadow-sm active:translate-y-1 active:scale-100">
+    <Card
+      onClick={handleAddProductToCart}
+      className="cursor-pointer py-4 transition-all duration-200 hover:scale-[1.02] hover:bg-muted hover:shadow-sm active:translate-y-1 active:scale-100"
+    >
       <CardContent>
         {/* Product Image */}
         <div className="relative mb-3 aspect-square overflow-hidden rounded-md bg-muted">
@@ -33,13 +52,9 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         {/* Product Details */}
         <div>
-          <h3 className="truncate text-sm font-medium">
-            {product.name}
-          </h3>
+          <h3 className="truncate text-sm font-medium">{product.name}</h3>
 
-          <p className="text-xs text-muted-foreground">
-            {product.sku}
-          </p>
+          <p className="text-xs text-muted-foreground">{product.sku}</p>
 
           {/* Price + Category */}
           <div className="mt-3 flex items-end justify-between gap-2">

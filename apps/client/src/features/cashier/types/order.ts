@@ -1,3 +1,5 @@
+export type PaymentType = "CARD" | "UPI" | "CASH";
+
 export interface Product {
   image: string;
   name: string;
@@ -17,7 +19,7 @@ export interface Customer {
 }
 
 export interface Order {
-  id: number;
+  id: string;
   createdAt: string;
   customer: Customer;
   totalAmount: number;

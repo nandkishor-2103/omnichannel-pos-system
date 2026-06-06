@@ -1,24 +1,16 @@
-import { Edit, User } from "lucide-react";
+import { Edit, Mail, Phone, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import CustomerDialog from "./CustomerDialog";
 import { useState } from "react";
-
-type Customer = {
-  fullName: string;
-  phone: string;
-};
-
-let selectedCustomer: Customer | null = {
-  fullName: "John Doe",
-  phone: "9876543210",
-};
-
-selectedCustomer = null;
+import { useAppSelector } from "@/app/store/hooks";
+import { selectSelectedCustomer } from "@/app/store/cart/cartSelectors";
 
 export default function CustomerSection() {
   const [showCustomerDialog, setShowCustomerDialog] = useState(false);
+
+  const selectedCustomer = useAppSelector(selectSelectedCustomer);
 
   return (
     <div className="border-b p-4">
@@ -29,38 +21,65 @@ export default function CustomerSection() {
 
       {/* Selected Customer */}
       {selectedCustomer ? (
-        <Card className="border-green-400 bg-green-50 dark:border-green-800 dark:bg-green-950">
-          <CardContent className="flex items-center justify-between gap-5 p-3">
-            <div>
-              <h3 className="font-medium text-green-800 dark:text-green-200">
-                {selectedCustomer.fullName}
-              </h3>
+        <Card className="border-primary/20 bg-primary/5 shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div>
+                  <h3 className="font-semibold text-foreground">
+                    {selectedCustomer.fullName}
+                  </h3>
 
-              <p className="text-sm text-green-600 dark:text-green-300">
-                {selectedCustomer.phone}
-              </p>
-            </div>
-            <div>
+                  <div className="mt-1 flex items-center gap-2">
+                    <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">
+                      {selectedCustomer.phone}
+                    </span>
+                  </div>
+
+                  <div className="mt-1 flex items-center gap-2">
+                    <Mail className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">
+                      {selectedCustomer.email || "No Email"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
               <Button
+                size="icon"
                 variant="outline"
-                className="mt-2 w-full cursor-pointer"
+                className="cursor-pointer"
                 onClick={() => setShowCustomerDialog(true)}
               >
-                <Edit />
+                <Edit className="h-4 w-4" />
               </Button>
             </div>
           </CardContent>
         </Card>
       ) : (
-        <div>
-          <Button
-            variant="outline"
-            className="w-full py-5 cursor-pointer"
-            onClick={() => setShowCustomerDialog(true)}
-          >
-            Select Customer
-          </Button>
-        </div>
+        <Card className="border-dashed">
+          <CardContent className="flex flex-col items-center gap-2 ">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+              <User className="h-6 w-6 text-muted-foreground" />
+            </div>
+
+            <div className="text-center">
+              <h3 className="font-medium">No Customer Selected</h3>
+
+              <p className="text-sm text-muted-foreground">
+                Select a customer for this order
+              </p>
+            </div>
+
+            <Button
+              className="cursor-pointer"
+              onClick={() => setShowCustomerDialog(true)}
+            >
+              Select Customer
+            </Button>
+          </CardContent>
+        </Card>
       )}
 
       {/* Customer Dialog */}
