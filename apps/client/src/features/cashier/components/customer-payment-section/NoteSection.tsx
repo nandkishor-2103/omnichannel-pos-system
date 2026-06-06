@@ -1,11 +1,18 @@
+import { selectNote } from "@/app/store/cart/cartSelectors";
+import { setNote } from "@/app/store/cart/cartSlice";
+import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
 import { FileText } from "lucide-react";
 import { useState } from "react";
 
 export default function NoteSection() {
-  const [note, setNote] = useState<string>("");
+  //   const [note, setNote] = useState<string>("");
+
+  const note = useAppSelector(selectNote);
+
+  const dispatch = useAppDispatch();
 
   const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
-    setNote(e.target.value);
+    dispatch(setNote(e.target.value));
   };
 
   return (
@@ -18,7 +25,7 @@ export default function NoteSection() {
       <div className="space-y-3">
         <textarea
           className="
-            min-h-40
+            min-h-20
             w-full
             resize-none
             rounded-md

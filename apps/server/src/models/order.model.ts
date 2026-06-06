@@ -12,6 +12,7 @@ export interface IOrderItem {
 
 export interface IOrder {
   totalAmount: number;
+  note?: string;
   branch: Types.ObjectId;
   cashier: Types.ObjectId;
   customer: Types.ObjectId;
@@ -55,6 +56,12 @@ const orderSchema = new Schema<IOrder>(
       type: Number,
       required: true,
       min: 0,
+    },
+
+    note: {
+      type: String,
+      trim: true,
+      maxLength: 500,
     },
 
     branch: {

@@ -18,9 +18,15 @@ interface CreateOrderPayload {
 
   paymentType: PaymentType;
 
+  totalAmount: number;
+
+  note?: string;
+
   items: {
     productId: string;
     quantity: number;
+    price: number;
+    total: number;
   }[];
 }
 
@@ -65,7 +71,7 @@ export async function createOrderService(
     });
   }
 
-  let totalAmount = 0;
+  const totalAmount = orderData.totalAmount;
 
   const orderItems = [];
 
@@ -86,18 +92,14 @@ export async function createOrderService(
       });
     }
 
-    const itemPrice = product.sellingPrice * item.quantity;
-
-    totalAmount += itemPrice;
-
     orderItems.push({
       product: product._id,
       quantity: item.quantity,
-      price: itemPrice,
+      price: item.total,
     });
   }
 
-  const order = await Order.create({
+  const orderPayload: any = {
     totalAmount,
     branch: currentUser.branch,
     cashier: currentUser._id,
@@ -105,7 +107,13 @@ export async function createOrderService(
     paymentType: orderData.paymentType,
     status: OrderStatus.COMPLETED,
     items: orderItems,
-  });
+  };
+
+  if (orderData.note?.trim()) {
+    orderPayload.note = orderData.note.trim();
+  }
+
+  const order = await Order.create(orderPayload);
 
   const populatedOrder = await Order.findById(order._id)
     .populate("branch")
