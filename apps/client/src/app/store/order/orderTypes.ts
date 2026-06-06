@@ -1,38 +1,76 @@
 export interface OrderItem {
-  product: string;
+  productId: string;
   quantity: number;
   price: number;
+  total: number;
 }
 
 export interface CreateOrderPayload {
   customerId: string;
-  cashierId: string;
-  branchId: string;
   paymentType: string;
+  totalAmount: number;
+  note?: string;
+
   items: OrderItem[];
 }
 
 export interface Order {
-  _id: string;
-  customerId: string;
-  cashierId: string;
-  branchId: string;
+  id: string;
+
+  totalAmount: number;
   paymentType: string;
   status: string;
-  totalAmount: number;
-  items: OrderItem[];
+  note?: string;
+
+  customer: {
+    id: string;
+    fullName: string;
+    phone: string;
+    email?: string;
+  };
+
+  cashier: {
+    id: string;
+    fullName: string;
+  };
+
+  branch: {
+    id: string;
+    name: string;
+  };
+
+  items: {
+    product: {
+      id: string;
+      name: string;
+      sku?: string;
+      image?: string;
+      sellingPrice: number;
+    } | null;
+
+    quantity: number;
+    price: number;
+  }[];
+
   createdAt: string;
-  updatedAt: string;
 }
 
 export interface OrderResponse {
-  order: Order;
-  message?: string;
+  statusCode: number;
+  success: boolean;
+  message: string;
+  payload: {
+    order: Order;
+  };
 }
 
 export interface OrdersResponse {
-  orders: Order[];
-  message?: string;
+  statusCode: number;
+  success: boolean;
+  message: string;
+  payload: {
+    orders: Order[];
+  };
 }
 
 export interface OrdersByBranchPayload {

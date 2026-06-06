@@ -1,68 +1,36 @@
 import { Button } from "@/components/ui/button.tsx";
 import { Pause, ShoppingCart, Trash2 } from "lucide-react";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 import CartItem from "@/features/cashier/components/cart-section/CartItem";
 import CartSummary from "@/features/cashier/components/cart-section/CartSummary";
 import HeldOrdersDialog from "@/features/cashier/components/cart-section/HeldOrdersDialog";
 import { useState } from "react";
-
-type CartItemType = {
-  id: number;
-  name: string;
-  sku: string;
-  quantity: number;
-  sellingPrice: number;
-};
-
-const cartItems: CartItemType[] = [
-  {
-    id: 1,
-    name: "Organic Cold Pressed Mixed Fruit Juice Bottle",
-    sku: "OCPMFJ-004",
-    quantity: 2,
-    sellingPrice: 15.99,
-  },
-
-  {
-    id: 2,
-    name: "Premium Imported Dark Chocolate Cookies Pack",
-    sku: "PIDCCP-005",
-    quantity: 1,
-    sellingPrice: 22.49,
-  },
-
-  {
-    id: 3,
-    name: "Family Size Extra Crispy Salted Potato Chips",
-    sku: "FSECSPC-006",
-    quantity: 4,
-    sellingPrice: 6.75,
-  },
-  {
-    id: 4,
-    name: "Organic Cold Pressed Mixed Fruit Juice Bottle",
-    sku: "OCPMFJ-004",
-    quantity: 2,
-    sellingPrice: 15.99,
-  },
-  {
-    id: 5,
-    name: "Premium Imported Dark Chocolate Cookies Pack",
-    sku: "PIDCCP-005",
-    quantity: 1,
-    sellingPrice: 22.49,
-  },
-  {
-    id: 6,
-    name: "Family Size Extra Crispy Salted Potato Chips",
-    sku: "FSECSPC-006",
-    quantity: 4,
-    sellingPrice: 6.75,
-  },
-];
+import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
+import { selectCartItems } from "@/app/store/cart/cartSelectors";
+import { clearCart } from "@/app/store/cart/cartSlice";
 
 export default function CartSection() {
   const [showHeldOrderDialog, setShowHeldOrderDialog] = useState(false);
+
+  const cartItems = useAppSelector(selectCartItems);
+
+  const dispatch = useAppDispatch();
+
+  const handleClearCart = () => {
+    dispatch(clearCart());
+  };
 
   return (
     <>
@@ -85,23 +53,72 @@ export default function CartSection() {
                 <Pause className="w-4 h-4 mr-1" /> Held
               </Button>
 
-              <Button className="cursor-pointer" variant="outline" size="sm">
-                <Trash2 className="w-4 h-4 mr-1" />
-                Clear
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    className="cursor-pointer"
+                    variant="outline"
+                    size="sm"
+                    disabled={cartItems.length === 0}
+                  >
+                    <Trash2 className="w-4 h-4 mr-1" />
+                    Clear
+                  </Button>
+                </AlertDialogTrigger>
+
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Clear Cart?</AlertDialogTitle>
+
+                    <AlertDialogDescription>
+                      This will remove all items from the cart. This action cannot be
+                      undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="cursor-pointer">
+                      Cancel
+                    </AlertDialogCancel>
+
+                    <AlertDialogAction
+                      className="cursor-pointer bg-red-600 hover:bg-red-700"
+                      onClick={handleClearCart}
+                    >
+                      Clear Cart
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
         </div>
 
         {/* Cart Items */}
-        <div className="group relative flex-1 overflow-y-auto p-4 space-y-3">
-          {cartItems.map((item, index) => (
-            <CartItem key={index} item={item} />
-          ))}
+        <div className="group relative flex-1 overflow-y-auto p-4">
+          {cartItems.length > 0 ? (
+            <div className="space-y-3">
+              {cartItems.map((item) => (
+                <CartItem key={item.id} item={item} />
+              ))}
+            </div>
+          ) : (
+            <div className="flex h-full flex-col items-center justify-center text-center">
+              <div className="mb-4 rounded-full bg-muted p-4">
+                <ShoppingCart className="h-10 w-10 text-muted-foreground" />
+              </div>
+
+              <h3 className="text-lg font-semibold">Your cart is empty</h3>
+
+              <p className="mt-1 max-w-xs text-sm text-muted-foreground">
+                Search or select products to start building an order.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Cart Summary */}
-        <CartSummary />
+        {cartItems.length > 0 && <CartSummary />}
       </div>
 
       <HeldOrdersDialog

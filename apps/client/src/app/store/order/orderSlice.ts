@@ -67,7 +67,7 @@ const orderSlice = createSlice({
       .addCase(createOrder.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.orders.unshift(action.payload.order);
+        state.orders.unshift(action.payload.payload.order);
       })
 
       .addCase(createOrder.rejected, (state, action) => {
@@ -85,7 +85,7 @@ const orderSlice = createSlice({
       .addCase(getOrderById.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.selectedOrder = action.payload.order;
+        state.selectedOrder = action.payload.payload.order;
       })
 
       .addCase(getOrderById.rejected, (state, action) => {
@@ -103,7 +103,7 @@ const orderSlice = createSlice({
       .addCase(getOrdersByBranch.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.orders = action.payload.orders;
+        state.orders = action.payload.payload.orders;
       })
 
       .addCase(getOrdersByBranch.rejected, (state, action) => {
@@ -121,7 +121,7 @@ const orderSlice = createSlice({
       .addCase(getOrdersByCashier.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.orders = action.payload.orders;
+        state.orders = action.payload.payload.orders;
       })
 
       .addCase(getOrdersByCashier.rejected, (state, action) => {
@@ -139,7 +139,7 @@ const orderSlice = createSlice({
       .addCase(getTodayOrdersByBranch.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.todayOrders = action.payload.orders;
+        state.todayOrders = action.payload.payload.orders;
       })
 
       .addCase(getTodayOrdersByBranch.rejected, (state, action) => {
@@ -157,7 +157,7 @@ const orderSlice = createSlice({
       .addCase(getOrdersByCustomer.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.customerOrders = action.payload.orders;
+        state.customerOrders = action.payload.payload.orders;
       })
 
       .addCase(getOrdersByCustomer.rejected, (state, action) => {
@@ -175,7 +175,7 @@ const orderSlice = createSlice({
       .addCase(getRecentOrdersByBranch.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.recentOrders = action.payload.orders;
+        state.recentOrders = action.payload.payload.orders;
       })
 
       .addCase(getRecentOrdersByBranch.rejected, (state, action) => {
@@ -193,9 +193,9 @@ const orderSlice = createSlice({
       .addCase(deleteOrder.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.orders = state.orders.filter((order) => order._id !== action.payload);
+        state.orders = state.orders.filter((order) => order.id !== action.payload);
 
-        if (state.selectedOrder && state.selectedOrder._id === action.payload) {
+        if (state.selectedOrder && state.selectedOrder.id === action.payload) {
           state.selectedOrder = null;
         }
       })

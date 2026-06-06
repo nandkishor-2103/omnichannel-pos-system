@@ -5,12 +5,14 @@ export function mapOrderToResponse(order: any) {
     totalAmount: order.totalAmount,
     paymentType: order.paymentType,
     status: order.status,
+    note: order.note,
 
     customer: order.customer
       ? {
           id: order.customer._id,
           fullName: order.customer.fullName,
           phone: order.customer.phone,
+          email: order.customer.email,
         }
       : null,
 
@@ -34,6 +36,8 @@ export function mapOrderToResponse(order: any) {
           ? {
               id: item.product._id,
               name: item.product.name,
+              sku: item.product.sku,
+              image: item.product.image,
               sellingPrice: item.product.sellingPrice,
             }
           : null,
