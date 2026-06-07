@@ -4,6 +4,7 @@ import Refund from "../models/refund.model.js";
 import Order from "../models/order.model.js";
 import Branch from "../models/branch.model.js";
 import User from "../models/user.model.js";
+import ShiftReport from "../models/shiftReport.model.js";
 
 import type { IUser } from "../models/user.model.js";
 
@@ -79,19 +80,43 @@ export const createRefundService = async (
     });
   }
 
-  const refund = await Refund.create({
+  const activeShift = await ShiftReport.findOne({
+    cashier: currentUser._id,
+    shiftEnd: null,
+  });
+
+  const refundPayload: any = {
     order: order._id,
     cashier: currentUser._id,
     branch: branch._id,
     reason,
     amount: order.totalAmount,
     paymentType: order.paymentType,
-  });
+  };
+
+  if (activeShift) {
+    refundPayload.shiftReport = activeShift._id;
+  }
+
+  const refund = await Refund.create(refundPayload);
+
+  if (!refund) {
+    throw new ApiError({
+      statusCode: 500,
+      message: "Failed to create refund",
+    });
+  }
+
+  if (activeShift) {
+    activeShift.refunds.push(refund._id as mongoose.Types.ObjectId);
+
+    await activeShift.save();
+  }
 
   order.status = OrderStatus.REFUNDED;
   await order.save();
 
-  const populatedRefund = await Refund.findById(refund._id)
+  const populatedRefund = await Refund.findById(refund._id as mongoose.Types.ObjectId)
     .populate("order")
     .populate("branch")
     .populate("cashier", "fullName");

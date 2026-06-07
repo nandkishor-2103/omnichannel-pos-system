@@ -17,6 +17,7 @@ import { employeeRoutes } from "./routes/employee.routes.js";
 import { customerRoutes } from "./routes/customer.routes.js";
 import { orderRoutes } from "./routes/order.routes.js";
 import { refundRoutes } from "./routes/refund.routes.js";
+import { shiftReportRoutes } from "./routes/shiftReport.routes.js";
 
 const app = express();
 
@@ -64,6 +65,7 @@ app.use("/api/employees", employeeRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/refunds", refundRoutes);
+app.use("/api/shift-reports", shiftReportRoutes);
 // =========== 🚨 Global Error Handling Middleware ===========
 app.use(errorHandler);
 
