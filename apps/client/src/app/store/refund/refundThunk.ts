@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { api } from "@/lib/axios";
+import { api, getErrorMessage } from "@/lib/axios";
 
 import type {
   CreateRefundPayload,
@@ -19,17 +19,9 @@ export const createRefund = createAsyncThunk<
   try {
     const res = await api.post<RefundResponse>("/refunds", refundDTO);
 
-    console.log("✅ Refund created:", res.data);
-
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error("❌ Create refund failed:", error.response?.data);
-
-      return rejectWithValue(error.response?.data?.message ?? "Failed to create refund");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -43,17 +35,9 @@ export const getAllRefunds = createAsyncThunk<
   try {
     const res = await api.get<RefundsResponse>("/refunds");
 
-    console.log("✅ Refunds fetched:", res.data);
-
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error("❌ Get refunds failed:", error.response?.data);
-
-      return rejectWithValue(error.response?.data?.message ?? "Failed to fetch refunds");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -67,19 +51,9 @@ export const getRefundsByCashier = createAsyncThunk<
   try {
     const res = await api.get<RefundsResponse>(`/refunds/cashier/${cashierId}`);
 
-    console.log("✅ Refunds by cashier:", res.data);
-
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error("❌ Refunds by cashier failed:", error.response?.data);
-
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch refunds by cashier"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -93,19 +67,9 @@ export const getRefundsByBranch = createAsyncThunk<
   try {
     const res = await api.get<RefundsResponse>(`/refunds/branch/${branchId}`);
 
-    console.log("✅ Refunds by branch:", res.data);
-
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error("❌ Refunds by branch failed:", error.response?.data);
-
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch refunds by branch"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -119,19 +83,9 @@ export const getRefundsByShift = createAsyncThunk<
   try {
     const res = await api.get<RefundsResponse>(`/refunds/shift/${shiftReportId}`);
 
-    console.log("✅ Refunds by shift:", res.data);
-
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error("❌ Refunds by shift failed:", error.response?.data);
-
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch refunds by shift"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -152,22 +106,9 @@ export const getRefundsByCashierAndDateRange = createAsyncThunk<
         },
       });
 
-      console.log("✅ Refunds by cashier and date range:", res.data);
-
       return res.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(
-          "❌ Refunds by cashier and date range failed:",
-          error.response?.data
-        );
-
-        return rejectWithValue(
-          error.response?.data?.message ?? "Failed to fetch refunds"
-        );
-      }
-
-      return rejectWithValue("Something went wrong");
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -182,17 +123,9 @@ export const getRefundById = createAsyncThunk<
   try {
     const res = await api.get<RefundResponse>(`/refunds/${id}`);
 
-    console.log("✅ Refund fetched:", res.data);
-
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error("❌ Get refund by id failed:", error.response?.data);
-
-      return rejectWithValue(error.response?.data?.message ?? "Refund not found");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -204,19 +137,9 @@ export const deleteRefund = createAsyncThunk<string, string, { rejectValue: stri
     try {
       await api.delete(`/refunds/${id}`);
 
-      console.log("✅ Refund deleted:", id);
-
       return id;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("❌ Delete refund failed:", error.response?.data);
-
-        return rejectWithValue(
-          error.response?.data?.message ?? "Failed to delete refund"
-        );
-      }
-
-      return rejectWithValue("Something went wrong");
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );

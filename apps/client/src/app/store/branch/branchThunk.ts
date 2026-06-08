@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { api } from "@/lib/axios";
+import { api, getErrorMessage } from "@/lib/axios";
 
 import type {
   BranchResponse,
@@ -16,17 +16,11 @@ export const createBranch = createAsyncThunk<
   { rejectValue: string }
 >("branch/create", async (dto, { rejectWithValue }) => {
   try {
-    const res = await api.post<BranchResponse>("/branches", dto);
+    const response = await api.post<BranchResponse>("/branches", dto);
 
-    console.log("Create branch success:", res.data);
-
-    return res.data;
+    return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Create branch failed");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -37,17 +31,11 @@ export const getBranchById = createAsyncThunk<
   { rejectValue: string }
 >("branch/getById", async (id, { rejectWithValue }) => {
   try {
-    const res = await api.get<BranchResponse>(`/branches/${id}`);
+    const response = await api.get<BranchResponse>(`/branches/${id}`);
 
-    // console.log("Get branch success:", res.data);
-
-    return res.data;
+    return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Branch not found");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -58,17 +46,11 @@ export const getAllBranchesByStore = createAsyncThunk<
   { rejectValue: string }
 >("branch/getAllByStore", async (storeId, { rejectWithValue }) => {
   try {
-    const res = await api.get<BranchesResponse>(`/branches/store/${storeId}`);
+    const response = await api.get<BranchesResponse>(`/branches/store/${storeId}`);
 
-    console.log("Get branches success:", res.data);
-
-    return res.data;
+    return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Failed to fetch branches");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -79,17 +61,11 @@ export const updateBranch = createAsyncThunk<
   { rejectValue: string }
 >("branch/update", async ({ id, dto }, { rejectWithValue }) => {
   try {
-    const res = await api.put<BranchResponse>(`/branches/${id}`, dto);
+    const response = await api.put<BranchResponse>(`/branches/${id}`, dto);
 
-    console.log("Update branch success:", res.data);
-
-    return res.data;
+    return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Update failed");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -100,15 +76,9 @@ export const deleteBranch = createAsyncThunk<string, string, { rejectValue: stri
     try {
       await api.delete(`/branches/${id}`);
 
-      console.log("Delete branch success:", id);
-
       return id;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        return rejectWithValue(error.response?.data?.message ?? "Delete failed");
-      }
-
-      return rejectWithValue("Something went wrong");
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );

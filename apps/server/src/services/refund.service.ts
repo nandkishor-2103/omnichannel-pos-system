@@ -19,6 +19,7 @@ import {
   mapRefundsToResponse,
   type RefundMapperInput,
 } from "../mappers/refund.mapper.js";
+import { Inventory } from "../models/inventory.model.js";
 
 // ============== CREATE REFUND SERVICE ==================
 export const createRefundService = async (
@@ -107,6 +108,38 @@ export const createRefundService = async (
     });
   }
 
+  /**
+   * Restore inventory stock
+   */
+  await Promise.all(
+    order.items.map(async (item) => {
+      const inventory = await Inventory.findOneAndUpdate(
+        {
+          branch: order.branch,
+          product: item.product,
+        },
+        {
+          $inc: {
+            quantity: item.quantity,
+          },
+          $set: {
+            lastUpdated: new Date(),
+          },
+        },
+        {
+          new: true,
+        }
+      );
+
+      if (!inventory) {
+        throw new ApiError({
+          statusCode: 404,
+          message: `Inventory not found for product ${item.product}`,
+        });
+      }
+    })
+  );
+
   if (activeShift) {
     activeShift.refunds.push(refund._id as mongoose.Types.ObjectId);
 
@@ -114,6 +147,7 @@ export const createRefundService = async (
   }
 
   order.status = OrderStatus.REFUNDED;
+
   await order.save();
 
   const populatedRefund = await Refund.findById(refund._id as mongoose.Types.ObjectId)

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { api } from "@/lib/axios";
+import { api, getErrorMessage } from "@/lib/axios";
 
 import type {
   InventoryResponse,
@@ -21,13 +21,7 @@ export const createInventory = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to create inventory"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -43,13 +37,7 @@ export const updateInventory = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to update inventory"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -63,13 +51,7 @@ export const deleteInventory = createAsyncThunk<string, string, { rejectValue: s
 
       return id;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        return rejectWithValue(
-          error.response?.data?.message ?? "Failed to delete inventory"
-        );
-      }
-
-      return rejectWithValue("Something went wrong");
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -86,11 +68,7 @@ export const getInventoryById = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Inventory not found");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -106,13 +84,7 @@ export const getInventoryByBranch = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch branch inventory"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -128,12 +100,6 @@ export const getInventoryByProduct = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch product inventory"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });

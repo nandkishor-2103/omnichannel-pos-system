@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { api } from "@/lib/axios";
+import { api, getErrorMessage } from "@/lib/axios";
 
 import type {
   StoreResponse,
@@ -24,11 +24,7 @@ export const createStore = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Failed to create store");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -45,11 +41,7 @@ export const getStoreById = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Store not found");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -67,11 +59,7 @@ export const getAllStores = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Failed to fetch stores");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -87,11 +75,7 @@ export const updateStore = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Failed to update store");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -103,11 +87,7 @@ export const deleteStore = createAsyncThunk<void, void, { rejectValue: string }>
     try {
       await api.delete("/stores");
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        return rejectWithValue(error.response?.data?.message ?? "Failed to delete store");
-      }
-
-      return rejectWithValue("Something went wrong");
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -124,11 +104,7 @@ export const getStoreByAdmin = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Not authorized");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -144,11 +120,7 @@ export const getStoreByEmployee = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Not authorized");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -164,11 +136,7 @@ export const getStoreEmployees = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Failed to get employees");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -184,11 +152,7 @@ export const addEmployee = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Failed to add employee");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -206,10 +170,6 @@ export const moderateStore = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Failed to moderate store");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });

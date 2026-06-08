@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { api } from "@/lib/axios";
+import { api, getErrorMessage } from "@/lib/axios";
 
 import type {
   CategoryResponse,
@@ -19,17 +19,9 @@ export const createCategory = createAsyncThunk<
   try {
     const res = await api.post<CategoryResponse>("/categories", dto);
 
-    console.log("Create category:", res.data);
-
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to create category"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -43,17 +35,9 @@ export const getCategoriesByStore = createAsyncThunk<
   try {
     const res = await api.get<CategoriesResponse>(`/categories/store/${storeId}`);
 
-    console.log("Get categories:", res.data);
-
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch categories"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -67,17 +51,9 @@ export const updateCategory = createAsyncThunk<
   try {
     const res = await api.put<CategoryResponse>(`/categories/${id}`, dto);
 
-    console.log("Update category:", res.data);
-
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to update category"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -89,17 +65,9 @@ export const deleteCategory = createAsyncThunk<string, string, { rejectValue: st
     try {
       await api.delete(`/categories/${id}`);
 
-      console.log("Delete category:", id);
-
       return id;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        return rejectWithValue(
-          error.response?.data?.message ?? "Failed to delete category"
-        );
-      }
-
-      return rejectWithValue("Something went wrong");
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );

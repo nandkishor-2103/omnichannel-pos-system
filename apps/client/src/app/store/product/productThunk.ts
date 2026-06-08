@@ -1,6 +1,5 @@
-import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { api } from "@/lib/axios";
+import { api, getErrorMessage } from "@/lib/axios";
 
 import type {
   ProductResponse,
@@ -9,7 +8,6 @@ import type {
   UpdateProductPayload,
   SearchProductsPayload,
 } from "./productTypes";
-import { getTestLoadingDelay } from "@/config/appConfig";
 
 // ================= CREATE PRODUCT =================
 
@@ -23,11 +21,7 @@ export const createProduct = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Failed to create product");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -43,11 +37,7 @@ export const getProductById = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Product not found");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -63,11 +53,7 @@ export const updateProduct = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Failed to update product");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -81,13 +67,7 @@ export const deleteProduct = createAsyncThunk<string, string, { rejectValue: str
 
       return id;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        return rejectWithValue(
-          error.response?.data?.message ?? "Failed to delete product"
-        );
-      }
-
-      return rejectWithValue("Something went wrong");
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -102,15 +82,9 @@ export const getProductsByStore = createAsyncThunk<
   try {
     const res = await api.get<ProductsResponse>(`/products/store/${storeId}`);
 
-    // console.log("Get Store Products: ", res.data)
-
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Failed to fetch products");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -122,20 +96,12 @@ export const searchProducts = createAsyncThunk<
   { rejectValue: string }
 >("product/search", async ({ query, storeId }, { rejectWithValue }) => {
   try {
-    // Simulate loading delay
-    await getTestLoadingDelay();
     const res = await api.get<ProductsResponse>(
       `/products/store/${storeId}/search?q=${encodeURIComponent(query)}`
     );
 
-    console.log("Search products: ", res.data);
-
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Search failed");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
