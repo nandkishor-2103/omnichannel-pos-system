@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { api } from "@/lib/axios";
+import { api, getErrorMessage } from "@/lib/axios";
 
 import type {
   DailySalesPayload,
@@ -24,19 +24,13 @@ export const getDailySalesChart = createAsyncThunk<
   "branchAnalytics/getDailySalesChart",
   async ({ branchId, days = 7 }, { rejectWithValue }) => {
     try {
-      const res = await api.get<DailySalesResponse>(
+      const response = await api.get<DailySalesResponse>(
         `/branch-analytics/daily-sales?branchId=${branchId}&days=${days}`
       );
 
-      return res.data;
+      return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        return rejectWithValue(
-          error.response?.data?.message ?? "Failed to fetch daily sales chart"
-        );
-      }
-
-      return rejectWithValue("Something went wrong");
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -49,19 +43,13 @@ export const getTopProductsByQuantity = createAsyncThunk<
   { rejectValue: string }
 >("branchAnalytics/getTopProductsByQuantity", async (branchId, { rejectWithValue }) => {
   try {
-    const res = await api.get<TopProductsResponse>(
+    const response = await api.get<TopProductsResponse>(
       `/branch-analytics/top-products?branchId=${branchId}`
     );
 
-    return res.data;
+    return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch top products"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -73,19 +61,13 @@ export const getTopCashiersByRevenue = createAsyncThunk<
   { rejectValue: string }
 >("branchAnalytics/getTopCashiersByRevenue", async (branchId, { rejectWithValue }) => {
   try {
-    const res = await api.get<TopCashiersResponse>(
+    const response = await api.get<TopCashiersResponse>(
       `/branch-analytics/top-cashiers?branchId=${branchId}`
     );
 
-    return res.data;
+    return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch top cashiers"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -105,13 +87,7 @@ export const getCategoryWiseSalesBreakdown = createAsyncThunk<
 
       return res.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        return rejectWithValue(
-          error.response?.data?.message ?? "Failed to fetch category-wise sales breakdown"
-        );
-      }
-
-      return rejectWithValue("Something went wrong");
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -130,13 +106,7 @@ export const getTodayOverview = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch today overview"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -156,13 +126,7 @@ export const getPaymentBreakdown = createAsyncThunk<
 
       return res.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        return rejectWithValue(
-          error.response?.data?.message ?? "Failed to fetch payment breakdown"
-        );
-      }
-
-      return rejectWithValue("Something went wrong");
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { api } from "@/lib/axios";
+import { api, getErrorMessage } from "@/lib/axios";
 
 import type {
   CustomerResponse,
@@ -8,7 +8,6 @@ import type {
   CreateCustomerPayload,
   UpdateCustomerPayload,
 } from "./customerTypes";
-import { getTestLoadingDelay } from "@/config/appConfig";
 
 // ================= CREATE CUSTOMER =================
 
@@ -18,22 +17,11 @@ export const createCustomer = createAsyncThunk<
   { rejectValue: string }
 >("customer/create", async (customerData, { rejectWithValue }) => {
   try {
-    await getTestLoadingDelay();
     const res = await api.post<CustomerResponse>("/customers", customerData);
-
-    console.log("✅ Customer created:", res.data);
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.errors?.[0]?.message ||
-          error.response?.data?.message ||
-          "Failed to create customer"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -45,22 +33,11 @@ export const updateCustomer = createAsyncThunk<
   { rejectValue: string }
 >("customer/update", async ({ id, customerData }, { rejectWithValue }) => {
   try {
-    await getTestLoadingDelay();
     const res = await api.put<CustomerResponse>(`/customers/${id}`, customerData);
-
-    console.log("✅ Customer updated:", res.data);
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log("❌ Update customer failed:", error.response?.data);
-
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to update customer"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -70,22 +47,11 @@ export const deleteCustomer = createAsyncThunk<string, string, { rejectValue: st
   "customer/delete",
   async (id, { rejectWithValue }) => {
     try {
-      await getTestLoadingDelay();
       await api.delete(`/customers/${id}`);
-
-      console.log("✅ Customer deleted:", id);
 
       return id;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.log("❌ Delete customer failed:", error.response?.data);
-
-        return rejectWithValue(
-          error.response?.data?.message ?? "Failed to delete customer"
-        );
-      }
-
-      return rejectWithValue("Something went wrong");
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -98,20 +64,11 @@ export const getCustomerById = createAsyncThunk<
   { rejectValue: string }
 >("customer/getById", async (id, { rejectWithValue }) => {
   try {
-    await getTestLoadingDelay();
-    const res = await api.get<CustomerResponse>(`/customers/${id}`);
+    const response = await api.get<CustomerResponse>(`/customers/${id}`);
 
-    console.log("✅ Customer fetched:", res.data);
-
-    return res.data;
+    return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log("❌ Get customer failed:", error.response?.data);
-
-      return rejectWithValue(error.response?.data?.message ?? "Customer not found");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -123,22 +80,11 @@ export const getAllCustomers = createAsyncThunk<
   { rejectValue: string }
 >("customer/getAll", async (_, { rejectWithValue }) => {
   try {
-    await getTestLoadingDelay();
     const res = await api.get<CustomersResponse>("/customers");
-
-    console.log("✅ Customers fetched:", res.data);
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log("❌ Get customers failed:", error.response?.data);
-
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch customers"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -150,23 +96,12 @@ export const searchCustomer = createAsyncThunk<
   { rejectValue: string }
 >("customer/search", async (query, { rejectWithValue }) => {
   try {
-    await getTestLoadingDelay();
     const res = await api.get<CustomersResponse>(
       `/customers/search?q=${encodeURIComponent(query)}`
     );
 
-    console.log("✅ Customer search:", res.data);
-
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log("❌ Search customer failed:", error.response?.data);
-
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to search customers"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });

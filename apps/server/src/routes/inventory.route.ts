@@ -21,7 +21,7 @@ const router = Router();
 router.post(
   "/",
   isAuthenticated,
-  authorizeRoles("ROLE_STORE_MANAGER"),
+  authorizeRoles("ROLE_STORE_MANAGER", "ROLE_BRANCH_MANAGER"),
   createInventoryValidator,
   createInventoryController
 );
@@ -29,7 +29,7 @@ router.post(
 router.put(
   "/:id",
   isAuthenticated,
-  authorizeRoles("ROLE_STORE_MANAGER"),
+  authorizeRoles("ROLE_STORE_MANAGER", "ROLE_BRANCH_MANAGER"),
   updateInventoryValidator,
   updateInventoryController
 );
@@ -37,7 +37,7 @@ router.put(
 router.delete(
   "/:id",
   isAuthenticated,
-  authorizeRoles("ROLE_STORE_MANAGER"),
+  authorizeRoles("ROLE_STORE_MANAGER", "ROLE_BRANCH_MANAGER"),
   deleteInventoryController
 );
 

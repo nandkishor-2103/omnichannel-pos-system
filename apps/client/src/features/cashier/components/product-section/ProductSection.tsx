@@ -21,9 +21,16 @@ export default function ProductSection() {
   const searchResults = useAppSelector((state) => state.product.searchResults);
 
   useEffect(() => {
-    if (branch?.store?._id) {
+    if (!branch?.store?._id) return;
+
+    dispatch(getProductsByStore(branch.store._id));
+
+    const interval = setInterval(() => {
+      if (!branch?.store?._id) return;
       dispatch(getProductsByStore(branch.store._id));
-    }
+    }, 15000); // 15 seconds
+
+    return () => clearInterval(interval);
   }, [dispatch, branch?.store?._id]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,7 +58,7 @@ export default function ProductSection() {
       );
 
       if (searchProducts.rejected.match(resultAction)) {
-        toast.error((resultAction.payload as string) ?? "Failed to search products");
+        toast.error("Failed to search products");
       }
     }, 500);
 

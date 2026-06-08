@@ -14,6 +14,8 @@ export interface Product {
   mrp: number;
   sellingPrice: number;
 
+  availableQuantity: number;
+
   brand?: string;
   image?: string;
 

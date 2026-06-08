@@ -10,6 +10,7 @@ import ApiError from "../utils/ApiError.js";
 
 import { PaymentType } from "../enums/paymentType.enums.js";
 import { OrderStatus } from "../enums/orderStatus.enums.js";
+import { Inventory } from "../models/inventory.model.js";
 
 import { mapOrderToResponse, mapOrdersToResponse } from "../mappers/order.mapper.js";
 
@@ -75,6 +76,9 @@ export async function createOrderService(
 
   const orderItems = [];
 
+  /**
+   * Validate stock first
+   */
   for (const item of orderData.items) {
     const product = await Product.findById(item.productId);
 
@@ -92,12 +96,63 @@ export async function createOrderService(
       });
     }
 
+    const inventory = await Inventory.findOne({
+      branch: currentUser.branch,
+      product: product._id,
+    });
+
+    if (!inventory) {
+      throw new ApiError({
+        statusCode: 404,
+        message: `${product.name} product inventory not created`,
+      });
+    }
+
+    if (inventory.quantity < item.quantity) {
+      throw new ApiError({
+        statusCode: 400,
+        message: `Insufficient stock for ${product.name}. Available quantity: ${inventory.quantity}`,
+      });
+    }
+
     orderItems.push({
       product: product._id,
       quantity: item.quantity,
       price: item.total,
     });
   }
+
+  /**
+   * Reduce inventory
+   */
+  await Promise.all(
+    orderData.items.map(async (item) => {
+      const inventory = await Inventory.findOneAndUpdate(
+        {
+          branch: currentUser.branch as mongoose.Types.ObjectId,
+          product: item.productId,
+        },
+        {
+          $inc: {
+            quantity: -item.quantity,
+          },
+          $set: {
+            lastUpdated: new Date(),
+          },
+        },
+        {
+          new: true,
+        }
+      );
+
+      if (!inventory) {
+        throw new ApiError({
+          statusCode: 404,
+          message: "Inventory update failed",
+        });
+      }
+    })
+  );
 
   const orderPayload: any = {
     totalAmount,

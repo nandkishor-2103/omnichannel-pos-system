@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { api } from "@/lib/axios";
+import { api, getErrorMessage } from "@/lib/axios";
 
 import type {
   CreateOrderPayload,
@@ -19,17 +19,9 @@ export const createOrder = createAsyncThunk<
   try {
     const res = await api.post<OrderResponse>("/orders", dto);
 
-    console.log("✅ Order created:", res.data);
-
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log("❌ Create order failed:", error.response?.data);
-
-      return rejectWithValue(error.response?.data?.message ?? "Failed to create order");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -43,17 +35,9 @@ export const getOrderById = createAsyncThunk<
   try {
     const res = await api.get<OrderResponse>(`/orders/${id}`);
 
-    console.log("✅ Order fetched:", res.data);
-
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log("❌ Get order failed:", error.response?.data);
-
-      return rejectWithValue(error.response?.data?.message ?? "Order not found");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -80,17 +64,9 @@ export const getOrdersByBranch = createAsyncThunk<
       `/orders/branch/${branchId}${query ? `?${query}` : ""}`
     );
 
-    console.log("✅ Orders by branch:", res.data);
-
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log("❌ Orders by branch failed:", error.response?.data);
-
-      return rejectWithValue(error.response?.data?.message ?? "Failed to fetch orders");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -104,17 +80,9 @@ export const getOrdersByCashier = createAsyncThunk<
   try {
     const res = await api.get<OrdersResponse>(`/orders/cashier/${cashierId}`);
 
-    console.log("✅ Orders by cashier:", res.data);
-
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log("❌ Orders by cashier failed:", error.response?.data);
-
-      return rejectWithValue(error.response?.data?.message ?? "Failed to fetch orders");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -128,19 +96,9 @@ export const getTodayOrdersByBranch = createAsyncThunk<
   try {
     const res = await api.get<OrdersResponse>(`/orders/today/branch/${branchId}`);
 
-    console.log("✅ Today's orders:", res.data);
-
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log("❌ Today's orders failed:", error.response?.data);
-
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch today's orders"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -152,17 +110,9 @@ export const deleteOrder = createAsyncThunk<string, string, { rejectValue: strin
     try {
       await api.delete(`/orders/${id}`);
 
-      console.log("✅ Order deleted:", id);
-
       return id;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.log("❌ Delete order failed:", error.response?.data);
-
-        return rejectWithValue(error.response?.data?.message ?? "Failed to delete order");
-      }
-
-      return rejectWithValue("Something went wrong");
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -177,19 +127,9 @@ export const getOrdersByCustomer = createAsyncThunk<
   try {
     const res = await api.get<OrdersResponse>(`/orders/customer/${customerId}`);
 
-    console.log("✅ Customer orders:", res.data);
-
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log("❌ Customer orders failed:", error.response?.data);
-
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch customer orders"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -203,18 +143,8 @@ export const getRecentOrdersByBranch = createAsyncThunk<
   try {
     const res = await api.get<OrdersResponse>(`/orders/recent/${branchId}`);
 
-    console.log("✅ Recent orders:", res.data);
-
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log("❌ Recent orders failed:", error.response?.data);
-
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch recent orders"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });

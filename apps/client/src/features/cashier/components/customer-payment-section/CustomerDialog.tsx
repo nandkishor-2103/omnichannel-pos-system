@@ -47,9 +47,7 @@ export default function CustomerDialog({
   const searchResults = useAppSelector((state) => state.customer.searchResults);
 
   function handleSelectCustomer(customer: Customer): void {
-    // console.log(`Selected customer: ${customer.fullName}`);
-
-    dispatch(setSelectedCustomer(customer))
+    dispatch(setSelectedCustomer(customer));
 
     setShowCustomerDialog(false);
   }
