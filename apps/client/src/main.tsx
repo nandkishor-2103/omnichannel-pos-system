@@ -8,14 +8,18 @@ import App from "./App";
 import "./index.css";
 
 import { store, persistor } from "./app/store";
-
 import BackendWakeupScreen from "./components/shared/BackendWakeupScreen";
 
 export function RootApp() {
-  const [isBackendReady, setIsBackendReady] = useState(false);
+  const [isBackendReady, setIsBackendReady] = useState(!import.meta.env.PROD);
+
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
+    if (!import.meta.env.PROD) {
+      return;
+    }
+
     const wakeUpBackend = async () => {
       try {
         const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -26,10 +30,8 @@ export function RootApp() {
           credentials: "include",
         });
 
-        // Show success state
         setIsConnected(true);
 
-        // Keep success screen visible for 1 second
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
         setIsBackendReady(true);
@@ -41,7 +43,7 @@ export function RootApp() {
     wakeUpBackend();
   }, []);
 
-  if (!isBackendReady) {
+  if (import.meta.env.PROD && !isBackendReady) {
     return <BackendWakeupScreen connected={isConnected} />;
   }
 

@@ -1,11 +1,19 @@
 import { useEffect, useState } from "react";
-import { Loader2, Store, Server, Clock, CheckCircle2 } from "lucide-react";
+import {
+  Loader2,
+  Store,
+  Server,
+  Clock,
+  CheckCircle2,
+} from "lucide-react";
 
 interface BackendWakeupScreenProps {
   connected: boolean;
 }
 
-export default function BackendWakeupScreen({ connected }: BackendWakeupScreenProps) {
+export default function BackendWakeupScreen({
+  connected,
+}: BackendWakeupScreenProps) {
   const [elapsedTime, setElapsedTime] = useState(0);
 
   useEffect(() => {
@@ -19,7 +27,7 @@ export default function BackendWakeupScreen({ connected }: BackendWakeupScreenPr
   }, []);
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100 px-6">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100 p-6">
       {/* Background Effects */}
       <div className="absolute inset-0">
         <div className="absolute left-20 top-20 h-72 w-72 rounded-full bg-green-200/40 blur-3xl" />
@@ -29,7 +37,6 @@ export default function BackendWakeupScreen({ connected }: BackendWakeupScreenPr
         <div className="absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-green-100/40 blur-3xl" />
       </div>
 
-      {/* Main Card */}
       <div className="relative z-10 w-full max-w-lg">
         <div className="rounded-3xl border border-slate-200 bg-white p-10 shadow-2xl">
           {/* Logo */}
@@ -68,13 +75,19 @@ export default function BackendWakeupScreen({ connected }: BackendWakeupScreenPr
               <div className="flex items-center justify-center gap-3">
                 <Clock className="h-5 w-5 text-green-600" />
 
-                <span className="text-sm font-medium text-slate-700">Wake-up Time</span>
+                <span className="text-sm font-medium text-slate-700">
+                  Wake-up Time
+                </span>
               </div>
 
               <div className="mt-3 text-center">
-                <span className="text-5xl font-bold text-green-600">{elapsedTime}s</span>
+                <span className="text-5xl font-bold text-green-600">
+                  {elapsedTime}s
+                </span>
 
-                <p className="mt-2 text-sm text-slate-500">Elapsed time</p>
+                <p className="mt-2 text-sm text-slate-500">
+                  Elapsed time
+                </p>
               </div>
             </div>
           )}
@@ -99,7 +112,9 @@ export default function BackendWakeupScreen({ connected }: BackendWakeupScreenPr
               <>
                 <CheckCircle2 className="h-5 w-5 text-green-600" />
 
-                <span className="font-medium text-green-600">Redirecting...</span>
+                <span className="font-medium text-green-600">
+                  Redirecting...
+                </span>
               </>
             ) : (
               <>
@@ -119,16 +134,19 @@ export default function BackendWakeupScreen({ connected }: BackendWakeupScreenPr
                 <Server className="mt-0.5 h-5 w-5 text-green-600" />
 
                 <div>
-                  <h3 className="font-semibold text-slate-900">Why does this happen?</h3>
+                  <h3 className="font-semibold text-slate-900">
+                    Why does this happen?
+                  </h3>
 
                   <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                    This application is hosted on Render's free tier. Inactive services
-                    automatically sleep after 15 minutes without traffic.
+                    This application is hosted on Render's free tier.
+                    Inactive services automatically sleep after 15 minutes
+                    without traffic.
                   </p>
 
                   <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                    When a new request arrives, the backend wakes up again. This usually
-                    takes around 30–60 seconds.
+                    When a new request arrives, the backend wakes up again.
+                    This usually takes around 30–60 seconds.
                   </p>
                 </div>
               </div>
