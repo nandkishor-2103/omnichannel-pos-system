@@ -3,7 +3,8 @@ import ENV_VARS from "./config/env.js";
 import connectDB from "./config/db.js";
 import redisClient from "./config/redis.js";
 
-const PORT: number = Number(ENV_VARS.SERVER_PORT);
+// const PORT: number = Number(ENV_VARS.SERVER_PORT);
+const PORT = Number(process.env.PORT || ENV_VARS.SERVER_PORT);
 
 async function startServer() {
   try {
