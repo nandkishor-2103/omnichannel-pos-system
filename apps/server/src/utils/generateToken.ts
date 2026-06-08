@@ -19,7 +19,7 @@ async function generateToken(res: Response, user: IUser) {
   res.cookie("infotactToken", infotactToken, {
     httpOnly: true,
     secure: ENV_VAR.NODE_ENV === "production",
-    sameSite: ENV_VAR.NODE_ENV === "production" ? "none" : "strict",
+    sameSite: ENV_VAR.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 24 * 60 * 60 * 1000, // 1 day
   });
 
