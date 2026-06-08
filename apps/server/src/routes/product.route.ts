@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   createProductController,
   deleteProductController,
+  getCashierProductsController,
   getProductByIdController,
   getProductsByStoreController,
   searchProductsController,
@@ -30,6 +31,17 @@ router.post(
   authorizeRoles("ROLE_STORE_ADMIN", "ROLE_STORE_MANAGER"),
   createProductValidation,
   createProductController
+);
+
+/**
+ * @des Get products by cashier
+ * @route GET /api/products/cashier
+ */
+router.get(
+  "/cashier/products",
+  isAuthenticated,
+  authorizeRoles("ROLE_BRANCH_CASHIER"),
+  getCashierProductsController
 );
 
 /**

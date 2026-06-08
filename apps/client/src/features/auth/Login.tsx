@@ -55,13 +55,9 @@ export default function Login() {
     const resultAction = await dispatch(signin(formData));
 
     if (signin.fulfilled.match(resultAction)) {
-      toast.success("Login Successful");
-
       const loggedInUser = resultAction.payload.payload.user;
 
       navigate(roleRoutes[loggedInUser.role] ?? "/");
-    } else {
-      toast.error((resultAction.payload as string) ?? "Login failed");
     }
   };
 

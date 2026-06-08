@@ -24,7 +24,7 @@ export default function POSHeader() {
     : "??";
 
   const avatarUrl = userProfile?.fullName
-    ? `https://api.dicebear.com/10.x/notionists/svg?seed=${encodeURIComponent(
+    ? `https://api.dicebear.com/10.x/notionists/svg?backgroundColor=FFA500,0b0385&seed=${encodeURIComponent(
         userProfile.fullName
       )}`
     : undefined;

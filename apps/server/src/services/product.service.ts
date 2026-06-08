@@ -4,6 +4,8 @@ import Store from "../models/store.model.js";
 import ApiError from "../utils/ApiError.js";
 import type { CreateProductDto, UpdateProductDto } from "../types/product.types.js";
 import type { IProduct } from "../models/product.model.js";
+import { Inventory } from "../models/inventory.model.js";
+import type { IUser } from "../models/user.model.js";
 
 const checkStoreAccess = (store: any, user: Express.User): boolean => {
   if (user.role === "ROLE_ADMIN") {
@@ -175,7 +177,10 @@ export const deleteProductService = async (
 };
 
 // ================== GET PRODUCTS BY STORE ==================
-export const getProductsByStoreService = async (storeId: string): Promise<IProduct[]> => {
+export const getProductsByStoreService = async (
+  storeId: string,
+  branchId?: string
+): Promise<any[]> => {
   const store = await Store.findById(storeId);
 
   if (!store) {
@@ -185,21 +190,90 @@ export const getProductsByStoreService = async (storeId: string): Promise<IProdu
     });
   }
 
-  const products = await Product.find({
-    store: storeId,
+  /**
+   * Store Admin / Manager
+   * No branch provided -> return all store products
+   */
+  if (!branchId) {
+    const products = await Product.find({
+      store: storeId,
+    })
+      .populate("category", "name")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return products.map((product) => ({
+      _id: product._id,
+      name: product.name,
+      sku: product.sku,
+      description: product.description,
+      mrp: product.mrp,
+      sellingPrice: product.sellingPrice,
+      brand: product.brand,
+      image: product.image,
+      category: product.category,
+      store: product.store,
+      availableQuantity: 0,
+    }));
+  }
+
+  /**
+   * Branch Cashier
+   * Only products available in this branch inventory
+   */
+  const inventories = await Inventory.find({
+    branch: branchId,
   })
-    .populate("category", "name")
-    .sort({ createdAt: -1 });
+    .populate({
+      path: "product",
+      match: {
+        store: storeId,
+      },
+      populate: {
+        path: "category",
+        select: "name",
+      },
+    })
+    .lean();
+
+  const products = inventories
+    .filter((inventory: any) => inventory.product)
+    .map((inventory: any) => ({
+      _id: inventory.product._id,
+
+      name: inventory.product.name,
+
+      sku: inventory.product.sku,
+
+      description: inventory.product.description,
+
+      mrp: inventory.product.mrp,
+
+      sellingPrice: inventory.product.sellingPrice,
+
+      brand: inventory.product.brand,
+
+      image: inventory.product.image,
+
+      category: inventory.product.category,
+
+      store: inventory.product.store,
+
+      availableQuantity: inventory.quantity,
+    }));
 
   return products;
 };
 
 // ================== SEARCH PRODUCTS ==================
+
 export const searchProductsService = async (
   storeId: string,
-  query: string
-): Promise<IProduct[]> => {
+  query: string,
+  user: IUser
+): Promise<any[]> => {
   const store = await Store.findById(storeId);
+
   if (!store) {
     throw new ApiError({
       statusCode: 404,
@@ -207,9 +281,7 @@ export const searchProductsService = async (
     });
   }
 
-  const products = await Product.find({
-    store: storeId,
-
+  const searchFilter = {
     $or: [
       {
         name: {
@@ -239,9 +311,157 @@ export const searchProductsService = async (
         },
       },
     ],
+  };
+
+  /**
+   * Cashier
+   * Search only branch inventory products
+   */
+  if (user.role === "ROLE_BRANCH_CASHIER") {
+    if (!user.branch) {
+    throw new ApiError({
+      statusCode: 400,
+      message: "Cashier branch not found",
+    });
+  }
+    const inventories = await Inventory.find({
+      branch: user.branch,
+    })
+      .populate({
+        path: "product",
+
+        match: {
+          store: storeId,
+          ...searchFilter,
+        },
+
+        populate: {
+          path: "category",
+          select: "name",
+        },
+      })
+      .lean();
+
+    return inventories
+      .filter((inventory: any) => inventory.product)
+      .map((inventory: any) => ({
+        _id: inventory.product._id,
+
+        name: inventory.product.name,
+
+        sku: inventory.product.sku,
+
+        description: inventory.product.description,
+
+        mrp: inventory.product.mrp,
+
+        sellingPrice: inventory.product.sellingPrice,
+
+        brand: inventory.product.brand,
+
+        image: inventory.product.image,
+
+        category: inventory.product.category,
+
+        store: inventory.product.store,
+
+        availableQuantity: inventory.quantity,
+      }));
+  }
+
+  /**
+   * Store Admin
+   * Store Manager
+   * Branch Admin
+   * Branch Manager
+   *
+   * Search all store products
+   */
+  const products = await Product.find({
+    store: storeId,
+    ...searchFilter,
   })
     .populate("category", "name")
-    .sort({ createdAt: -1 });
+    .sort({
+      createdAt: -1,
+    })
+    .lean();
 
-  return products;
+  return products.map((product: any) => ({
+    _id: product._id,
+
+    name: product.name,
+
+    sku: product.sku,
+
+    description: product.description,
+
+    mrp: product.mrp,
+
+    sellingPrice: product.sellingPrice,
+
+    brand: product.brand,
+
+    image: product.image,
+
+    category: product.category,
+
+    store: product.store,
+  }));
+};
+
+// ================= GET PRODUCT FOR CASHIER SERVICE ==================
+export const getProductsForCashierService = async (currentUser: IUser) => {
+  if (!currentUser.branch) {
+    throw new ApiError({
+      statusCode: 400,
+      message: "Branch not found",
+    });
+  }
+
+  const inventories = await Inventory.find({
+    branch: currentUser.branch,
+  })
+    .populate({
+      path: "product",
+      populate: [
+        {
+          path: "category",
+          select: "name",
+        },
+        {
+          path: "store",
+          select: "brand",
+        },
+      ],
+    })
+    .lean();
+
+  return inventories
+    .filter((inventory: any) => inventory.product)
+    .map((inventory: any) => ({
+      _id: inventory.product._id,
+
+      name: inventory.product.name,
+      sku: inventory.product.sku,
+
+      description: inventory.product.description,
+
+      mrp: inventory.product.mrp,
+      sellingPrice: inventory.product.sellingPrice,
+
+      brand: inventory.product.brand,
+
+      category: {
+        _id: inventory.product.category?._id,
+        name: inventory.product.category?.name,
+      },
+
+      store: {
+        _id: inventory.product.store?._id,
+        brand: inventory.product.store?.brand,
+      },
+
+      availableQuantity: inventory.quantity,
+    }));
 };

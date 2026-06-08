@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { api } from "@/lib/axios";
+import { api, getErrorMessage } from "@/lib/axios";
 
 import type {
   StoreOverview,
@@ -28,13 +28,7 @@ export const getStoreOverview = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch store overview"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -54,13 +48,7 @@ export const getSalesTrends = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch sales trends"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -78,13 +66,7 @@ export const getMonthlySales = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch monthly sales"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -102,13 +84,7 @@ export const getDailySales = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch daily sales"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -126,13 +102,7 @@ export const getSalesByCategory = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch sales by category"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -150,13 +120,7 @@ export const getSalesByPaymentMethod = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch sales by payment method"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -174,13 +138,7 @@ export const getSalesByBranch = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch sales by branch"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -198,13 +156,7 @@ export const getPaymentBreakdown = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch payment breakdown"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -222,13 +174,7 @@ export const getBranchPerformance = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch branch performance"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -244,12 +190,6 @@ export const getStoreAlerts = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch store alerts"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });

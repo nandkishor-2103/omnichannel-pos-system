@@ -19,6 +19,8 @@ import { orderRoutes } from "./routes/order.routes.js";
 import { refundRoutes } from "./routes/refund.routes.js";
 import { shiftReportRoutes } from "./routes/shiftReport.routes.js";
 import { adminDashboardRoutes } from "./routes/adminDashboard.routes.js";
+import { branchAnalyticsRoutes } from "./routes/branchAnalytics.routes.js";
+import { storeAnalyticsRoutes } from "./routes/storeAnalytics.routes.js";
 
 const app = express();
 
@@ -68,6 +70,8 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/refunds", refundRoutes);
 app.use("/api/shift-reports", shiftReportRoutes);
 app.use("/api/super-admin", adminDashboardRoutes);
+app.use("/api/branch-analytics", branchAnalyticsRoutes);
+app.use("/api/store/analytics", storeAnalyticsRoutes);
 // =========== 🚨 Global Error Handling Middleware ===========
 app.use(errorHandler);
 

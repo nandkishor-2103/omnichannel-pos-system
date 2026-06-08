@@ -1,6 +1,5 @@
-import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { api } from "@/lib/axios";
+import { api, getErrorMessage } from "@/lib/axios";
 
 import type {
   SubscriptionPlanResponse,
@@ -24,13 +23,7 @@ export const createSubscriptionPlan = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to create subscription plan"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -49,13 +42,7 @@ export const updateSubscriptionPlan = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to update subscription plan"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -73,13 +60,7 @@ export const getAllSubscriptionPlans = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch subscription plans"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -97,13 +78,7 @@ export const getSubscriptionPlanById = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch subscription plan"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -119,12 +94,6 @@ export const deleteSubscriptionPlan = createAsyncThunk<
 
     return id;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to delete subscription plan"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });

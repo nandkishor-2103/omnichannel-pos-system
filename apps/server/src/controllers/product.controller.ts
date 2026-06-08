@@ -6,9 +6,11 @@ import {
   deleteProductService,
   getProductByIdService,
   getProductsByStoreService,
+  getProductsForCashierService,
   searchProductsService,
   updateProductService,
 } from "../services/product.service.js";
+import type { IUser } from "../models/user.model.js";
 
 /**
  * @desc    Create a new product
@@ -102,7 +104,10 @@ export const deleteProductController = asyncHandler(
  */
 export const getProductsByStoreController = asyncHandler(
   async (req: Request, res: Response) => {
-    const products = await getProductsByStoreService(req.params.storeId as string);
+    const products = await getProductsByStoreService(
+      req.params.storeId as string,
+      (req.user as IUser)?.branch?.toString()
+    );
 
     return res.status(200).json(
       new ApiResponse({
@@ -125,7 +130,8 @@ export const searchProductsController = asyncHandler(
   async (req: Request, res: Response) => {
     const products = await searchProductsService(
       req.params.storeId as string,
-      req.query.q as string
+      req.query.q as string,
+      req.user as IUser
     );
 
     return res.status(200).json(
@@ -139,3 +145,15 @@ export const searchProductsController = asyncHandler(
     );
   }
 );
+
+export const getCashierProductsController = asyncHandler(async (req, res) => {
+  const products = await getProductsForCashierService(req.user as IUser);
+
+  return res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "Products fetched successfully",
+      payload: { products },
+    })
+  );
+});

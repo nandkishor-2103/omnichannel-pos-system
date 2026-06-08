@@ -1,9 +1,20 @@
 import { removeFromCart, updateCartItemQuantity } from "@/app/store/cart/cartSlice";
 import { useAppDispatch } from "@/app/store/hooks";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button.tsx";
 import { Card, CardContent } from "@/components/ui/card.tsx";
 import { Minus, Plus, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 type CartItemType = {
   id: string;
@@ -11,6 +22,7 @@ type CartItemType = {
   sku: string;
   quantity: number;
   sellingPrice: number;
+  availableQuantity: number;
 };
 
 type CartItemProps = {
@@ -28,6 +40,7 @@ export default function CartItem({ item }: CartItemProps) {
       })
     );
   };
+
   return (
     <Card className="border-l-4 border-l-green-800 hover:scale-103 transition-transform duration-300 hover:cursor-pointer hover:bg-muted">
       <CardContent className="p-3">
@@ -35,6 +48,10 @@ export default function CartItem({ item }: CartItemProps) {
           <div className="flex-1">
             <h3 className="font-medium">{item.name}</h3>
             <p className="text-muted-foreground text-sm">{item.sku}</p>
+            <p className="text-xs text-muted-foreground">
+              Available Quantity:{" "}
+              <span className="font-medium">{item.availableQuantity}</span>
+            </p>
           </div>
 
           <div className="flex items-center space-x-2">
@@ -53,7 +70,16 @@ export default function CartItem({ item }: CartItemProps) {
               </span>
 
               <Button
-                onClick={() => handleUpdateCartItemQuantity(1)}
+                onClick={() => {
+                  if (item.quantity >= item.availableQuantity) {
+                    toast.warning(
+                      `Only ${item.availableQuantity} units of ${item.name} are available`
+                    );
+                    return;
+                  }
+
+                  handleUpdateCartItemQuantity(1);
+                }}
                 variant="ghost"
                 size="sm"
                 className="cursor-pointer"

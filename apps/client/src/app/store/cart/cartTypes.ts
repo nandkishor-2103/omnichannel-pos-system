@@ -10,6 +10,7 @@ export interface CartItem {
   sku: string;
   sellingPrice: number;
   quantity: number;
+  availableQuantity: number;
 }
 
 export interface Discount {

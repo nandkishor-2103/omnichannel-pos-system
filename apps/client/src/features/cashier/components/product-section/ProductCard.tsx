@@ -24,13 +24,16 @@ export default function ProductCard({ product }: ProductCardProps) {
         sku: product.sku,
         sellingPrice: product.sellingPrice,
         quantity: 1,
+        availableQuantity: product.availableQuantity,
       })
     );
   };
 
   return (
     <Card
-      onClick={handleAddProductToCart}
+      onClick={() => {
+        handleAddProductToCart();
+      }}
       className="cursor-pointer py-4 transition-all duration-200 hover:scale-[1.02] hover:bg-muted hover:shadow-sm active:translate-y-1 active:scale-100"
     >
       <CardContent>

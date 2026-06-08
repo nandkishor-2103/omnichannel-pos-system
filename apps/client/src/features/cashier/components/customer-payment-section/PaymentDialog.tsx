@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import type { PaymentType } from "../../types/order";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { resetOrder } from "@/app/store/cart/cartSlice";
+import { getProductsByStore } from "@/app/store/product/productThunk";
 
 type PaymentOption = {
   id: number;
@@ -70,15 +71,16 @@ export default function PaymentDialog({
   const selectedCustomer = useAppSelector(selectSelectedCustomer);
   const cart = useAppSelector(selectCartItems);
   const note = useAppSelector(selectNote);
+  const user = useAppSelector((state) => state.user.userProfile);
 
   const handleCreateOrder = async () => {
     if (!selectedCustomer) {
-      toast.error("Please select a customer before creating the order");
+      toast.warning("Please select a customer before creating the order");
       return;
     }
 
     if (!selectedPaymentMethod) {
-      toast.error("Please select a payment method");
+      toast.warning("Please select a payment method");
       return;
     }
 
@@ -100,13 +102,15 @@ export default function PaymentDialog({
     if (createOrder.fulfilled.match(resultAction)) {
       dispatch(resetOrder());
 
+      if (user?.store) {
+        dispatch(getProductsByStore(user.store));
+      }
+
       toast.success("Order created successfully");
 
       setShowPaymentDialog(false);
 
       setSelectedPaymentMethod(null);
-    } else {
-      toast.error((resultAction.payload as string) ?? "Failed to create order");
     }
   };
 

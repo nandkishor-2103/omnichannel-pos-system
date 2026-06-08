@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { api } from "@/lib/axios";
+import { api, getErrorMessage } from "@/lib/axios";
 
 import type {
   ShiftReportResponse,
@@ -23,11 +23,7 @@ export const startShift = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Failed to start shift");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -43,11 +39,7 @@ export const endShift = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Failed to end shift");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -63,13 +55,7 @@ export const getCurrentShiftProgress = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch current shift"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -87,13 +73,7 @@ export const getShiftReportByDate = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch shift report"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -111,13 +91,7 @@ export const getShiftsByCashier = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch cashier shifts"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -133,13 +107,7 @@ export const getShiftsByBranch = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(
-        error.response?.data?.message ?? "Failed to fetch branch shifts"
-      );
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -155,11 +123,7 @@ export const getAllShifts = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Failed to fetch shifts");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -175,11 +139,7 @@ export const getShiftById = createAsyncThunk<
 
     return res.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return rejectWithValue(error.response?.data?.message ?? "Shift not found");
-    }
-
-    return rejectWithValue("Something went wrong");
+    return rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -193,11 +153,7 @@ export const deleteShift = createAsyncThunk<string, string, { rejectValue: strin
 
       return id;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        return rejectWithValue(error.response?.data?.message ?? "Failed to delete shift");
-      }
-
-      return rejectWithValue("Something went wrong");
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );

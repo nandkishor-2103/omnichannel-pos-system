@@ -34,7 +34,9 @@ const cartSlice = createSlice({
       const existingItem = state.items.find((item) => item.id === product.id);
 
       if (existingItem) {
-        existingItem.quantity += 1;
+        if (existingItem.quantity < existingItem.availableQuantity) {
+          existingItem.quantity += 1;
+        }
       } else {
         state.items.push({
           ...product,
@@ -60,7 +62,7 @@ const cartSlice = createSlice({
       const item = state.items.find((item) => item.id === id);
 
       if (item) {
-        item.quantity = quantity;
+        item.quantity = Math.min(quantity, item.availableQuantity);
       }
     },
 
@@ -96,42 +98,42 @@ const cartSlice = createSlice({
       state.paymentMethod = action.payload;
     },
 
-   holdOrder: (state) => {
-  if (state.items.length === 0) return;
+    holdOrder: (state) => {
+      if (state.items.length === 0) return;
 
-  const subtotal = state.items.reduce(
-    (total, item) => total + item.sellingPrice * item.quantity,
-    0
-  );
+      const subtotal = state.items.reduce(
+        (total, item) => total + item.sellingPrice * item.quantity,
+        0
+      );
 
-  const discountAmount =
-    state.discount.type === "percentage"
-      ? subtotal * (state.discount.value / 100)
-      : state.discount.value;
+      const discountAmount =
+        state.discount.type === "percentage"
+          ? subtotal * (state.discount.value / 100)
+          : state.discount.value;
 
-  const totalAmount = Math.max(0, subtotal - discountAmount);
+      const totalAmount = Math.max(0, subtotal - discountAmount);
 
-  const heldOrder: HeldOrder = {
-    id: Date.now(),
-    items: [...state.items],
-    customer: state.selectedCustomer,
-    note: state.note,
-    discount: state.discount,
-    totalAmount,
-    timestamp: new Date().toISOString(),
-  };
+      const heldOrder: HeldOrder = {
+        id: Date.now(),
+        items: [...state.items],
+        customer: state.selectedCustomer,
+        note: state.note,
+        discount: state.discount,
+        totalAmount,
+        timestamp: new Date().toISOString(),
+      };
 
-  state.heldOrders.push(heldOrder);
+      state.heldOrders.push(heldOrder);
 
-  // Clear state
-  state.items = [];
-  state.selectedCustomer = null;
-  state.note = "";
-  state.discount = {
-    type: "percentage",
-    value: 0,
-  };
-},
+      // Clear state
+      state.items = [];
+      state.selectedCustomer = null;
+      state.note = "";
+      state.discount = {
+        type: "percentage",
+        value: 0,
+      };
+    },
 
     resumeOrder: (state, action: PayloadAction<HeldOrder>) => {
       const order = action.payload;
