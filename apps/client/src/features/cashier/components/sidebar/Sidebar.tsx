@@ -33,7 +33,6 @@ export default function Sidebar({ navItems, onClose }: SidebarProps) {
     const resultAction = await dispatch(logout());
 
     if (logout.fulfilled.match(resultAction)) {
-      toast.success("Logged out successfully");
 
       navigate("/login", { replace: true });
     } else {
