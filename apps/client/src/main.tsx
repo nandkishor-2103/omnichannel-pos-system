@@ -13,6 +13,7 @@ import BackendWakeupScreen from "./components/shared/BackendWakeupScreen";
 
 export function RootApp() {
   const [isBackendReady, setIsBackendReady] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     const wakeUpBackend = async () => {
@@ -25,6 +26,12 @@ export function RootApp() {
           credentials: "include",
         });
 
+        // Show success state
+        setIsConnected(true);
+
+        // Keep success screen visible for 1 second
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
         setIsBackendReady(true);
       } catch {
         setTimeout(wakeUpBackend, 3000);
@@ -35,7 +42,7 @@ export function RootApp() {
   }, []);
 
   if (!isBackendReady) {
-    return <BackendWakeupScreen />;
+    return <BackendWakeupScreen connected={isConnected} />;
   }
 
   return (
