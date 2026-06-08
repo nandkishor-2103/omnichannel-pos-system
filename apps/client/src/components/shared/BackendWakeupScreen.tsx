@@ -27,7 +27,7 @@ export default function BackendWakeupScreen({
   }, []);
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100 p-6">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100 p-4">
       {/* Background Effects */}
       <div className="absolute inset-0">
         <div className="absolute left-20 top-20 h-72 w-72 rounded-full bg-green-200/40 blur-3xl" />
@@ -38,7 +38,7 @@ export default function BackendWakeupScreen({
       </div>
 
       <div className="relative z-10 w-full max-w-lg">
-        <div className="rounded-3xl border border-slate-200 bg-white p-10 shadow-2xl">
+        <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-2xl">
           {/* Logo */}
           <div className="flex justify-center">
             <div className="relative">
@@ -57,7 +57,7 @@ export default function BackendWakeupScreen({
           </div>
 
           {/* Title */}
-          <div className="mt-8 text-center">
+          <div className="mt-6 text-center">
             <h1 className="text-3xl font-bold text-slate-900">
               {connected ? "Backend Connected" : "Starting POS System"}
             </h1>
@@ -71,7 +71,7 @@ export default function BackendWakeupScreen({
 
           {/* Timer */}
           {!connected && (
-            <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+            <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5">
               <div className="flex items-center justify-center gap-3">
                 <Clock className="h-5 w-5 text-green-600" />
 
@@ -107,7 +107,7 @@ export default function BackendWakeupScreen({
           )}
 
           {/* Status */}
-          <div className="mt-8 flex items-center justify-center gap-3">
+          <div className="mt-6 flex items-center justify-center gap-3">
             {connected ? (
               <>
                 <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -129,7 +129,7 @@ export default function BackendWakeupScreen({
 
           {/* Information */}
           {!connected && (
-            <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+            <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5">
               <div className="flex gap-3">
                 <Server className="mt-0.5 h-5 w-5 text-green-600" />
 
@@ -154,7 +154,7 @@ export default function BackendWakeupScreen({
           )}
 
           {/* Footer */}
-          <div className="mt-8 text-center">
+          <div className="mt-6 text-center">
             <p className="text-xs font-medium tracking-[0.25em] uppercase text-slate-400">
               Loading Inventory • Orders • Customers
             </p>
