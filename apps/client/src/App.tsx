@@ -10,6 +10,7 @@ import SuperAdminRoutes from "./routes/SuperAdminRoutes";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import AuthInitializer from "./routes/AuthInitializer";
 import { Toaster } from "./components/ui/sonner";
+import NotFound from "./components/shared/NotFound";
 
 export default function App() {
   return (
@@ -58,6 +59,8 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route path="*" element={<NotFound/>} />
       </Routes>
 
       <Toaster richColors position="top-right" />
