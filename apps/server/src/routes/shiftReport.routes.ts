@@ -10,6 +10,8 @@ import {
   getShiftReportsByBranchController,
   getShiftReportByCashierAndDateController,
   deleteShiftReportController,
+  pauseShiftController,
+  resumeShiftController,
 } from "../controllers/shiftReport.controller.js";
 
 import { isAuthenticated } from "../middleware/auth.middleware.js";
@@ -37,6 +39,20 @@ router.post(
   authorizeRoles("ROLE_BRANCH_CASHIER"),
   startShiftValidator,
   startShiftController
+);
+
+router.patch(
+  "/pause",
+  isAuthenticated,
+  authorizeRoles("ROLE_BRANCH_CASHIER"),
+  pauseShiftController
+);
+
+router.patch(
+  "/resume",
+  isAuthenticated,
+  authorizeRoles("ROLE_BRANCH_CASHIER"),
+  resumeShiftController
 );
 
 /**

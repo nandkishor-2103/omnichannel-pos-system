@@ -183,13 +183,13 @@ export default function OrderTable({ onViewOrderDetails }: OrderTableProps) {
                         <EyeIcon className="h-4 w-4" />
                       </Button>
 
-                      <Button
+                      {/* <Button
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 rounded-full cursor-pointer"
                       >
                         <PrinterIcon className="h-4 w-4" />
-                      </Button>
+                      </Button> */}
                     </div>
                   </TableCell>
                 </TableRow>

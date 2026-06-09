@@ -15,6 +15,8 @@ import {
   getShiftReportsByBranchService,
   getShiftReportByCashierAndDateService,
   deleteShiftReportService,
+  pauseShiftService,
+  resumeShiftService,
 } from "../services/shiftReport.service.js";
 
 // ======================================================
@@ -22,7 +24,12 @@ import {
 // ======================================================
 
 export const startShiftController = asyncHandler(async (req: Request, res: Response) => {
-  const shiftReport = await startShiftService(req.body, req.user as IUser);
+  const shiftReport = await startShiftService(
+    {
+      branchId: req.query.branchId as string,
+    },
+    req.user as IUser
+  );
 
   res.status(201).json(
     new ApiResponse({
@@ -36,11 +43,48 @@ export const startShiftController = asyncHandler(async (req: Request, res: Respo
 });
 
 // ======================================================
+// PAUSE SHIFT
+// ======================================================
+export const pauseShiftController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const shiftReport = await pauseShiftService(req.user as IUser);
+
+    res.status(200).json(
+      new ApiResponse({
+        statusCode: 200,
+        message: "Shift paused successfully",
+        payload: {
+          shiftReport,
+        },
+      })
+    );
+  }
+);
+
+// ======================================================
+// RESUME SHIFT
+// ======================================================
+export const resumeShiftController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const shiftReport = await resumeShiftService(req.user as IUser);
+
+    res.status(200).json(
+      new ApiResponse({
+        statusCode: 200,
+        message: "Shift resumed successfully",
+        payload: {
+          shiftReport,
+        },
+      })
+    );
+  }
+);
+
+// ======================================================
 // END SHIFT
 // ======================================================
 
 export const endShiftController = asyncHandler(async (req: Request, res: Response) => {
-  console.log("END SHIFT CONTROLLER HIT");
   const shiftReport = await endShiftService(req.user as IUser);
 
   res.status(200).json(

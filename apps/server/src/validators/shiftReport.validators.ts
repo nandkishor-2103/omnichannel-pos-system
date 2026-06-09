@@ -1,4 +1,4 @@
-import { param, query, body, validationResult } from "express-validator";
+import { param, query, validationResult } from "express-validator";
 
 import type { Request, Response, NextFunction } from "express";
 
@@ -25,7 +25,7 @@ const validate = (req: Request, res: Response, next: NextFunction) => {
  * POST /shift-reports/start
  */
 export const startShiftValidator = [
-  body("branchId")
+  query("branchId")
     .notEmpty()
     .withMessage("Branch ID is required")
     .isMongoId()

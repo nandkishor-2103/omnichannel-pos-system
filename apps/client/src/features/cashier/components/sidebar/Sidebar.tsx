@@ -35,8 +35,6 @@ export default function Sidebar({ navItems, onClose }: SidebarProps) {
     if (logout.fulfilled.match(resultAction)) {
 
       navigate("/login", { replace: true });
-    } else {
-      toast.error((resultAction.payload as string) || "Failed to logout");
     }
   };
 

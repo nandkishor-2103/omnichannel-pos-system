@@ -2,6 +2,15 @@ export interface CreateRefundPayload {
   orderId: string;
   branchId: string;
   reason: string;
+  refundAmount: number;
+  refundMethod: string;
+}
+
+export interface RefundItem {
+  productId: string;
+  name: string;
+  quantity: number;
+  amount: number;
 }
 
 export interface RefundResponseDto {
@@ -11,7 +20,7 @@ export interface RefundResponseDto {
 
   reason: string;
 
-  amount: number;
+  refundAmount: number;
 
   cashierName: string;
 
@@ -19,7 +28,9 @@ export interface RefundResponseDto {
 
   branchId: string;
 
-  paymentType: string;
+  refundMethod: string;
+
+  items: RefundItem[];
 
   createdAt: Date | null;
 }

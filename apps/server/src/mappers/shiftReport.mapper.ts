@@ -29,6 +29,11 @@ interface PopulatedRefund extends PopulatedEntity {
   createdAt?: Date;
 }
 
+interface ShiftBreak {
+  pauseAt: Date;
+  resumeAt?: Date | null;
+}
+
 export interface ShiftReportMapperInput {
   _id: {
     toString(): string;
@@ -37,6 +42,10 @@ export interface ShiftReportMapperInput {
   shiftStart: Date;
 
   shiftEnd?: Date | null;
+
+  status: "ACTIVE" | "PAUSED" | "CLOSED";
+
+  breaks: ShiftBreak[];
 
   totalSales: number;
 
@@ -72,6 +81,13 @@ export const mapShiftReportToResponse = (
     shiftStart: shiftReport.shiftStart,
 
     shiftEnd: shiftReport.shiftEnd ?? null,
+
+    status: shiftReport.status,
+
+    breaks: (shiftReport.breaks ?? []).map((item) => ({
+      pauseAt: item.pauseAt,
+      resumeAt: item.resumeAt ?? null,
+    })),
 
     totalSales: shiftReport.totalSales,
 
@@ -114,15 +130,31 @@ export const mapShiftReportSummaryToResponse = (
 ): ShiftReportSummaryDto => {
   return {
     id: shiftReport._id.toString(),
+
     shiftStart: shiftReport.shiftStart,
+
     shiftEnd: shiftReport.shiftEnd ?? null,
+
+    status: shiftReport.status,
+
+    breaks: (shiftReport.breaks ?? []).map((item) => ({
+      pauseAt: item.pauseAt,
+      resumeAt: item.resumeAt ?? null,
+    })),
+
     totalSales: shiftReport.totalSales,
+
     totalRefunds: shiftReport.totalRefunds,
+
     netSales: shiftReport.netSales,
+
     totalOrders: shiftReport.totalOrders,
+
     cashierId: getId(shiftReport.cashier),
+
     cashierName:
       typeof shiftReport.cashier === "string" ? "" : shiftReport.cashier.fullName,
+
     branchId: getId(shiftReport.branch),
   };
 };

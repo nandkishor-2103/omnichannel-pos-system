@@ -5,7 +5,8 @@ import OrderTable from "../components/refund/OrderTable";
 import ReturnItemSection from "../components/refund/ReturnItemSection";
 import ReturnReceiptDialog from "../components/refund/ReturnReceiptDialog";
 
-import type { Order } from "../types/refund";
+// import type { Order } from "../types/refund";
+import type { Order } from "@/app/store/order/orderTypes";
 
 export default function RefundPage() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -38,6 +39,10 @@ export default function RefundPage() {
           selectedOrder={selectedOrder}
           showReturnReceiptDialog={showReturnReceiptDialog}
           setShowReturnReceiptDialog={setShowReturnReceiptDialog}
+          onComplete={() => {
+            setSelectedOrder(null);
+            setShowReturnReceiptDialog(false);
+          }}
         />
       )}
     </div>

@@ -73,7 +73,7 @@ const refundSlice = createSlice({
       .addCase(createRefund.fulfilled, (state, action) => {
         state.loading = false;
 
-        const refund = action.payload.refund;
+        const refund = action.payload.payload.refund;
 
         state.refunds.unshift(refund);
         state.refundsByCashier.unshift(refund);
@@ -183,7 +183,7 @@ const refundSlice = createSlice({
 
       .addCase(getRefundById.fulfilled, (state, action) => {
         state.loading = false;
-        state.selectedRefund = action.payload.refund;
+        state.selectedRefund = action.payload.payload.refund;
       })
 
       .addCase(getRefundById.rejected, (state, action) => {
@@ -201,25 +201,25 @@ const refundSlice = createSlice({
       .addCase(deleteRefund.fulfilled, (state, action: PayloadAction<string>) => {
         state.loading = false;
 
-        state.refunds = state.refunds.filter((refund) => refund._id !== action.payload);
+        state.refunds = state.refunds.filter((refund) => refund.id !== action.payload);
 
         state.refundsByCashier = state.refundsByCashier.filter(
-          (refund) => refund._id !== action.payload
+          (refund) => refund.id !== action.payload
         );
 
         state.refundsByBranch = state.refundsByBranch.filter(
-          (refund) => refund._id !== action.payload
+          (refund) => refund.id !== action.payload
         );
 
         state.refundsByShift = state.refundsByShift.filter(
-          (refund) => refund._id !== action.payload
+          (refund) => refund.id !== action.payload
         );
 
         state.refundsByDateRange = state.refundsByDateRange.filter(
-          (refund) => refund._id !== action.payload
+          (refund) => refund.id !== action.payload
         );
 
-        if (state.selectedRefund && state.selectedRefund._id === action.payload) {
+        if (state.selectedRefund && state.selectedRefund.id === action.payload) {
           state.selectedRefund = null;
         }
       })
