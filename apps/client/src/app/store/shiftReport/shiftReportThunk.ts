@@ -17,9 +17,39 @@ export const startShift = createAsyncThunk<
 >("shiftReport/start", async (branchId, { rejectWithValue }) => {
   try {
     const res = await api.post<ShiftReportResponse>(
-      `/shift-reports/start?branchId=${branchId}`,
-      {}
+      `/shift-reports/start?branchId=${branchId}`
     );
+
+    return res.data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+// =================== PAUSE SHIFT =====================
+export const pauseShift = createAsyncThunk<
+  ShiftReportResponse,
+  void,
+  { rejectValue: string }
+>("shiftReport/pause", async (_, { rejectWithValue }) => {
+  try {
+    const res = await api.patch<ShiftReportResponse>("/shift-reports/pause");
+
+    return res.data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+// ======================== RESUME SHIFT ==================
+
+export const resumeShift = createAsyncThunk<
+  ShiftReportResponse,
+  void,
+  { rejectValue: string }
+>("shiftReport/resume", async (_, { rejectWithValue }) => {
+  try {
+    const res = await api.patch<ShiftReportResponse>("/shift-reports/resume");
 
     return res.data;
   } catch (error) {

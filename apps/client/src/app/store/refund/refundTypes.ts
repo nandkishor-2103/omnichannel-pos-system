@@ -5,28 +5,43 @@ export interface RefundItem {
 }
 
 export interface Refund {
-  _id: string;
+  id: string;
+
   orderId: string;
-  cashierId: string;
-  branchId: string;
-  shiftReportId?: string;
+
   reason: string;
+
   refundAmount: number;
-  items?: RefundItem[];
+
+  cashierName: string;
+
+  shiftReportId: string | null;
+
+  branchId: string;
+
+  refundMethod: string;
+
+  items: RefundItem[];
+
   createdAt: string;
-  updatedAt: string;
 }
 
 export interface CreateRefundPayload {
   orderId: string;
+  branchId: string;
   reason: string;
   refundAmount: number;
-  items?: RefundItem[];
+  refundMethod: string;
 }
 
 export interface RefundResponse {
-  refund: Refund;
-  message?: string;
+  statusCode: number;
+  success: boolean;
+  message: string;
+
+  payload: {
+    refund: Refund;
+  };
 }
 
 export interface RefundsResponse {

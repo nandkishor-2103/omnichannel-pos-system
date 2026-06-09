@@ -26,7 +26,7 @@ export const createRefundService = async (
   payload: CreateRefundPayload,
   currentUser: IUser
 ): Promise<RefundResponseDto> => {
-  const { orderId, branchId, reason } = payload;
+  const { orderId, branchId, reason, refundAmount, refundMethod } = payload;
 
   if (!mongoose.Types.ObjectId.isValid(orderId)) {
     throw new ApiError({
@@ -91,8 +91,8 @@ export const createRefundService = async (
     cashier: currentUser._id,
     branch: branch._id,
     reason,
-    amount: order.totalAmount,
-    paymentType: order.paymentType,
+    amount: refundAmount,
+    paymentType: refundMethod,
   };
 
   if (activeShift) {

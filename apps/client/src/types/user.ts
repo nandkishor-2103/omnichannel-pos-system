@@ -5,9 +5,13 @@ export interface User {
   fullName: string;
   email: string;
   phone?: string;
+
   role: UserRole;
+
   verified?: boolean;
+
   store?: string;
   branch?: string;
+
   lastLogin?: string;
 }

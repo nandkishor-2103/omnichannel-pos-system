@@ -13,7 +13,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import type { Order } from "../../types/refund";
+// import type { Order } from "../../types/refund";
+import type { Order } from "@/app/store/order/orderTypes";
 
 interface Props {
   selectedOrder: Order;
@@ -45,8 +46,22 @@ export default function OrderDetailsSection({
                 {selectedOrder.createdAt}
               </p>
             </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Payment Method:</span>
 
-            <Badge variant="outline">{selectedOrder.paymentType}</Badge>
+              <Badge
+                variant="outline"
+                className={
+                  selectedOrder.paymentType === "CASH"
+                    ? "border-green-200 bg-green-50 text-green-700"
+                    : selectedOrder.paymentType === "CARD"
+                      ? "border-blue-200 bg-blue-50 text-blue-700"
+                      : "border-purple-200 bg-purple-50 text-purple-700"
+                }
+              >
+                {selectedOrder.paymentType}
+              </Badge>
+            </div>
           </div>
 
           <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -109,20 +124,20 @@ export default function OrderDetailsSection({
 
               <TableBody>
                 {selectedOrder.items.map((item) => (
-                  <TableRow key={item.id}>
+                  <TableRow key={item.product?.id}>
                     <TableCell>
                       <div className="flex items-center gap-4">
                         <img
-                          src={item.product.image}
-                          alt={item.product.name}
+                          src={item.product?.image}
+                          alt={item.product?.name}
                           className="h-16 w-16 rounded-xl border object-cover"
                         />
 
                         <div>
-                          <p className="font-medium">{item.product.name}</p>
+                          <p className="font-medium">{item.product?.name}</p>
 
                           <p className="text-xs text-muted-foreground">
-                            SKU: {item.product.sku}
+                            SKU: {item.product?.sku}
                           </p>
                         </div>
                       </div>
@@ -130,10 +145,12 @@ export default function OrderDetailsSection({
 
                     <TableCell>{item.quantity}</TableCell>
 
-                    <TableCell>₹{item.product.sellingPrice.toFixed(2)}</TableCell>
+                    <TableCell>
+                      ₹{(item.product?.sellingPrice ?? item.price).toFixed(2)}
+                    </TableCell>
 
                     <TableCell className="text-right font-semibold">
-                      ₹{(item.product.sellingPrice * item.quantity).toFixed(2)}
+                      ₹{(item.price * item.quantity).toFixed(2)}
                     </TableCell>
                   </TableRow>
                 ))}

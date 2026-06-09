@@ -17,7 +17,7 @@ export interface Customer {
 }
 
 export interface Order {
-  id: number;
+  id: string;
   createdAt: string;
   customer: Customer;
   totalAmount: number;

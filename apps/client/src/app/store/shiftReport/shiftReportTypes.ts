@@ -1,29 +1,91 @@
+export interface ShiftBreak {
+  pauseAt: string;
+  resumeAt: string | null;
+}
+
+export type ShiftStatus = "ACTIVE" | "PAUSED" | "CLOSED";
+
+export interface RecentOrder {
+  id: string;
+  totalAmount: number;
+  paymentType: string;
+  status: string;
+  createdAt: string;
+}
+
+export interface TopSellingProduct {
+  id: string;
+  name: string;
+  sku: string;
+  quantitySold: number;
+  image?: string;
+  sellingPrice: number;
+}
+
+export interface Refund {
+  id: string;
+  orderId: string;
+  reason: string;
+  refundAmount: number;
+  cashierName: string;
+  shiftReportId: string;
+  branchId: string;
+  refundMethod: string;
+  items: unknown[];
+  createdAt: string;
+}
+
+export interface PaymentSummary {
+  type: string;
+  totalAmount: number;
+  transactionCount: number;
+  percentage: number;
+}
+
 export interface ShiftReport {
-  _id: string;
+  id: string;
+
   cashierId: string;
+  cashierName: string;
+
   branchId: string;
 
-  startTime: string;
-  endTime?: string;
+  shiftStart: string;
+  shiftEnd: string | null;
 
-  totalOrders?: number;
-  totalSales?: number;
-  totalRefunds?: number;
+  status: ShiftStatus;
 
-  status?: "OPEN" | "CLOSED";
+  breaks: ShiftBreak[];
 
-  createdAt?: string;
-  updatedAt?: string;
+  totalOrders: number;
+  totalSales: number;
+  totalRefunds: number;
+  netSales: number;
+
+  recentOrders: RecentOrder[];
+  topSellingProducts: TopSellingProduct[];
+  refunds: Refund[];
+  paymentSummaries: PaymentSummary[];
 }
 
 export interface ShiftReportResponse {
-  shiftReport: ShiftReport;
+  statusCode?: number;
+  success?: boolean;
   message?: string;
+
+  payload: {
+    shiftReport: ShiftReport;
+  };
 }
 
 export interface ShiftReportsResponse {
-  shiftReports: ShiftReport[];
+  statusCode?: number;
+  success?: boolean;
   message?: string;
+
+  payload: {
+    shiftReports: ShiftReport[];
+  };
 }
 
 export interface ShiftReportByDatePayload {

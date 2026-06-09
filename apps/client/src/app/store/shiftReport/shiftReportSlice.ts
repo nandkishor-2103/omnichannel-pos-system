@@ -10,6 +10,8 @@ import {
   getAllShifts,
   getShiftById,
   deleteShift,
+  pauseShift,
+  resumeShift,
 } from "./shiftReportThunk";
 
 import type { ShiftReportState } from "./shiftReportTypes";
@@ -57,68 +59,91 @@ const shiftReportSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
-
+      .addCase(startShift.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(startShift.fulfilled, (state, action) => {
-        const shift = action.payload.shiftReport;
+        const shift = action.payload.payload.shiftReport;
 
         state.loading = false;
         state.currentShift = shift;
         state.shifts.unshift(shift);
       })
+      .addCase(startShift.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload ?? "Failed to start shift";
+      })
 
+      .addCase(pauseShift.fulfilled, (state, action) => {
+        state.currentShift = action.payload.payload.shiftReport;
+      })
+
+      .addCase(resumeShift.fulfilled, (state, action) => {
+        state.currentShift = action.payload.payload.shiftReport;
+      })
+
+      .addCase(endShift.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(endShift.fulfilled, (state, action) => {
-        const shift = action.payload.shiftReport;
+        const shift = action.payload.payload.shiftReport;
 
         state.loading = false;
         state.currentShift = shift;
 
-        const index = state.shifts.findIndex((s) => s._id === shift._id);
+        const index = state.shifts.findIndex((s) => s.id === shift.id);
 
         if (index !== -1) {
           state.shifts[index] = shift;
         }
       })
+      .addCase(endShift.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload ?? "Failed to end shift";
+      })
 
       .addCase(getCurrentShiftProgress.fulfilled, (state, action) => {
-        state.currentShift = action.payload.shiftReport;
+        state.currentShift = action.payload.payload.shiftReport;
       })
 
       .addCase(getShiftReportByDate.fulfilled, (state, action) => {
-        state.selectedShift = action.payload.shiftReport;
+        state.selectedShift = action.payload.payload.shiftReport;
       })
 
       .addCase(getShiftsByCashier.fulfilled, (state, action) => {
-        state.shiftsByCashier = action.payload.shiftReports;
+        state.shiftsByCashier = action.payload.payload.shiftReports;
       })
 
       .addCase(getShiftsByBranch.fulfilled, (state, action) => {
-        state.shiftsByBranch = action.payload.shiftReports;
+        state.shiftsByBranch = action.payload.payload.shiftReports;
       })
 
       .addCase(getAllShifts.fulfilled, (state, action) => {
-        state.shifts = action.payload.shiftReports;
+        state.shifts = action.payload.payload.shiftReports;
       })
 
       .addCase(getShiftById.fulfilled, (state, action) => {
-        state.selectedShift = action.payload.shiftReport;
+        state.selectedShift = action.payload.payload.shiftReport;
       })
 
       .addCase(deleteShift.fulfilled, (state, action) => {
-        state.shifts = state.shifts.filter((shift) => shift._id !== action.payload);
+        state.shifts = state.shifts.filter((shift) => shift.id !== action.payload);
 
         state.shiftsByCashier = state.shiftsByCashier.filter(
-          (shift) => shift._id !== action.payload
+          (shift) => shift.id !== action.payload
         );
 
         state.shiftsByBranch = state.shiftsByBranch.filter(
-          (shift) => shift._id !== action.payload
+          (shift) => shift.id !== action.payload
         );
 
-        if (state.selectedShift?._id === action.payload) {
+        if (state.selectedShift?.id === action.payload) {
           state.selectedShift = null;
         }
 
-        if (state.currentShift?._id === action.payload) {
+        if (state.currentShift?.id === action.payload) {
           state.currentShift = null;
         }
       });

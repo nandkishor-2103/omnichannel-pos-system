@@ -16,6 +16,11 @@ export interface StartShiftPayload {
   branchId: string;
 }
 
+export interface ShiftBreakDto {
+  pauseAt: Date;
+  resumeAt: Date | null;
+}
+
 export interface RecentOrderDto {
   id: string;
   totalAmount: number;
@@ -26,9 +31,15 @@ export interface RecentOrderDto {
 
 export interface TopSellingProductDto {
   id: string;
+
   name: string;
+
   sku: string;
+
   image?: string;
+
+  sellingPrice: number;
+
   quantitySold: number;
 }
 
@@ -38,6 +49,10 @@ export interface ShiftReportSummaryDto {
   shiftStart: Date;
 
   shiftEnd: Date | null;
+
+  status: "ACTIVE" | "PAUSED" | "CLOSED";
+
+  breaks: ShiftBreakDto[];
 
   totalSales: number;
 

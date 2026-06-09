@@ -29,6 +29,7 @@ import {
 } from "../mappers/shiftReport.mapper.js";
 
 import type { RefundMapperInput } from "../mappers/refund.mapper.js";
+import { ShiftStatus } from "../enums/shiftStatus.enums.js";
 
 // ======================================================
 // HELPERS
@@ -55,6 +56,7 @@ const getTopSellingProducts = async (orders: any[]): Promise<TopSellingProductDt
     }
   >();
 
+  // Calculate total quantity sold per product
   for (const order of orders) {
     for (const item of order.items) {
       const productId = item.product.toString();
@@ -71,21 +73,41 @@ const getTopSellingProducts = async (orders: any[]): Promise<TopSellingProductDt
     }
   }
 
+  // Top 3 products by quantity sold
   const sortedProducts = [...productMap.entries()]
     .sort((a, b) => b[1].quantitySold - a[1].quantitySold)
-    .slice(0, 5);
+    .slice(0, 4);
+
+  if (sortedProducts.length === 0) {
+    return [];
+  }
+
+  const productIds = sortedProducts.map(([productId]) => productId);
+
+  const products = await Product.find({
+    _id: { $in: productIds },
+  }).lean();
+
+  const productLookup = new Map(
+    products.map((product) => [product._id.toString(), product])
+  );
 
   const results: TopSellingProductDto[] = [];
 
   for (const [productId, stats] of sortedProducts) {
-    const product = await Product.findById(productId);
+    const product = productLookup.get(productId);
 
     if (!product) continue;
 
     const topProduct: TopSellingProductDto = {
       id: product._id.toString(),
+
       name: product.name,
+
       sku: product.sku,
+
+      sellingPrice: product.sellingPrice,
+
       quantitySold: stats.quantitySold,
     };
 
@@ -159,30 +181,169 @@ export const startShiftService = async (
     });
   }
 
-  if (currentUser.branch && currentUser.branch.toString() !== branchId) {
+  if (currentUser.branch?.toString() !== branchId) {
     throw new ApiError({
       statusCode: 403,
       message: "Access denied for this branch",
     });
   }
 
-  const activeShift = await ShiftReport.findOne({
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const endOfDay = new Date();
+  endOfDay.setHours(23, 59, 59, 999);
+
+  const todayShift = await ShiftReport.findOne({
     cashier: currentUser._id,
-    shiftEnd: null,
+    shiftStart: {
+      $gte: startOfDay,
+      $lte: endOfDay,
+    },
   });
 
-  if (activeShift) {
-    throw new ApiError({
-      statusCode: 400,
-      message: "You already have an active shift",
-    });
+  if (todayShift) {
+    switch (todayShift.status) {
+      case ShiftStatus.ACTIVE:
+        throw new ApiError({
+          statusCode: 400,
+          message: "Shift already active",
+        });
+
+      case ShiftStatus.PAUSED:
+        throw new ApiError({
+          statusCode: 400,
+          message: "Resume existing shift",
+        });
+
+      case ShiftStatus.CLOSED:
+        throw new ApiError({
+          statusCode: 400,
+          message: "Shift already completed today",
+        });
+    }
   }
 
   const shift = await ShiftReport.create({
     shiftStart: new Date(),
     cashier: currentUser._id,
     branch: branch._id,
+
+    status: ShiftStatus.ACTIVE,
+
+    totalSales: 0,
+    totalRefunds: 0,
+    netSales: 0,
+    totalOrders: 0,
+
+    refunds: [],
+    breaks: [],
   });
+
+  const populatedShift = await ShiftReport.findById(shift._id)
+    .populate("cashier", "fullName")
+    .populate("refunds");
+
+  if (!populatedShift) {
+    throw new ApiError({
+      statusCode: 404,
+      message: "Shift report not found",
+    });
+  }
+
+  return mapShiftReportToResponse(
+    populatedShift.toObject() as unknown as ShiftReportMapperInput
+  );
+};
+
+// ======================================================
+// PAUSE SHIFT
+// ======================================================
+export const pauseShiftService = async (
+  currentUser: IUser
+): Promise<ShiftReportResponseDto> => {
+  const shift = await ShiftReport.findOne({
+    cashier: currentUser._id,
+    status: ShiftStatus.ACTIVE,
+  });
+
+  if (!shift) {
+    throw new ApiError({
+      statusCode: 404,
+      message: "No active shift found",
+    });
+  }
+
+  if (shift.status === ShiftStatus.PAUSED) {
+    throw new ApiError({
+      statusCode: 400,
+      message: "Shift already paused",
+    });
+  }
+
+  shift.status = ShiftStatus.PAUSED;
+
+  shift.breaks.push({
+    pauseAt: new Date(),
+  });
+
+  await shift.save();
+
+  const populatedShift = await ShiftReport.findById(shift._id)
+    .populate("cashier", "fullName")
+    .populate("refunds");
+
+  if (!populatedShift) {
+    throw new ApiError({
+      statusCode: 404,
+      message: "Shift report not found",
+    });
+  }
+
+  return mapShiftReportToResponse(
+    populatedShift.toObject() as unknown as ShiftReportMapperInput
+  );
+};
+
+// ======================================================
+export const resumeShiftService = async (
+  currentUser: IUser
+): Promise<ShiftReportResponseDto> => {
+  const shift = await ShiftReport.findOne({
+    cashier: currentUser._id,
+    status: ShiftStatus.PAUSED,
+  });
+
+  if (!shift) {
+    throw new ApiError({
+      statusCode: 404,
+      message: "No paused shift found",
+    });
+  }
+
+  const latestBreak = shift.breaks[shift.breaks.length - 1];
+
+  if (!latestBreak) {
+    throw new ApiError({
+      statusCode: 400,
+      message: "No break found",
+    });
+  }
+
+  if (latestBreak && !latestBreak.resumeAt) {
+    latestBreak.resumeAt = new Date();
+  }
+
+  if (shift.status === ShiftStatus.ACTIVE) {
+    throw new ApiError({
+      statusCode: 400,
+      message: "Shift already active",
+    });
+  }
+
+  shift.status = ShiftStatus.ACTIVE;
+
+  await shift.save();
 
   const populatedShift = await ShiftReport.findById(shift._id)
     .populate("cashier", "fullName")
@@ -209,7 +370,9 @@ export const endShiftService = async (
 ): Promise<ShiftReportResponseDto> => {
   const shift = await ShiftReport.findOne({
     cashier: currentUser._id,
-    shiftEnd: null,
+    status: {
+      $in: [ShiftStatus.ACTIVE, ShiftStatus.PAUSED],
+    },
   });
 
   if (!shift) {
@@ -219,7 +382,16 @@ export const endShiftService = async (
     });
   }
 
+  if (shift.status === ShiftStatus.PAUSED) {
+    throw new ApiError({
+      statusCode: 400,
+      message: "Please resume the shift before ending it",
+    });
+  }
+
   const shiftEnd = new Date();
+
+  shift.status = ShiftStatus.CLOSED;
 
   const orders = await Order.find({
     cashier: currentUser._id,
@@ -255,10 +427,6 @@ export const endShiftService = async (
   shift.refunds = refunds.map((refund) => refund._id as mongoose.Types.ObjectId);
 
   await shift.save();
-
-  // ======================================================
-  // REFUND ↔ SHIFT REPORT LINKING
-  // ======================================================
 
   await Refund.updateMany(
     {
@@ -310,7 +478,9 @@ export const getCurrentShiftProgressService = async (
 ): Promise<ShiftReportResponseDto> => {
   const shift = await ShiftReport.findOne({
     cashier: currentUser._id,
-    shiftEnd: null,
+    status: {
+      $in: [ShiftStatus.ACTIVE, ShiftStatus.PAUSED],
+    },
   })
     .populate("cashier", "fullName")
     .populate("refunds");

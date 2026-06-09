@@ -1,10 +1,20 @@
 import mongoose, { Schema, Types, model } from "mongoose";
 import type { HydratedDocument, Model } from "mongoose";
 
+import { ShiftStatus } from "../enums/shiftStatus.enums.js";
+
+interface ShiftBreak {
+  pauseAt: Date;
+  resumeAt?: Date | null;
+}
 export interface IShiftReport {
   shiftStart: Date;
 
   shiftEnd?: Date | null;
+
+  status: ShiftStatus;
+
+  breaks: ShiftBreak[];
 
   totalSales: number;
 
@@ -37,6 +47,26 @@ const shiftReportSchema = new Schema<IShiftReport>(
       type: Date,
       default: null,
     },
+
+    status: {
+      type: String,
+      enum: Object.values(ShiftStatus),
+      default: ShiftStatus.ACTIVE,
+    },
+
+    breaks: [
+      {
+        pauseAt: {
+          type: Date,
+          required: true,
+        },
+
+        resumeAt: {
+          type: Date,
+          default: null,
+        },
+      },
+    ],
 
     totalSales: {
       type: Number,
