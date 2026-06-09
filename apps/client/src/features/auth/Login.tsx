@@ -8,10 +8,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 
 import { signin } from "@/app/store/auth/authThunk";
-import { toast } from "sonner";
 
 import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import type { UserRole } from "./types/types";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 
@@ -31,7 +30,6 @@ export default function Login() {
   });
 
   const loading = useAppSelector((state) => state.auth.loading);
-  const user = useAppSelector((state) => state.auth.user);
 
   const roleRoutes: Record<UserRole, string> = {
     ROLE_ADMIN: "/super-admin/dashboard",
@@ -44,10 +42,6 @@ export default function Login() {
 
     ROLE_BRANCH_CASHIER: "/cashier",
   };
-
-  if (user) {
-    return <Navigate to={roleRoutes[user.role]} replace />;
-  }
 
   const handleLogin = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();

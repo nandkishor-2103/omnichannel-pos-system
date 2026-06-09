@@ -13,6 +13,7 @@ import { SidebarProvider } from "@/context/hook/SidebarProvider";
 import { useSidebar } from "@/context/hook/useSidebar";
 import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
 import { getStoreById } from "@/app/store/store/storeThunk";
+import { getCurrentShiftProgress } from "@/app/store/shiftReport/shiftReportThunk";
 
 type NavItem = {
   path: string;
@@ -50,6 +51,7 @@ function LayoutContent() {
   const { sidebarOpen, setSidebarOpen } = useSidebar();
 
   const storeId = useAppSelector((state) => state.auth.user?.store);
+  const user = useAppSelector((state) => state.auth.user);
 
   const dispatch = useAppDispatch();
 
@@ -58,6 +60,12 @@ function LayoutContent() {
       dispatch(getStoreById(storeId));
     }
   }, [dispatch, storeId]);
+
+  useEffect(() => {
+    if (user?.role === "ROLE_BRANCH_CASHIER") {
+      dispatch(getCurrentShiftProgress());
+    }
+  }, [dispatch, user]);
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">

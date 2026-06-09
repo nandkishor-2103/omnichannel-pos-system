@@ -44,7 +44,7 @@ export const mapRefundToResponse = (refund: RefundMapperInput): RefundResponseDt
 
     reason: refund.reason,
 
-    amount: refund.amount,
+    refundAmount: refund.amount,
 
     cashierName:
       typeof refund.cashier === "string" ? refund.cashier : refund.cashier.fullName,
@@ -53,7 +53,9 @@ export const mapRefundToResponse = (refund: RefundMapperInput): RefundResponseDt
 
     branchId: getId(refund.branch),
 
-    paymentType: refund.paymentType,
+    refundMethod: refund.paymentType,
+
+    items: [],
 
     createdAt: refund.createdAt ?? null,
   };
