@@ -37,7 +37,7 @@ export interface TodayOverviewDto {
   cashierGrowth: number;
 
   lowStockItems: number;
-  lowStockGrowth: number;
+   lowStockGrowth: number | null;
 }
 
 export interface PaymentBreakdownDto {

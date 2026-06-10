@@ -6,14 +6,15 @@ export interface DailySales {
 export interface TopProduct {
   productId: string;
   productName: string;
-  quantity: number;
+  quantitySold: number;
   percentage: number;
 }
 
 export interface TopCashier {
   cashierId: string;
   cashierName: string;
-  revenue: number;
+  totalOrders: number;
+  totalRevenue: number;
 }
 
 export interface CategorySales {
@@ -21,29 +22,51 @@ export interface CategorySales {
   categoryName: string;
   totalSales: number;
 }
+type PaymentType = "CASH" | "CARD" | "UPI";
 
 export interface PaymentBreakdown {
-  paymentType: string;
-  amount: number;
+  type: PaymentType;
+  totalAmount: number;
+  transactionCount: number;
+  percentage: number;
 }
 
 export interface TodayOverview {
   totalSales: number;
-  totalOrders: number;
-  totalCustomers: number;
-  totalRevenue: number;
+  salesGrowth: number;
+  ordersToday: number;
+  orderGrowth: number;
+  activeCashiers: number;
+  cashierGrowth: number;
+  lowStockItems: number;
+  lowStockGrowth: number;
 }
 
 export interface DailySalesResponse {
-  dailySales: DailySales[];
+  statusCode: number;
+  success: boolean;
+  message: string;
+  payload: {
+    sales: DailySales[];
+  };
 }
 
 export interface TopProductsResponse {
-  topProducts: TopProduct[];
+  statusCode: number;
+  success: boolean;
+  message: string;
+  payload: {
+    products: TopProduct[];
+  };
 }
 
 export interface TopCashiersResponse {
-  topCashiers: TopCashier[];
+  statusCode: number;
+  success: boolean;
+  message: string;
+  payload: {
+    cashiers: TopCashier[];
+  };
 }
 
 export interface CategorySalesResponse {
@@ -51,11 +74,21 @@ export interface CategorySalesResponse {
 }
 
 export interface TodayOverviewResponse {
-  overview: TodayOverview;
+  statusCode: number;
+  success: boolean;
+  message: string;
+  payload: {
+    overview: TodayOverview;
+  };
 }
 
 export interface PaymentBreakdownResponse {
-  paymentBreakdown: PaymentBreakdown[];
+  statusCode: number;
+  success: boolean;
+  message: string;
+  payload: {
+    payments: PaymentBreakdown[];
+  };
 }
 
 export interface DailySalesPayload {

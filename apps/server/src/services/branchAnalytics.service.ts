@@ -16,6 +16,7 @@ import type {
   TodayOverviewDto,
   PaymentBreakdownDto,
 } from "../types/branchAnalytics.types.js";
+import InventoryMovement from "../models/inventoryMovement.model.js";
 
 const calculateGrowth = (today: number, yesterday: number): number => {
   if (yesterday === 0) {
@@ -416,66 +417,80 @@ export const getTodayOverviewService = async (
   const yesterdayEnd = new Date(todayEnd);
   yesterdayEnd.setDate(yesterdayEnd.getDate() - 1);
 
-  const [todayStats, yesterdayStats, lowStockItems] = await Promise.all([
-    Order.aggregate([
-      {
-        $match: {
-          branch: branchObjectId,
-          createdAt: {
-            $gte: todayStart,
-            $lte: todayEnd,
+  const [todayStats, yesterdayStats, lowStockItems, yesterdayLowStockItems] =
+    await Promise.all([
+      Order.aggregate([
+        {
+          $match: {
+            branch: branchObjectId,
+            createdAt: {
+              $gte: todayStart,
+              $lte: todayEnd,
+            },
           },
         },
-      },
-      {
-        $group: {
-          _id: null,
-          totalSales: {
-            $sum: "$totalAmount",
-          },
-          totalOrders: {
-            $sum: 1,
-          },
-          cashiers: {
-            $addToSet: "$cashier",
+        {
+          $group: {
+            _id: null,
+            totalSales: {
+              $sum: "$totalAmount",
+            },
+            totalOrders: {
+              $sum: 1,
+            },
+            cashiers: {
+              $addToSet: "$cashier",
+            },
           },
         },
-      },
-    ]),
+      ]),
 
-    Order.aggregate([
-      {
-        $match: {
-          branch: branchObjectId,
-          createdAt: {
-            $gte: yesterdayStart,
-            $lte: yesterdayEnd,
+      Order.aggregate([
+        {
+          $match: {
+            branch: branchObjectId,
+            createdAt: {
+              $gte: yesterdayStart,
+              $lte: yesterdayEnd,
+            },
           },
         },
-      },
-      {
-        $group: {
-          _id: null,
-          totalSales: {
-            $sum: "$totalAmount",
-          },
-          totalOrders: {
-            $sum: 1,
-          },
-          cashiers: {
-            $addToSet: "$cashier",
+        {
+          $group: {
+            _id: null,
+            totalSales: {
+              $sum: "$totalAmount",
+            },
+            totalOrders: {
+              $sum: 1,
+            },
+            cashiers: {
+              $addToSet: "$cashier",
+            },
           },
         },
-      },
-    ]),
+      ]),
 
-    Inventory.countDocuments({
-      branch: branchObjectId,
-      quantity: {
-        $lte: 5,
-      },
-    }),
-  ]);
+      Inventory.countDocuments({
+        branch: branchObjectId,
+        quantity: {
+          $lte: 5,
+        },
+      }),
+
+      InventoryMovement.distinct("inventory", {
+        branch: branchObjectId,
+
+        createdAt: {
+          $gte: yesterdayStart,
+          $lte: yesterdayEnd,
+        },
+
+        newQuantity: {
+          $lte: 5,
+        },
+      }),
+    ]);
 
   const todayData = todayStats[0] ?? {
     totalSales: 0,
@@ -507,6 +522,6 @@ export const getTodayOverviewService = async (
 
     lowStockItems,
 
-    lowStockGrowth: 0,
+    lowStockGrowth: calculateGrowth(lowStockItems, yesterdayLowStockItems.length),
   };
 };

@@ -21,6 +21,7 @@ import { shiftReportRoutes } from "./routes/shiftReport.routes.js";
 import { adminDashboardRoutes } from "./routes/adminDashboard.routes.js";
 import { branchAnalyticsRoutes } from "./routes/branchAnalytics.routes.js";
 import { storeAnalyticsRoutes } from "./routes/storeAnalytics.routes.js";
+import inventoryMovementRoutes from "./routes/inventoryMovement.route.js";
 
 const app = express();
 
@@ -72,6 +73,7 @@ app.use("/api/shift-reports", shiftReportRoutes);
 app.use("/api/super-admin", adminDashboardRoutes);
 app.use("/api/branch-analytics", branchAnalyticsRoutes);
 app.use("/api/store/analytics", storeAnalyticsRoutes);
+app.use("/api/inventory-movements", inventoryMovementRoutes);
 // =========== 🚨 Global Error Handling Middleware ===========
 app.use(errorHandler);
 

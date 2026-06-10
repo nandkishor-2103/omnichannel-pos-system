@@ -20,6 +20,7 @@ import {
   type RefundMapperInput,
 } from "../mappers/refund.mapper.js";
 import { Inventory } from "../models/inventory.model.js";
+import { createInventoryMovement } from "./inventoryMovement.service.js";
 
 // ============== CREATE REFUND SERVICE ==================
 export const createRefundService = async (
@@ -113,23 +114,10 @@ export const createRefundService = async (
    */
   await Promise.all(
     order.items.map(async (item) => {
-      const inventory = await Inventory.findOneAndUpdate(
-        {
-          branch: order.branch,
-          product: item.product,
-        },
-        {
-          $inc: {
-            quantity: item.quantity,
-          },
-          $set: {
-            lastUpdated: new Date(),
-          },
-        },
-        {
-          new: true,
-        }
-      );
+      const inventory = await Inventory.findOne({
+        branch: order.branch,
+        product: item.product,
+      });
 
       if (!inventory) {
         throw new ApiError({
@@ -137,6 +125,31 @@ export const createRefundService = async (
           message: `Inventory not found for product ${item.product}`,
         });
       }
+
+      const previousQuantity = inventory.quantity;
+
+      inventory.quantity += item.quantity;
+      inventory.lastUpdated = new Date();
+
+      await inventory.save();
+
+      await createInventoryMovement({
+        inventory: inventory._id,
+        product: inventory.product,
+        branch: inventory.branch,
+
+        type: "REFUND",
+
+        quantity: item.quantity,
+
+        previousQuantity,
+
+        newQuantity: inventory.quantity,
+
+        performedBy: currentUser._id,
+
+        notes: "Inventory restored from refund",
+      });
     })
   );
 

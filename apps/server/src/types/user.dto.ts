@@ -1,24 +1,22 @@
-import type { UserRole } from "@/features/auth/types/types";
-
-export interface User {
+export interface UserResponseDto {
   id: string;
   fullName: string;
   email: string;
   phone?: string;
 
-  role: UserRole;
+  role: string;
 
-  verified?: boolean;
+  verified: boolean;
 
-  store?: {
+  store: {
     id: string;
     brand: string;
   } | null;
 
-  branch?: {
+  branch: {
     id: string;
     name: string;
   } | null;
 
-  lastLogin?: string;
+  lastLogin?: Date;
 }
