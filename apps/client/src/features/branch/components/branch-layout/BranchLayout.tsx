@@ -15,15 +15,6 @@ import {
   Users,
 } from "lucide-react";
 
-type BranchDetails = {
-  name: string;
-  address: string;
-};
-
-const branch: BranchDetails = {
-  name: "Downtown Store",
-  address: "123 Main St, Cityville",
-};
 
 type NavItem = {
   path: string;
@@ -77,7 +68,7 @@ const navItems: NavItem[] = [
 export default function BranchLayout() {
   return (
     <div className="flex h-screen bg-gradient-to-br from-primary/5 via-background to-primary/10">
-      <BranchSidebar branch={branch} navItems={navItems} />
+      <BranchSidebar navItems={navItems} />
 
       <div className="flex flex-1 flex-col">
         <BranchTopbar />
