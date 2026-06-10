@@ -51,7 +51,7 @@ const branchAnalyticsSlice = createSlice({
       })
       .addCase(getDailySalesChart.fulfilled, (state, action) => {
         state.loading = false;
-        state.dailySales = action.payload.dailySales;
+        state.dailySales = action.payload.payload.sales;
       })
       .addCase(getDailySalesChart.rejected, (state, action) => {
         state.loading = false;
@@ -61,13 +61,13 @@ const branchAnalyticsSlice = createSlice({
       // TOP PRODUCTS
 
       .addCase(getTopProductsByQuantity.fulfilled, (state, action) => {
-        state.topProducts = action.payload.topProducts;
+        state.topProducts = action.payload.payload.products;
       })
 
       // TOP CASHIERS
 
       .addCase(getTopCashiersByRevenue.fulfilled, (state, action) => {
-        state.topCashiers = action.payload.topCashiers;
+        state.topCashiers = action.payload.payload.cashiers;
       })
 
       // CATEGORY SALES
@@ -79,13 +79,13 @@ const branchAnalyticsSlice = createSlice({
       // TODAY OVERVIEW
 
       .addCase(getTodayOverview.fulfilled, (state, action) => {
-        state.todayOverview = action.payload.overview;
+        state.todayOverview = action.payload.payload.overview;
       })
 
       // PAYMENT BREAKDOWN
 
       .addCase(getPaymentBreakdown.fulfilled, (state, action) => {
-        state.paymentBreakdown = action.payload.paymentBreakdown;
+        state.paymentBreakdown = action.payload.payload.payments;
       });
   },
 });

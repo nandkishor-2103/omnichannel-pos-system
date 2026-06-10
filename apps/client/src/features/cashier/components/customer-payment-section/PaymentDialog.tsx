@@ -72,8 +72,19 @@ export default function PaymentDialog({
   const cart = useAppSelector(selectCartItems);
   const note = useAppSelector(selectNote);
   const user = useAppSelector((state) => state.user.userProfile);
+  const currentShift = useAppSelector((state) => state.shiftReport.currentShift);
 
   const handleCreateOrder = async () => {
+    if (!currentShift) {
+      toast.error("Please start your shift before creating an order");
+      return;
+    }
+
+    if (currentShift.status === "PAUSED") {
+      toast.error("Please resume your shift before creating an order");
+      return;
+    }
+
     if (!selectedCustomer) {
       toast.warning("Please select a customer before creating the order");
       return;
@@ -102,8 +113,8 @@ export default function PaymentDialog({
     if (createOrder.fulfilled.match(resultAction)) {
       dispatch(resetOrder());
 
-      if (user?.store) {
-        dispatch(getProductsByStore(user.store));
+      if (user?.store?.id) {
+        dispatch(getProductsByStore(user.store.id));
       }
 
       setShowPaymentDialog(false);

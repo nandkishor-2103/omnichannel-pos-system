@@ -1,10 +1,11 @@
-import { NavLink } from "react-router-dom";
-
-
+import { NavLink, useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button.tsx";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { LayoutDashboard, LogOutIcon } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
+import { logout } from "@/app/store/auth/authThunk";
+import { getBranchById } from "@/app/store/branch/branchThunk";
 
 type NavItem = {
   path: string;
@@ -12,17 +13,31 @@ type NavItem = {
   icon: ReactNode;
 };
 
-type BranchDetails = {
-  name: string;
-  address: string;
-};
-
 type BranchSidebarProps = {
-  branch?: BranchDetails;
   navItems: NavItem[];
 };
 
-export default function BranchSidebar({ branch, navItems }: BranchSidebarProps) {
+export default function BranchSidebar({ navItems }: BranchSidebarProps) {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const user = useAppSelector((state) => state.auth.user);
+  const branch = useAppSelector((state) => state.branch.branch);
+
+  useEffect(() => {
+    if (user?.branch?.id) {
+      dispatch(getBranchById(user.branch.id));
+    }
+  }, [dispatch, user?.branch?.id]);
+
+  const handleLogout = async () => {
+    const resultAction = await dispatch(logout());
+
+    if (logout.fulfilled.match(resultAction)) {
+      navigate("/login", { replace: true });
+    }
+  };
+
   return (
     <aside className="flex h-full w-72 flex-col border-r border-border/60 bg-sidebar px-2 shadow-xl">
       {/* TOP SECTION */}
@@ -41,14 +56,14 @@ export default function BranchSidebar({ branch, navItems }: BranchSidebarProps) 
       </div>
 
       {/* BRANCH DETAILS */}
-      {branch && (
+      {user?.branch?.id && (
         <div className="mx-2 my-4 rounded-xl bg-sidebar-accent px-4 py-3">
           <h3 className="text-sm font-semibold text-sidebar-accent-foreground">
-            {branch.name}
+            {branch?.store?.brand}
           </h3>
 
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-            {branch.address}
+            {branch?.store?.contact.address}
           </p>
         </div>
       )}
@@ -84,7 +99,11 @@ export default function BranchSidebar({ branch, navItems }: BranchSidebarProps) 
 
       {/* FOOTER */}
       <div className="border-t border-border/60 p-4">
-        <Button className="h-11 w-full cursor-pointer rounded-xl" variant="default">
+        <Button
+          onClick={handleLogout}
+          className="h-11 w-full cursor-pointer rounded-xl"
+          variant="default"
+        >
           <LogOutIcon className="h-4 w-4" />
 
           <span className="font-medium">Logout</span>
