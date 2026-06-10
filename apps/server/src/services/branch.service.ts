@@ -87,6 +87,13 @@ export const createBranchService = async (
 };
 
 export const getBranchByIdService = async (branchId: string): Promise<IBranch> => {
+  if (!mongoose.Types.ObjectId.isValid(branchId)) {
+    throw new ApiError({
+      statusCode: 400,
+      message: "Invalid branch ID",
+    });
+  }
+
   const branch = await Branch.findById(branchId)
     .populate("store")
     .populate("manager", "fullName email");

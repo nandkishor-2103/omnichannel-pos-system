@@ -13,6 +13,7 @@ import { OrderStatus } from "../enums/orderStatus.enums.js";
 import { Inventory } from "../models/inventory.model.js";
 
 import { mapOrderToResponse, mapOrdersToResponse } from "../mappers/order.mapper.js";
+import { createInventoryMovement } from "./inventoryMovement.service.js";
 
 interface CreateOrderPayload {
   customerId: string;
@@ -125,25 +126,13 @@ export async function createOrderService(
   /**
    * Reduce inventory
    */
+  const branchId = currentUser.branch;
   await Promise.all(
     orderData.items.map(async (item) => {
-      const inventory = await Inventory.findOneAndUpdate(
-        {
-          branch: currentUser.branch as mongoose.Types.ObjectId,
-          product: item.productId,
-        },
-        {
-          $inc: {
-            quantity: -item.quantity,
-          },
-          $set: {
-            lastUpdated: new Date(),
-          },
-        },
-        {
-          new: true,
-        }
-      );
+      const inventory = await Inventory.findOne({
+        branch: branchId,
+        product: item.productId,
+      });
 
       if (!inventory) {
         throw new ApiError({
@@ -151,6 +140,31 @@ export async function createOrderService(
           message: "Inventory update failed",
         });
       }
+
+      const previousQuantity = inventory.quantity;
+
+      inventory.quantity -= item.quantity;
+      inventory.lastUpdated = new Date();
+
+      await inventory.save();
+
+      await createInventoryMovement({
+        inventory: inventory._id,
+        product: inventory.product,
+        branch: inventory.branch,
+
+        type: "SALE",
+
+        quantity: item.quantity,
+
+        previousQuantity,
+
+        newQuantity: inventory.quantity,
+
+        performedBy: currentUser._id,
+
+        notes: "Product sold through POS",
+      });
     })
   );
 

@@ -23,6 +23,7 @@ export const isAuthenticated = asyncHandler(
     const decoded = jwt.verify(token, ENV_VAR.JWT_SECRET as string) as JwtPayload;
 
     const user = await User.findById(decoded.userId).select("-password");
+
     if (!user) {
       throw new ApiError({
         statusCode: 401,
@@ -31,6 +32,7 @@ export const isAuthenticated = asyncHandler(
     }
 
     req.user = user;
+
     next();
   }
 );

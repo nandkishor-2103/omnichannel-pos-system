@@ -29,7 +29,8 @@ export default function ShiftReportHeader() {
 
   const currentShift = useAppSelector((state) => state.shiftReport.currentShift);
 
-  const branchId = useAppSelector((state) => state.auth.user?.branch);
+  const branchId = useAppSelector((state) => state.auth.user?.branch?.id);
+  console.log("Branch ID: ", branchId)
 
   const shiftStatus = currentShift?.status ?? "CLOSED";
 

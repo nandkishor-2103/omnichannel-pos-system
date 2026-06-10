@@ -1,5 +1,5 @@
 import { ArrowLeftIcon, ShoppingCartIcon, Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,18 @@ import { useNavigate } from "react-router-dom";
 import type { UserRole } from "./types/types";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 
+const roleRoutes: Record<UserRole, string> = {
+  ROLE_ADMIN: "/super-admin/dashboard",
+
+  ROLE_STORE_ADMIN: "/store/dashboard",
+  ROLE_STORE_MANAGER: "/store/dashboard",
+
+  ROLE_BRANCH_ADMIN: "/branch/dashboard",
+  ROLE_BRANCH_MANAGER: "/branch/dashboard",
+
+  ROLE_BRANCH_CASHIER: "/cashier",
+};
+
 export default function Login() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -24,6 +36,9 @@ export default function Login() {
 
   const [showPassword, setShowPassword] = useState(false);
 
+  const user = useAppSelector((state) => state.auth.user);
+  console.log(user);
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -31,23 +46,18 @@ export default function Login() {
 
   const loading = useAppSelector((state) => state.auth.loading);
 
-  const roleRoutes: Record<UserRole, string> = {
-    ROLE_ADMIN: "/super-admin/dashboard",
+  useEffect(() => {
+    if (!user) return;
 
-    ROLE_STORE_ADMIN: "/store/dashboard",
-    ROLE_STORE_MANAGER: "/store/dashboard",
-
-    ROLE_BRANCH_ADMIN: "/branch/dashboard",
-    ROLE_BRANCH_MANAGER: "/branch/dashboard",
-
-    ROLE_BRANCH_CASHIER: "/cashier",
-  };
+    navigate(roleRoutes[user.role] ?? "/", {
+      replace: true,
+    });
+  }, [user, navigate]);
 
   const handleLogin = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const resultAction = await dispatch(signin(formData));
-
     if (signin.fulfilled.match(resultAction)) {
       const loggedInUser = resultAction.payload.payload.user;
 

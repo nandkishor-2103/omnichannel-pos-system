@@ -9,45 +9,11 @@ import {
 import { Bar, BarChart, Cell, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 import { Trophy } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
+import { useEffect } from "react";
+import { getTopCashiersByRevenue } from "@/app/store/branchAnalytics/branchAnalyticsThunk";
 
-type CashierPerformanceData = {
-  name: string;
-  sales: number;
-  color: string;
-};
-
-const data: CashierPerformanceData[] = [
-  {
-    name: "John",
-    sales: 95000,
-    color: "#10b981",
-  },
-  {
-    name: "Emma",
-    sales: 82000,
-    color: "#3b82f6",
-  },
-  {
-    name: "Michael",
-    sales: 76000,
-    color: "#f59e0b",
-  },
-  {
-    name: "Sophia",
-    sales: 68000,
-    color: "#8b5cf6",
-  },
-  {
-    name: "David",
-    sales: 54000,
-    color: "#ef4444",
-  },
-  {
-    name: "Olivia",
-    sales: 43000,
-    color: "#ec4899",
-  }
-];
+const colors = ["#10b981", "#3b82f6", "#f59e0b", "#8b5cf6", "#ef4444"];
 
 const config = {
   sales: {
@@ -57,6 +23,27 @@ const config = {
 };
 
 export default function CashierPerformance() {
+  const dispatch = useAppDispatch();
+
+  const branch = useAppSelector((state) => state.branch.branch);
+  const topCashierByRevenue = useAppSelector(
+    (state) => state.branchAnalytics.topCashiers
+  );
+
+  useEffect(() => {
+    if (branch?._id) {
+      dispatch(getTopCashiersByRevenue(branch._id));
+    }
+  }, [dispatch, branch?._id]);
+
+  const data = topCashierByRevenue.map((topCashier, index) => ({
+    name: topCashier.cashierName.split(" ")[0], // First name only
+    fullName: topCashier.cashierName, // Keep full name for tooltip
+    sales: topCashier.totalRevenue,
+    orders: topCashier.totalOrders,
+    color: colors[index % colors.length],
+  }));
+
   return (
     <Card className="rounded-2xl border border-border/50 shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between pb-3">
@@ -71,58 +58,77 @@ export default function CashierPerformance() {
         <div className="flex items-center gap-2 rounded-full bg-emerald-500/10 px-3 py-1">
           <Trophy className="h-4 w-4 text-emerald-500" />
 
-          <span className="text-xs font-medium text-emerald-600">Top 5</span>
+          <span className="text-xs font-medium text-emerald-600">Top {data.length}</span>
         </div>
       </CardHeader>
 
       <CardContent>
         <ChartContainer config={config} className="h-[300px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={data.slice(0, 5)}
-              layout="vertical"
-              margin={{
-                top: 5,
-                right: 10,
-                left: 10,
-                bottom: 5,
+          {/* <ResponsiveContainer width="100%" height="100%"> */}
+          <BarChart
+            data={data.slice(0, 5)}
+            layout="vertical"
+            margin={{
+              top: 5,
+              right: 10,
+              left: 10,
+              bottom: 5,
+            }}
+          >
+            <XAxis
+              type="number"
+              tickLine={false}
+              axisLine={false}
+              fontSize={12}
+              tickFormatter={(value) => `₹${value / 1000}k`}
+            />
+
+            <YAxis
+              dataKey="name"
+              type="category"
+              tickLine={false}
+              axisLine={false}
+              fontSize={13}
+              width={70}
+            />
+
+            <ChartTooltip
+              cursor={{ fill: "rgba(0,0,0,0.04)" }}
+              content={({ active, payload }) => {
+                if (!active || !payload?.length) return null;
+
+                const item = payload[0].payload;
+
+                return (
+                  <div className="rounded-lg border bg-background p-3 shadow-lg">
+                    <p>
+                      Name:{" "} <span className="font-medium">{item.fullName}</span>
+                    </p>
+
+                    <div className="mt-2 space-y-1 text-sm">
+                      <p>
+                        Revenue:{" "}
+                        <span className="font-medium">
+                          ₹{item.sales.toLocaleString("en-IN")}
+                        </span>
+                      </p>
+
+                      <p>
+                        Orders: <span className="font-medium">{item.orders}</span>
+                      </p>
+                    </div>
+                  </div>
+                );
               }}
-            >
-              <XAxis
-                type="number"
-                tickLine={false}
-                axisLine={false}
-                fontSize={12}
-                tickFormatter={(value) => `₹${value / 1000}k`}
-              />
+            />
 
-              <YAxis
-                dataKey="name"
-                type="category"
-                tickLine={false}
-                axisLine={false}
-                fontSize={13}
-                width={70}
-              />
-
-              <ChartTooltip
-                cursor={{ fill: "rgba(0,0,0,0.04)" }}
-                content={({ active, payload }) => (
-                  <ChartTooltipContent
-                    active={active}
-                    payload={payload}
-                    formatter={(value) => [`₹${Number(value).toLocaleString()}`, " Sales"]}
-                  />
-                )}
-              />
-
-              <Bar dataKey="sales" radius={[0, 10, 10, 0]}>
-                {data.map((entry, index) => (
-                  <Cell key={index} fill={entry.color} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+            <Bar dataKey="sales" radius={[0, 10, 10, 0]}>
+              {data.map((entry, index) => (
+                <Cell key={index} fill={entry.color} />
+              ))}
+            </Bar>
+          </BarChart>
+          {/* </ResponsiveContainer> */}
         </ChartContainer>
         {/* {loading && (
           <div className="text-center text-xs text-gray-400 mt-2">Loading...</div>

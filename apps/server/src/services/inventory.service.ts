@@ -4,6 +4,7 @@ import type { IInventory } from "../models/inventory.model.js";
 import Branch from "../models/branch.model.js";
 import { Product } from "../models/product.model.js";
 import ApiError from "../utils/ApiError.js";
+import { createInventoryMovement } from "./inventoryMovement.service.js";
 
 interface CreateInventoryInput {
   branchId: string;
@@ -83,7 +84,29 @@ export const updateInventoryService = async (
     });
   }
 
+  const previousQuantity = inventory.quantity;
+
   inventory.quantity = quantity;
+
+  inventory.lastUpdated = new Date();
+
+  await inventory.save();
+
+  await createInventoryMovement({
+    inventory: inventory._id,
+    product: inventory.product,
+    branch: inventory.branch,
+
+    type: "ADJUSTMENT",
+
+    quantity: Math.abs(quantity - previousQuantity),
+
+    previousQuantity,
+
+    newQuantity: quantity,
+
+    notes: "Manual inventory adjustment",
+  });
 
   inventory.lastUpdated = new Date();
 

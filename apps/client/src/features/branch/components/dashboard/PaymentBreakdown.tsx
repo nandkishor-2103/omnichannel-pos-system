@@ -1,42 +1,15 @@
+import { useAppSelector } from "@/app/store/hooks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.tsx";
 import { Banknote, CreditCard, Smartphone, TrendingUp } from "lucide-react";
 
-type PaymentType = "Cash" | "Card" | "UPI";
-
-type PaymentBreakdownItem = {
-  type: PaymentType;
-  totalAmount: number;
-  percentage: number;
-  transactionCount: number;
-};
-
-const paymentBreakdown: PaymentBreakdownItem[] = [
-  {
-    type: "Cash",
-    totalAmount: 50000,
-    percentage: 50,
-    transactionCount: 100,
-  },
-  {
-    type: "Card",
-    totalAmount: 30000,
-    percentage: 30,
-    transactionCount: 60,
-  },
-  {
-    type: "UPI",
-    totalAmount: 10000,
-    percentage: 10,
-    transactionCount: 20,
-  },
-];
+type PaymentType = "CASH" | "CARD" | "UPI";
 
 const getPaymentIcon = (type: PaymentType) => {
   switch (type) {
-    case "Cash":
+    case "CASH":
       return <Banknote className="h-5 w-5 text-emerald-500" />;
 
-    case "Card":
+    case "CARD":
       return <CreditCard className="h-5 w-5 text-blue-500" />;
 
     case "UPI":
@@ -49,10 +22,10 @@ const getPaymentIcon = (type: PaymentType) => {
 
 const getProgressColor = (type: PaymentType) => {
   switch (type) {
-    case "Cash":
+    case "CASH":
       return "bg-emerald-500";
 
-    case "Card":
+    case "CARD":
       return "bg-blue-500";
 
     case "UPI":
@@ -64,6 +37,9 @@ const getProgressColor = (type: PaymentType) => {
 };
 
 export default function PaymentBreakdown() {
+  const paymentBreakdown = useAppSelector(
+    (state) => state.branchAnalytics.paymentBreakdown
+  );
   return (
     <Card className="border-border/50 shadow-sm">
       <CardHeader className="pb-1">

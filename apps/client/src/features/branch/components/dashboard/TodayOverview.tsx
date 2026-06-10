@@ -1,3 +1,4 @@
+import { useAppSelector } from "@/app/store/hooks";
 import { Card, CardContent } from "@/components/ui/card.tsx";
 import { getChangeType } from "@/features/branch/components/dashboard/getChangeType.ts";
 import {
@@ -9,18 +10,9 @@ import {
   Users,
 } from "lucide-react";
 
-const todayOverview = {
-  totalSales: 125000,
-  salesGrowth: 5.2,
-  ordersToday: 150,
-  orderGrowth: 3.5,
-  activeCashiers: 10,
-  cashierGrowth: 2.1,
-  lowStockItems: 5,
-  lowStockGrowth: -1.2,
-};
-
 export default function TodayOverview() {
+  const todayOverview = useAppSelector((state) => state.branchAnalytics.todayOverview);
+
   const kpis = todayOverview
     ? [
         {

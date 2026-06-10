@@ -9,6 +9,7 @@ import { sendMail } from "../services/mail.service.js";
 import { storeOtp, getOtp, deleteOtp } from "../services/redis.service.js";
 import generateToken from "../utils/generateToken.js";
 import ENV_VAR from "../config/env.js";
+import { mapUserToResponseDto } from "../mappers/user.mapper.js";
 
 /**
  * @desc    Signup a new user
@@ -178,20 +179,13 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 
   await generateToken(res, user);
 
+  console.log("LOGIN RESPONSE", mapUserToResponseDto(user));
   res.status(200).json(
     new ApiResponse({
       statusCode: 200,
       message: "Login successful",
       payload: {
-        user: {
-          id: user._id,
-          fullName: user.fullName,
-          email: user.email,
-          phone: user.phone,
-          role: user.role,
-          storeId: user.store,
-          branchId: user.branch,
-        },
+        user: mapUserToResponseDto(user),
       },
     })
   );
@@ -214,7 +208,7 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
   res.clearCookie("infotactToken", {
     httpOnly: true,
     secure: ENV_VAR.NODE_ENV === "production",
-    sameSite: ENV_VAR.NODE_ENV === "production" ? "none" : "strict",
+    sameSite: ENV_VAR.NODE_ENV === "production" ? "none" : "lax",
     expires: new Date(0),
   });
   res.status(200).json(

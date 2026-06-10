@@ -4,6 +4,7 @@ import asyncHandler from "../utils/asyncHandler.js";
 import ApiResponse from "../utils/ApiResponse.js";
 
 import { getUserByIdService } from "../services/user.service.js";
+import { mapUserToResponseDto } from "../mappers/user.mapper.js";
 
 /**
  * @desc    Get Current Logged In User Profile
@@ -19,17 +20,7 @@ export const getUserProfileController = asyncHandler(
         statusCode: 200,
         message: "User profile retrieved successfully",
         payload: {
-          user: {
-            id: user?._id,
-            fullName: user?.fullName,
-            email: user?.email,
-            phone: user?.phone,
-            role: user?.role,
-            verified: user?.verified,
-            store: user?.store,
-            branch: user?.branch,
-            lastLogin: user?.lastLogin,
-          },
+          user: mapUserToResponseDto(user),
         },
       })
     );
@@ -51,17 +42,7 @@ export const getUserByIdController = asyncHandler(async (req: Request, res: Resp
       statusCode: 200,
       message: "User profile retrieved successfully",
       payload: {
-        user: {
-          id: user?._id,
-          fullName: user?.fullName,
-          email: user?.email,
-          phone: user?.phone,
-          role: user?.role,
-          verified: user?.verified,
-          store: user?.store,
-          branch: user?.branch,
-          lastLogin: user?.lastLogin,
-        },
+        user: mapUserToResponseDto(user),
       },
     })
   );

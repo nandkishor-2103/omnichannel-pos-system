@@ -4,7 +4,6 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function SalesSummaryCard() {
   const currentShift = useAppSelector((state) => state.shiftReport.currentShift);
-  console.log(currentShift)
 
   const totalSales = currentShift?.totalSales ?? 0;
   const totalRefunds = currentShift?.totalRefunds ?? 0;

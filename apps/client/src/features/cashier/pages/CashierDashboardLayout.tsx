@@ -50,7 +50,7 @@ const navItems: NavItem[] = [
 function LayoutContent() {
   const { sidebarOpen, setSidebarOpen } = useSidebar();
 
-  const storeId = useAppSelector((state) => state.auth.user?.store);
+  const storeId = useAppSelector((state) => state.auth.user?.store?.id);
   const user = useAppSelector((state) => state.auth.user);
 
   const dispatch = useAppDispatch();

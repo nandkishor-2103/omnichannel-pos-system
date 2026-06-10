@@ -1,3 +1,5 @@
+import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
+import { getRecentOrdersByBranch } from "@/app/store/order/orderThunk";
 import { Badge } from "@/components/ui/badge.tsx";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.tsx";
@@ -10,8 +12,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table.tsx";
+import { useEffect } from "react";
 
-type OrderStatus = "Completed" | "Pending" | "Cancelled";
+type OrderStatus = "COMPLETED" | "PENDING" | "REFUNDED" | "CANCELLED";
 
 type RecentOrder = {
   id: string;
@@ -21,82 +24,19 @@ type RecentOrder = {
   createdAt: string;
 };
 
-const recentOrders: RecentOrder[] = [
-  {
-    id: "#ORD-1001",
-    customerName: "John Doe",
-    totalAmount: 2500,
-    status: "Completed",
-    createdAt: "2025-07-08T10:30:00",
-  },
-  {
-    id: "#ORD-1002",
-    customerName: "Emma Watson",
-    totalAmount: 4200,
-    status: "Pending",
-    createdAt: "2025-07-08T11:10:00",
-  },
-  {
-    id: "#ORD-1003",
-    customerName: "Michael Scott",
-    totalAmount: 1800,
-    status: "Completed",
-    createdAt: "2025-07-08T12:05:00",
-  },
-  {
-    id: "#ORD-1004",
-    customerName: "Sophia Lee",
-    totalAmount: 3200,
-    status: "Cancelled",
-    createdAt: "2025-07-08T12:45:00",
-  },
-  {
-    id: "#ORD-1005",
-    customerName: "David Miller",
-    totalAmount: 5100,
-    status: "Completed",
-    createdAt: "2025-07-08T01:20:00",
-  },
-  {
-    id: "#ORD-1006",
-    customerName: "Olivia Brown",
-    totalAmount: 2900,
-    status: "Pending",
-    createdAt: "2025-07-08T02:15:00",
-  },
-  {
-    id: "#ORD-1007",
-    customerName: "James Wilson",
-    totalAmount: 3600,
-    status: "Completed",
-    createdAt: "2025-07-08T03:40:00",
-  },
-  {
-    id: "#ORD-1008",
-    customerName: "Ava Davis",
-    totalAmount: 2700,
-    status: "Cancelled",
-    createdAt: "2025-07-08T04:30:00",
-  },
-  {
-    id: "#ORD-1009",
-    customerName: "William Johnson",
-    totalAmount: 4300,
-    status: "Completed",
-    createdAt: "2025-07-08T05:50:00",
-  },
-];
-
 const getStatusColor = (status: OrderStatus) => {
   switch (status) {
-    case "Completed":
+    case "COMPLETED":
       return "bg-emerald-500/10 text-emerald-600 border-emerald-500/20";
 
-    case "Pending":
+    case "PENDING":
       return "bg-amber-500/10 text-amber-600 border-amber-500/20";
 
-    case "Cancelled":
+    case "CANCELLED":
       return "bg-red-500/10 text-red-600 border-red-500/20";
+
+    case "REFUNDED":
+      return "bg-blue-500/10 text-blue-600 border-blue-500/20";
 
     default:
       return "";
@@ -104,6 +44,16 @@ const getStatusColor = (status: OrderStatus) => {
 };
 
 export default function RecentOrders() {
+  const dispatch = useAppDispatch();
+
+  const branch = useAppSelector((state) => state.branch.branch);
+  const recentOrders = useAppSelector((state) => state.order.recentOrders);
+
+  useEffect(() => {
+    if (branch?._id) {
+      dispatch(getRecentOrdersByBranch(branch._id));
+    }
+  }, [dispatch, branch?._id]);
   return (
     <Card className="rounded-2xl border border-border/50 shadow-sm">
       <CardHeader className="flex flex-row items-start justify-between pb-4">
@@ -151,11 +101,11 @@ export default function RecentOrders() {
               {recentOrders.slice(0, 5).map((order) => (
                 <TableRow key={order.id} className="transition-colors hover:bg-muted/30">
                   <TableCell className="font-medium text-foreground">
-                    {order.id}
+                    #{order.id.slice(-6).toUpperCase()}
                   </TableCell>
 
                   <TableCell className="text-muted-foreground">
-                    {order.customerName}
+                    {order.customer.fullName?.split(" ").slice(0, 2).join(" ")}
                   </TableCell>
 
                   <TableCell className="font-medium text-foreground">
@@ -163,7 +113,10 @@ export default function RecentOrders() {
                   </TableCell>
 
                   <TableCell>
-                    <Badge variant="outline" className={getStatusColor(order.status)}>
+                    <Badge
+                      variant="outline"
+                      className={getStatusColor(order.status as OrderStatus)}
+                    >
                       {order.status}
                     </Badge>
                   </TableCell>

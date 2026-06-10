@@ -7,7 +7,6 @@ import { LayoutDashboard, X, LogOutIcon, MapPin, Store, Clock } from "lucide-rea
 import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
 import { logout } from "@/app/store/auth/authThunk";
-import { toast } from "sonner";
 import { getBranchById } from "@/app/store/branch/branchThunk";
 
 type NavItem = {
@@ -38,12 +37,12 @@ export default function Sidebar({ navItems, onClose }: SidebarProps) {
   };
 
   useEffect(() => {
-    const branchId = userProfile?.branch;
+    const branchId = userProfile?.branch?.id;
 
     if (!branchId) return;
 
     dispatch(getBranchById(branchId));
-  }, [dispatch, userProfile?.branch]);
+  }, [dispatch, userProfile?.branch?.id]);
 
   return (
     <aside className="flex h-full w-72 flex-col border-r border-border bg-sidebar shadow-2xl">
