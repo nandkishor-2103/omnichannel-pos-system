@@ -1,28 +1,49 @@
 export interface Inventory {
   _id: string;
-  branchId: string;
-  productId: string;
+  branch: {
+    _id: string;
+    name: string;
+  };
+  product: {
+    _id: string;
+    name: string;
+    sku: string;
+    brand: string;
+    image: string;
+    category: {
+      _id: string;
+      name: string;
+    };
+  };
   quantity: number;
-  minStock?: number;
-  createdAt?: string;
-  updatedAt?: string;
+  lastUpdated: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface InventoryResponse {
-  inventory: Inventory;
-  message?: string;
+  statusCode: number;
+  success: boolean;
+  message: string;
+
+  payload: {
+    inventory: Inventory;
+  };
 }
 
 export interface InventoriesResponse {
-  inventories: Inventory[];
-  message?: string;
+  statusCode: number;
+  success: true;
+  message: string;
+  payload: {
+    inventories: Inventory[];
+  };
 }
 
 export interface CreateInventoryPayload {
   branchId: string;
   productId: string;
   quantity: number;
-  minStock?: number;
 }
 
 export interface UpdateInventoryPayload {

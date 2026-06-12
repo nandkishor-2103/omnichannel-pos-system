@@ -82,11 +82,11 @@ export const updateEmployeeValidator = [
     .withMessage("Please provide a valid email"),
 
   body("password")
-    .optional()
+    .optional({ values: "falsy" })
     .isLength({ min: 8 })
     .withMessage("Password must be at least 8 characters long")
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/)
-    .withMessage("Password must contain upper, lower, number & special character"),
+    .withMessage("Password must contain upper case, lower case, number & special character"),
 
   body("phone")
     .optional()

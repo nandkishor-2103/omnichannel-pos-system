@@ -179,7 +179,7 @@ export const deleteProductService = async (
 // ================== GET PRODUCTS BY STORE ==================
 export const getProductsByStoreService = async (
   storeId: string,
-  branchId?: string
+  user: IUser
 ): Promise<any[]> => {
   const store = await Store.findById(storeId);
 
@@ -191,78 +191,96 @@ export const getProductsByStoreService = async (
   }
 
   /**
-   * Store Admin / Manager
-   * No branch provided -> return all store products
+   * Only Cashier should see branch inventory products
    */
-  if (!branchId) {
-    const products = await Product.find({
-      store: storeId,
+  if (user.role === "ROLE_BRANCH_CASHIER") {
+    if (!user.branch) {
+      throw new ApiError({
+        statusCode: 400,
+        message: "Cashier branch not found",
+      });
+    }
+
+    const inventories = await Inventory.find({
+      branch: user.branch,
     })
-      .populate("category", "name")
-      .sort({ createdAt: -1 })
+      .populate({
+        path: "product",
+        match: {
+          store: storeId,
+        },
+        populate: {
+          path: "category",
+          select: "name",
+        },
+      })
       .lean();
 
-    return products.map((product) => ({
-      _id: product._id,
-      name: product.name,
-      sku: product.sku,
-      description: product.description,
-      mrp: product.mrp,
-      sellingPrice: product.sellingPrice,
-      brand: product.brand,
-      image: product.image,
-      category: product.category,
-      store: product.store,
-      availableQuantity: 0,
-    }));
+    return inventories
+      .filter((inventory: any) => inventory.product)
+      .map((inventory: any) => ({
+        _id: inventory.product._id,
+
+        name: inventory.product.name,
+
+        sku: inventory.product.sku,
+
+        description: inventory.product.description,
+
+        mrp: inventory.product.mrp,
+
+        sellingPrice: inventory.product.sellingPrice,
+
+        brand: inventory.product.brand,
+
+        image: inventory.product.image,
+
+        category: inventory.product.category,
+
+        store: inventory.product.store,
+
+        availableQuantity: inventory.quantity,
+      }));
   }
 
   /**
-   * Branch Cashier
-   * Only products available in this branch inventory
+   * Store Admin
+   * Store Manager
+   * Branch Admin
+   * Branch Manager
+   *
+   * Return ALL store products
    */
-  const inventories = await Inventory.find({
-    branch: branchId,
+  const products = await Product.find({
+    store: storeId,
   })
-    .populate({
-      path: "product",
-      match: {
-        store: storeId,
-      },
-      populate: {
-        path: "category",
-        select: "name",
-      },
-    })
+    .populate("category", "name")
+    .sort({ createdAt: -1 })
     .lean();
 
-  const products = inventories
-    .filter((inventory: any) => inventory.product)
-    .map((inventory: any) => ({
-      _id: inventory.product._id,
+  return products.map((product: any) => ({
+    _id: product._id,
 
-      name: inventory.product.name,
+    name: product.name,
 
-      sku: inventory.product.sku,
+    sku: product.sku,
 
-      description: inventory.product.description,
+    description: product.description,
 
-      mrp: inventory.product.mrp,
+    mrp: product.mrp,
 
-      sellingPrice: inventory.product.sellingPrice,
+    sellingPrice: product.sellingPrice,
 
-      brand: inventory.product.brand,
+    brand: product.brand,
 
-      image: inventory.product.image,
+    image: product.image,
 
-      category: inventory.product.category,
+    category: product.category,
 
-      store: inventory.product.store,
+    store: product.store,
 
-      availableQuantity: inventory.quantity,
-    }));
-
-  return products;
+    availableQuantity: 0,
+  }));
 };
 
 // ================== SEARCH PRODUCTS ==================
@@ -319,11 +337,11 @@ export const searchProductsService = async (
    */
   if (user.role === "ROLE_BRANCH_CASHIER") {
     if (!user.branch) {
-    throw new ApiError({
-      statusCode: 400,
-      message: "Cashier branch not found",
-    });
-  }
+      throw new ApiError({
+        statusCode: 400,
+        message: "Cashier branch not found",
+      });
+    }
     const inventories = await Inventory.find({
       branch: user.branch,
     })

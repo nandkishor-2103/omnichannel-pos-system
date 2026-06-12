@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,24 +17,29 @@ import { Eye, EyeOff } from "lucide-react";
 import { useFormik } from "formik";
 
 import type { EmployeeFormValues } from "../../types/employee";
+import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
+import { createBranchEmployee, updateEmployee } from "@/app/store/employee/employeeThunk";
 
 type EmployeeFormProps = {
   initialData?: EmployeeFormValues;
-  onSubmit: () => void;
   roles: string[];
+  onSuccess?: () => void;
 };
 
 export default function EmployeeForm({
   initialData,
-  onSubmit,
   roles,
+  onSuccess,
 }: EmployeeFormProps) {
+  const dispatch = useAppDispatch();
   const [showPassword, setShowPassword] = useState(false);
+  const branch = useAppSelector((state) => state.branch.branch);
 
   const formik = useFormik<EmployeeFormValues>({
     enableReinitialize: true,
 
     initialValues: initialData || {
+      employeeId: "",
       fullName: "",
       email: "",
       password: "",
@@ -43,14 +48,56 @@ export default function EmployeeForm({
       branchId: "",
     },
 
-    onSubmit: (values) => {
-      console.log("Employee Info: ", values);
-      onSubmit();
+    onSubmit: async (values) => {
+      // EDIT EMPLOYEE
+      if (values.employeeId) {
+        const result = await dispatch(
+          updateEmployee({
+            employeeId: values.employeeId,
+            employeeDetails: {
+              fullName: values.fullName,
+              email: values.email,
+              password: values.password,
+              phone: values.phone,
+              role: values.role,
+            },
+          })
+        );
+
+        if (updateEmployee.fulfilled.match(result)) {
+          onSuccess?.();
+        }
+
+        return;
+      }
+
+      // CREATE EMPLOYEE
+      if (branch?._id) {
+        const result = await dispatch(
+          createBranchEmployee({
+            employee: values,
+            branchId: branch._id,
+          })
+        );
+
+        if (createBranchEmployee.fulfilled.match(result)) {
+          formik.resetForm();
+          onSuccess?.();
+        }
+      }
     },
   });
 
+  useEffect(() => {
+    console.log("Formik Values", formik.values);
+  }, [formik.values]);
+
   return (
-    <form onSubmit={formik.handleSubmit} className="space-y-5 py-2">
+    <form
+      autoComplete="new-password"
+      onSubmit={formik.handleSubmit}
+      className="space-y-5 py-2"
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Full Name */}
         <div className="space-y-2">
@@ -105,7 +152,7 @@ export default function EmployeeForm({
         <div className="relative">
           <Input
             type={showPassword ? "text" : "password"}
-            autoComplete="off"
+            autoComplete="new-password"
             name="password"
             value={formik.values.password}
             onChange={formik.handleChange}

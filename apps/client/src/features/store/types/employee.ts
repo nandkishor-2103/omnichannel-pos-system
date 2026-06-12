@@ -1,4 +1,6 @@
 export type EmployeeFormValues = {
+  employeeId?: string;
+
   fullName: string;
   email: string;
   password: string;

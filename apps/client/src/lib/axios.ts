@@ -14,7 +14,7 @@ const APP_CONFIG = {
   TEST_LOADING_DELAY: import.meta.env.TEST_LOADING_DELAY_DEV,
 };
 
-// const IGNORED_TOAST_MESSAGES = ["No active shift found"];
+const IGNORED_TOAST_MESSAGES = ["No active shift found"];
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -64,11 +64,11 @@ api.interceptors.response.use(
 
     const message = data?.message || "Something went wrong";
 
-    // const silentMessages = IGNORED_TOAST_MESSAGES;
+    const silentMessages = IGNORED_TOAST_MESSAGES;
 
-    // if (silentMessages.includes(message)) {
-    //   return Promise.reject(error);
-    // }
+    if (silentMessages.includes(message)) {
+      return Promise.reject(error);
+    }
 
     switch (status) {
       // Validation / User Action Issues

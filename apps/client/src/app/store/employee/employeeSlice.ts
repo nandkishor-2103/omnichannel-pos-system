@@ -8,6 +8,8 @@ import {
   findEmployeeById,
   findStoreEmployees,
   findBranchEmployees,
+  disableEmployee,
+  enableEmployee,
 } from "./employeeThunk";
 
 import type { EmployeeState } from "./employeeTypes";
@@ -43,7 +45,7 @@ const employeeSlice = createSlice({
 
       .addCase(createStoreEmployee.fulfilled, (state, action) => {
         state.loading = false;
-        state.employees.push(action.payload.employee);
+        state.employees.push(action.payload.payload.employee);
       })
 
       .addCase(createStoreEmployee.rejected, (state, action) => {
@@ -60,7 +62,7 @@ const employeeSlice = createSlice({
 
       .addCase(createBranchEmployee.fulfilled, (state, action) => {
         state.loading = false;
-        state.employees.push(action.payload.employee);
+        state.employees.push(action.payload.payload.employee);
       })
 
       .addCase(createBranchEmployee.rejected, (state, action) => {
@@ -71,7 +73,7 @@ const employeeSlice = createSlice({
       // UPDATE EMPLOYEE
 
       .addCase(updateEmployee.fulfilled, (state, action) => {
-        const updatedEmployee = action.payload.employee;
+        const updatedEmployee = action.payload.payload.employee;
 
         const index = state.employees.findIndex(
           (employee) => employee._id === updatedEmployee._id
@@ -101,19 +103,55 @@ const employeeSlice = createSlice({
       // FIND BY ID
 
       .addCase(findEmployeeById.fulfilled, (state, action) => {
-        state.employee = action.payload.employee;
+        state.employee = action.payload.payload.employee;
       })
 
       // FIND STORE EMPLOYEES
 
       .addCase(findStoreEmployees.fulfilled, (state, action) => {
-        state.employees = action.payload.employees;
+        state.employees = action.payload.payload.employees;
       })
 
       // FIND BRANCH EMPLOYEES
 
       .addCase(findBranchEmployees.fulfilled, (state, action) => {
-        state.employees = action.payload.employees;
+        state.employees = action.payload.payload.employees;
+      })
+
+      // ENABLE EMPLOYEE
+
+      .addCase(enableEmployee.fulfilled, (state, action) => {
+        const updatedEmployee = action.payload;
+
+        const index = state.employees.findIndex(
+          (employee) => employee._id === updatedEmployee._id
+        );
+
+        if (index !== -1) {
+          state.employees[index] = updatedEmployee;
+        }
+
+        if (state.employee?._id === updatedEmployee._id) {
+          state.employee = updatedEmployee;
+        }
+      })
+
+      // DISABLE EMPLOYEE
+
+      .addCase(disableEmployee.fulfilled, (state, action) => {
+        const updatedEmployee = action.payload;
+
+        const index = state.employees.findIndex(
+          (employee) => employee._id === updatedEmployee._id
+        );
+
+        if (index !== -1) {
+          state.employees[index] = updatedEmployee;
+        }
+
+        if (state.employee?._id === updatedEmployee._id) {
+          state.employee = updatedEmployee;
+        }
       });
   },
 });

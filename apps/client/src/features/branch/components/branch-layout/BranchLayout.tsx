@@ -33,11 +33,11 @@ const navItems: NavItem[] = [
     path: "/branch/orders",
     icon: <ShoppingBag className="h-5 w-5" />,
   },
-  {
-    name: "Transactions",
-    path: "/branch/transactions",
-    icon: <CreditCard className="h-5 w-5" />,
-  },
+//   {
+//     name: "Transactions",
+//     path: "/branch/transactions",
+//     icon: <CreditCard className="h-5 w-5" />,
+//   },
   {
     name: "Inventory",
     path: "/branch/inventory",
@@ -48,11 +48,11 @@ const navItems: NavItem[] = [
     path: "/branch/employees",
     icon: <Users className="h-5 w-5" />,
   },
-  {
-    name: "Customers",
-    path: "/branch/customers",
-    icon: <UserCircle className="h-5 w-5" />,
-  },
+//   {
+//     name: "Customers",
+//     path: "/branch/customers",
+//     icon: <UserCircle className="h-5 w-5" />,
+//   },
   {
     name: "Reports",
     path: "/branch/reports",
