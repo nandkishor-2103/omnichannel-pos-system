@@ -42,9 +42,8 @@ const inventorySlice = createSlice({
         state.error = null;
       })
 
-      .addCase(createInventory.fulfilled, (state, action) => {
+      .addCase(createInventory.fulfilled, (state) => {
         state.loading = false;
-        state.inventories.push(action.payload.inventory);
       })
 
       .addCase(createInventory.rejected, (state, action) => {
@@ -53,9 +52,13 @@ const inventorySlice = createSlice({
       })
 
       // UPDATE
-
+      .addCase(updateInventory.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(updateInventory.fulfilled, (state, action) => {
-        const updatedInventory = action.payload.inventory;
+        state.loading = false;
+        const updatedInventory = action.payload.payload.inventory;
 
         const index = state.inventories.findIndex(
           (inv) => inv._id === updatedInventory._id
@@ -68,6 +71,10 @@ const inventorySlice = createSlice({
         if (state.inventory?._id === updatedInventory._id) {
           state.inventory = updatedInventory;
         }
+      })
+      .addCase(updateInventory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload ?? "Failed to update inventory";
       })
 
       // DELETE
@@ -83,19 +90,19 @@ const inventorySlice = createSlice({
       // GET BY ID
 
       .addCase(getInventoryById.fulfilled, (state, action) => {
-        state.inventory = action.payload.inventory;
+        state.inventory = action.payload.payload.inventory;
       })
 
       // GET BY BRANCH
 
       .addCase(getInventoryByBranch.fulfilled, (state, action) => {
-        state.inventories = action.payload.inventories;
+        state.inventories = action.payload.payload.inventories;
       })
 
       // GET BY PRODUCT
 
       .addCase(getInventoryByProduct.fulfilled, (state, action) => {
-        state.inventory = action.payload.inventory;
+        state.inventory = action.payload.payload.inventory;
       });
   },
 });

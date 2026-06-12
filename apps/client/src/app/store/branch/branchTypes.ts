@@ -62,6 +62,7 @@ export interface CreateBranchPayload {
   phone?: string;
   email?: string;
   storeId: string;
+  workingDays?: string[];
 }
 
 export interface UpdateBranchPayload {

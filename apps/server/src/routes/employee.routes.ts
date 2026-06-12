@@ -4,6 +4,8 @@ import {
   createBranchEmployeeController,
   createStoreEmployeeController,
   deleteEmployeeController,
+  disableEmployeeController,
+  enableEmployeeController,
   getBranchEmployeesController,
   getEmployeeByIdController,
   getStoreEmployeesController,
@@ -54,6 +56,30 @@ router.delete(
   isAuthenticated,
   authorizeRoles("ROLE_STORE_ADMIN", "ROLE_BRANCH_ADMIN"),
   deleteEmployeeController
+);
+
+router.patch(
+  "/:employeeId/enable",
+  isAuthenticated,
+  authorizeRoles(
+    "ROLE_STORE_ADMIN",
+    "ROLE_BRANCH_ADMIN",
+    "ROLE_STORE_MANAGER",
+    "ROLE_BRANCH_MANAGER"
+  ),
+  enableEmployeeController
+);
+
+router.patch(
+  "/:employeeId/disable",
+  isAuthenticated,
+  authorizeRoles(
+    "ROLE_STORE_ADMIN",
+    "ROLE_BRANCH_ADMIN",
+    "ROLE_STORE_MANAGER",
+    "ROLE_BRANCH_MANAGER"
+  ),
+  disableEmployeeController
 );
 
 router.get(

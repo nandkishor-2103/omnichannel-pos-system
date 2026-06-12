@@ -530,3 +530,116 @@ export const getBranchEmployeesService = async (
 
   return await User.find(filter).select("-password").populate("store").populate("branch");
 };
+
+export const enableEmployeeService = async (employeeId: string, currentUser: IUser) => {
+  if (!mongoose.Types.ObjectId.isValid(employeeId)) {
+    throw new ApiError({
+      statusCode: 400,
+      message: "Invalid employee ID",
+    });
+  }
+
+  const employee = await User.findById(employeeId);
+
+  if (!employee) {
+    throw new ApiError({
+      statusCode: 404,
+      message: "Employee not found",
+    });
+  }
+
+  if (["ROLE_STORE_ADMIN", "ROLE_STORE_MANAGER"].includes(currentUser.role)) {
+    if (
+      !employee.store ||
+      !currentUser.store ||
+      employee.store.toString() !== currentUser.store.toString()
+    ) {
+      throw new ApiError({
+        statusCode: 403,
+        message: "You can only manage employees from your own store",
+      });
+    }
+  }
+
+  if (["ROLE_BRANCH_ADMIN", "ROLE_BRANCH_MANAGER"].includes(currentUser.role)) {
+    if (
+      !employee.branch ||
+      !currentUser.branch ||
+      employee.branch.toString() !== currentUser.branch.toString()
+    ) {
+      throw new ApiError({
+        statusCode: 403,
+        message: "You can only manage employees from your own branch",
+      });
+    }
+  }
+
+  employee.verified = true;
+
+  await employee.save();
+
+  return await User.findById(employee._id)
+    .select("-password")
+    .populate("store")
+    .populate("branch");
+};
+
+export const disableEmployeeService = async (employeeId: string, currentUser: IUser) => {
+  if (!mongoose.Types.ObjectId.isValid(employeeId)) {
+    throw new ApiError({
+      statusCode: 400,
+      message: "Invalid employee ID",
+    });
+  }
+
+  const employee = await User.findById(employeeId);
+
+  if (!employee) {
+    throw new ApiError({
+      statusCode: 404,
+      message: "Employee not found",
+    });
+  }
+
+  if (["ROLE_STORE_ADMIN", "ROLE_STORE_MANAGER"].includes(currentUser.role)) {
+    if (
+      !employee.store ||
+      !currentUser.store ||
+      employee.store.toString() !== currentUser.store.toString()
+    ) {
+      throw new ApiError({
+        statusCode: 403,
+        message: "You can only manage employees from your own store",
+      });
+    }
+  }
+
+  if (["ROLE_BRANCH_ADMIN", "ROLE_BRANCH_MANAGER"].includes(currentUser.role)) {
+    if (
+      !employee.branch ||
+      !currentUser.branch ||
+      employee.branch.toString() !== currentUser.branch.toString()
+    ) {
+      throw new ApiError({
+        statusCode: 403,
+        message: "You can only manage employees from your own branch",
+      });
+    }
+  }
+
+  if (employee._id.toString() === currentUser._id.toString()) {
+    throw new ApiError({
+      statusCode: 400,
+      message: "You cannot disable your own account",
+    });
+  }
+
+  employee.verified = false;
+
+  await employee.save();
+
+  return await User.findById(employee._id)
+    .select("-password")
+    .populate("store")
+    .populate("branch");
+};

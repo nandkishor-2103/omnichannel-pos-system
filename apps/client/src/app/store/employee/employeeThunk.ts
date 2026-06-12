@@ -9,6 +9,7 @@ import type {
   CreateBranchEmployeePayload,
   UpdateEmployeePayload,
   BranchEmployeeParams,
+  Employee,
 } from "./employeeTypes";
 
 // ================= CREATE STORE EMPLOYEE =================
@@ -131,6 +132,34 @@ export const findBranchEmployees = createAsyncThunk<
     const res = await api.get<EmployeesResponse>(`/employees/branch/${branchId}${query}`);
 
     return res.data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+// =================== ENABLE EMPLOYEE ==============
+export const enableEmployee = createAsyncThunk<Employee, string, { rejectValue: string }>(
+  "employee/enableEmployee",
+  async (employeeId, { rejectWithValue }) => {
+    try {
+      const res = await api.patch<EmployeeResponse>(`/employees/${employeeId}/enable`);
+
+      return res.data.payload.employee;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+export const disableEmployee = createAsyncThunk<
+  Employee,
+  string,
+  { rejectValue: string }
+>("employee/disableEmployee", async (employeeId, { rejectWithValue }) => {
+  try {
+    const res = await api.patch<EmployeeResponse>(`/employees/${employeeId}/disable`);
+
+    return res.data.payload.employee;
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
   }

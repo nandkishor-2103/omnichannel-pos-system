@@ -34,7 +34,7 @@ export default function AddEmployeeDialog() {
           <DialogDescription>Fill employee information below.</DialogDescription>
         </DialogHeader>
 
-        <EmployeeForm roles={roles} onSubmit={() => console.log("Submitted")} />
+        <EmployeeForm roles={roles} />
       </DialogContent>
     </Dialog>
   );

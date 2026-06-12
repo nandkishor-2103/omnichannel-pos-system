@@ -3,6 +3,8 @@ import {
   createBranchEmployeeService,
   createStoreEmployeeService,
   deleteEmployeeService,
+  disableEmployeeService,
+  enableEmployeeService,
   getBranchEmployeesService,
   getEmployeeByIdService,
   getStoreEmployeesService,
@@ -11,10 +13,14 @@ import {
 
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import type { IUser } from "../models/user.model.js";
 
 export const createStoreEmployeeController = asyncHandler(
   async (req: Request, res: Response) => {
-    const employee = await createStoreEmployeeService(req.body, req.params.storeId as string);
+    const employee = await createStoreEmployeeService(
+      req.body,
+      req.params.storeId as string
+    );
 
     return res.status(201).json(
       new ApiResponse({
@@ -83,7 +89,10 @@ export const deleteEmployeeController = asyncHandler(
 
 export const getEmployeeByIdController = asyncHandler(
   async (req: Request, res: Response) => {
-    const employee = await getEmployeeByIdService(req.params.employeeId as string, req.user!);
+    const employee = await getEmployeeByIdService(
+      req.params.employeeId as string,
+      req.user!
+    );
 
     return res.status(200).json(
       new ApiResponse({
@@ -99,7 +108,10 @@ export const getEmployeeByIdController = asyncHandler(
 
 export const getStoreEmployeesController = asyncHandler(
   async (req: Request, res: Response) => {
-    const employees = await getStoreEmployeesService(req.params.storeId as string, req.user!);
+    const employees = await getStoreEmployeesService(
+      req.params.storeId as string,
+      req.user!
+    );
 
     return res.status(200).json(
       new ApiResponse({
@@ -134,3 +146,33 @@ export const getBranchEmployeesController = asyncHandler(
     );
   }
 );
+
+export const enableEmployeeController = asyncHandler(async (req, res) => {
+  const employee = await enableEmployeeService(
+    req.params.employeeId as string,
+    req.user as IUser
+  );
+
+  return res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "Employee enabled successfully",
+      payload: { employee },
+    })
+  );
+});
+
+export const disableEmployeeController = asyncHandler(async (req, res) => {
+  const employee = await disableEmployeeService(
+    req.params.employeeId as string,
+    req.user as IUser
+  );
+
+  return res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "Employee disabled successfully",
+      payload: { employee },
+    })
+  );
+});

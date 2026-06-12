@@ -76,12 +76,12 @@ export default function PaymentDialog({
 
   const handleCreateOrder = async () => {
     if (!currentShift) {
-      toast.error("Please start your shift before creating an order");
+      toast.warning("Please start your shift before creating an order");
       return;
     }
 
     if (currentShift.status === "PAUSED") {
-      toast.error("Please resume your shift before creating an order");
+      toast.warning("Please resume your shift before creating an order");
       return;
     }
 
@@ -116,6 +116,7 @@ export default function PaymentDialog({
       if (user?.store?.id) {
         dispatch(getProductsByStore(user.store.id));
       }
+
 
       setShowPaymentDialog(false);
 

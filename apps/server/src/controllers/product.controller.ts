@@ -104,10 +104,9 @@ export const deleteProductController = asyncHandler(
  */
 export const getProductsByStoreController = asyncHandler(
   async (req: Request, res: Response) => {
-    console.log("USER BRANCH =>", (req.user as IUser)?.branch);
     const products = await getProductsByStoreService(
       req.params.storeId as string,
-      (req.user as IUser)?.branch?.toString()
+      req.user as IUser
     );
 
     return res.status(200).json(
