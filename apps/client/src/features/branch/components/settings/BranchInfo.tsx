@@ -7,12 +7,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+
 import { Save } from "lucide-react";
 
-import { useState } from "react";
+import { useFormik } from "formik";
+
+import { updateBranch } from "@/app/store/branch/branchThunk";
+import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
 
 type BranchInfoType = {
   name: string;
@@ -28,7 +31,7 @@ type FormFieldProps = {
   type: string;
   name: keyof BranchInfoType;
   value: string;
-  onChange: (field: keyof BranchInfoType, value: string) => void;
+  onChange: React.ChangeEventHandler<HTMLInputElement>;
 };
 
 function FormField({ placeholder, label, type, name, value, onChange }: FormFieldProps) {
@@ -42,13 +45,13 @@ function FormField({ placeholder, label, type, name, value, onChange }: FormFiel
         autoComplete="off"
         name={name}
         value={value}
-        onChange={(e) => onChange(name, e.target.value)}
+        onChange={onChange}
       />
     </div>
   );
 }
 
-const workingDays: string[] = [
+const workingDays = [
   "MONDAY",
   "TUESDAY",
   "WEDNESDAY",
@@ -59,34 +62,45 @@ const workingDays: string[] = [
 ];
 
 export default function BranchInfo() {
-  const [branchInfo, setBranchInfo] = useState<BranchInfoType>({
-    name: "",
-    email: "",
-    phone: "",
-    address: "",
-    workingDays: [],
+  const dispatch = useAppDispatch();
+
+  const branch = useAppSelector((state) => state.branch.branch);
+
+  const formik = useFormik<BranchInfoType>({
+    enableReinitialize: true,
+
+    initialValues: {
+      name: branch?.name ?? "",
+      email: branch?.email ?? "",
+      phone: branch?.phone ?? "",
+      address: branch?.address ?? "",
+      workingDays: branch?.workingDays ?? [],
+    },
+
+    onSubmit: async (values) => {
+      if (!branch?._id) return;
+
+      await dispatch(
+        updateBranch({
+          id: branch._id,
+          dto: {
+            name: values.name,
+            email: values.email,
+            phone: values.phone,
+            address: values.address,
+            workingDays: values.workingDays,
+          },
+        })
+      ).unwrap();
+    },
   });
 
-  const handleBranchInfoChange = (
-    field: keyof BranchInfoType,
-    value: string | string[]
-  ): void => {
-    setBranchInfo({
-      ...branchInfo,
-      [field]: value,
-    });
-  };
-
   const handleWorkingDayChange = (day: string) => {
-    const updatedDays = branchInfo.workingDays.includes(day)
-      ? branchInfo.workingDays.filter((item) => item !== day)
-      : [...branchInfo.workingDays, day];
+    const updatedDays = formik.values.workingDays.includes(day)
+      ? formik.values.workingDays.filter((item) => item !== day)
+      : [...formik.values.workingDays, day];
 
-    handleBranchInfoChange("workingDays", updatedDays);
-  };
-
-  const handleSaveSettings = () => {
-    console.log("Branch Info: ", branchInfo);
+    formik.setFieldValue("workingDays", updatedDays);
   };
 
   return (
@@ -94,77 +108,79 @@ export default function BranchInfo() {
       <CardHeader>
         <CardTitle>Branch Information</CardTitle>
 
-        <CardDescription>Update your branch Details and business time</CardDescription>
+        <CardDescription>Update your branch details and business time</CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-6">
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <FormField
-              placeholder="Enter branch name"
-              label="Branch Name:"
-              type="text"
-              name="name"
-              value={branchInfo.name}
-              onChange={handleBranchInfoChange}
-            />
+      <form onSubmit={formik.handleSubmit}>
+        <CardContent className="space-y-6">
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <FormField
+                placeholder="Enter branch name"
+                label="Branch Name"
+                type="text"
+                name="name"
+                value={formik.values.name}
+                onChange={formik.handleChange}
+              />
 
-            <FormField
-              placeholder="Enter branch address"
-              label="Address:"
-              type="text"
-              name="address"
-              value={branchInfo.address}
-              onChange={handleBranchInfoChange}
-            />
+              <FormField
+                placeholder="Enter branch address"
+                label="Address"
+                type="text"
+                name="address"
+                value={formik.values.address}
+                onChange={formik.handleChange}
+              />
 
-            <FormField
-              placeholder="Enter branch contact number"
-              label="Contact Number:"
-              type="tel"
-              name="phone"
-              value={branchInfo.phone}
-              onChange={handleBranchInfoChange}
-            />
+              <FormField
+                placeholder="Enter branch contact number"
+                label="Contact Number"
+                type="tel"
+                name="phone"
+                value={formik.values.phone}
+                onChange={formik.handleChange}
+              />
 
-            <FormField
-              placeholder="Enter branch email address"
-              label="Email:"
-              type="email"
-              name="email"
-              value={branchInfo.email}
-              onChange={handleBranchInfoChange}
-            />
-          </div>
+              <FormField
+                placeholder="Enter branch email address"
+                label="Email"
+                type="email"
+                name="email"
+                value={formik.values.email}
+                onChange={formik.handleChange}
+              />
+            </div>
 
-          <Separator />
+            <Separator />
 
-          <div className="mt-4">
-            <label className="text-sm font-medium">Working Days</label>
+            <div className="mt-4">
+              <label className="text-sm font-medium">Working Days</label>
 
-            <div className="grid grid-cols-2 gap-2 mt-2 md:grid-cols-4">
-              {workingDays.map((day) => (
-                <div key={day} className="flex items-center gap-2">
-                  <Checkbox
-                    className="cursor-pointer"
-                    checked={branchInfo.workingDays.includes(day)}
-                    onCheckedChange={() => handleWorkingDayChange(day)}
-                  />
+              <div className="grid grid-cols-2 gap-2 mt-2 md:grid-cols-4">
+                {workingDays.map((day) => (
+                  <div key={day} className="flex items-center gap-2">
+                    <Checkbox
+                      className="cursor-pointer"
+                      checked={formik.values.workingDays.includes(day)}
+                      onCheckedChange={() => handleWorkingDayChange(day)}
+                    />
 
-                  <label className="text-sm text-gray-700">{day}</label>
-                </div>
-              ))}
+                    <label className="text-sm text-gray-700">{day}</label>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div>
-          <Button className="cursor-pointer" onClick={handleSaveSettings}>
-            <Save className="h-4 w-4" />
-            Save Changes
-          </Button>
-        </div>
-      </CardContent>
+          <div>
+            <Button type="submit" className="cursor-pointer">
+              <Save className="h-4 w-4" />
+              Save Changes
+            </Button>
+          </div>
+        </CardContent>
+      </form>
     </Card>
   );
 }

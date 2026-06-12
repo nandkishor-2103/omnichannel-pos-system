@@ -1,28 +1,142 @@
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Plus, Search } from "lucide-react";
+import { useEffect, useState } from "react";
+
 import InventoryFormDialog from "./InventoryFormDialog";
 import InventoryTable from "./InventoryTable";
+
+import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
+import {
+  createInventory,
+  getInventoryByBranch,
+  updateInventory,
+} from "@/app/store/inventory/inventoryThunk";
+import { getProductsByStore } from "@/app/store/product/productThunk";
+import { toast } from "sonner";
 
 export default function Inventory() {
   const [selectedProductId, setSelectedProductId] = useState<string>("");
 
+  const [selectedInventoryId, setSelectedInventoryId] = useState<string>("");
+
   const [quantity, setQuantity] = useState<number>(1);
+
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState<boolean>(false);
 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
 
-  const handleAddInventory = (): void => {
-    console.log(selectedProductId, quantity);
+  const branch = useAppSelector((state) => state.branch.branch);
+
+  const dispatch = useAppDispatch();
+
+  const inventories = useAppSelector((state) => state.inventory.inventories);
+
+  const handleAddInventory = async () => {
+    if (!selectedProductId) {
+      toast.warning("Please select a product");
+
+      return;
+    }
+
+    if (!branch?._id) {
+      toast.error("Branch not found");
+
+      return;
+    }
+
+    const resultAction = await dispatch(
+      createInventory({
+        branchId: branch._id,
+        productId: selectedProductId,
+        quantity,
+      })
+    );
+
+    if (createInventory.fulfilled.match(resultAction)) {
+      dispatch(getInventoryByBranch(branch._id));
+
+      setSelectedProductId("");
+      setQuantity(1);
+
+      setIsAddDialogOpen(false);
+    }
   };
 
-  return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight">Inventory Management</h1>
+  const handleUpdateInventory = async () => {
+    if (!selectedInventoryId) {
+      toast.warning("Please select inventory");
+      return;
+    }
 
-        <div className="flex gap-2">
+    const resultAction = await dispatch(
+      updateInventory({
+        id: selectedInventoryId,
+        dto: {
+          quantity,
+        },
+      })
+    );
+
+    if (updateInventory.fulfilled.match(resultAction)) {
+      if (branch?._id) {
+        dispatch(getInventoryByBranch(branch._id));
+      }
+
+      setSelectedInventoryId("");
+      setSelectedProductId("");
+      setQuantity(1);
+
+      setIsEditDialogOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    if (branch?._id && branch.store?._id) {
+      dispatch(getInventoryByBranch(branch._id));
+      dispatch(getProductsByStore(branch.store._id));
+    }
+  }, [dispatch, branch?._id, branch?.store?._id]);
+
+  return (
+    <div>
+      {/* HEADER */}
+      <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3 lg:items-center">
+        {/* LEFT */}
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Inventory Management</h1>
+
+          <p className="mt-1 text-sm text-muted-foreground">
+            Manage and monitor branch inventory stock.
+          </p>
+        </div>
+
+        {/* CENTER */}
+        <div className="flex justify-center">
+          <div className="rounded-xl border bg-muted/30 px-6 py-1 text-center min-w-[140px]">
+            <span className="text-xs uppercase tracking-wide text-muted-foreground">
+              Total Products:
+            </span>
+
+            <span className="text-sm font-bold ml-2">{inventories.length}</span>
+          </div>
+        </div>
+
+        {/* RIGHT */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+
+            <Input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search SKU, product or category..."
+              className="w-[300px] pl-9"
+            />
+          </div>
+
           <Button
             onClick={() => setIsAddDialogOpen(true)}
             className="gap-2 cursor-pointer"
@@ -33,7 +147,13 @@ export default function Inventory() {
         </div>
       </div>
 
-      <InventoryTable setIsEditDialogOpen={setIsEditDialogOpen} />
+      <InventoryTable
+        searchTerm={searchTerm}
+        setIsEditDialogOpen={setIsEditDialogOpen}
+        setSelectedInventoryId={setSelectedInventoryId}
+        setSelectedProductId={setSelectedProductId}
+        setQuantity={setQuantity}
+      />
 
       <InventoryFormDialog
         open={isAddDialogOpen}
@@ -54,7 +174,7 @@ export default function Inventory() {
         setSelectedProductId={setSelectedProductId}
         quantity={quantity}
         setQuantity={setQuantity}
-        onSubmit={handleAddInventory}
+        onSubmit={handleUpdateInventory}
       />
     </div>
   );

@@ -11,9 +11,9 @@ import {
 
 import { Edit } from "lucide-react";
 
-
 import type { EmployeeFormValues } from "../../types/employee";
 import EmployeeForm from "@/features/store/components/employee/EmployeeForm";
+import { useState } from "react";
 
 const roles: string[] = [
   "ROLE_BRANCH_ADMIN",
@@ -30,8 +30,9 @@ export default function EditEmployeeDialog({
   selectedEmployee,
   handleOpenEditDialog,
 }: EditEmployeeDialogProps) {
+  const [open, setOpen] = useState(false);
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
           onClick={handleOpenEditDialog}
@@ -50,9 +51,10 @@ export default function EditEmployeeDialog({
         </DialogHeader>
 
         <EmployeeForm
+          key={selectedEmployee?.employeeId ?? "edit"}
           roles={roles}
           initialData={selectedEmployee}
-          onSubmit={() => console.log("Submitted")}
+          onSuccess={() => setOpen(false)}
         />
       </DialogContent>
     </Dialog>

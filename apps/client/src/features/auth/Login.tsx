@@ -37,7 +37,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
   const user = useAppSelector((state) => state.auth.user);
-  console.log(user);
+
 
   const [formData, setFormData] = useState({
     email: "",

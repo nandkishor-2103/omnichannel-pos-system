@@ -1,10 +1,38 @@
-// EmployeeTable.tsx
-
 import { useState } from "react";
-
 import { ArrowUpDown } from "lucide-react";
 
 import EditEmployeeDialog from "./EditEmployeeDialog";
+import {
+  enableEmployee,
+  disableEmployee,
+  deleteEmployee,
+} from "@/app/store/employee/employeeThunk";
+
+import type { Employee } from "@/app/store/employee/employeeTypes";
+
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
+import { MoreHorizontal, UserX, UserCheck, Trash2 } from "lucide-react";
 
 import {
   Table,
@@ -17,134 +45,276 @@ import {
 
 import type { EmployeeFormValues } from "../../types/employee";
 
-type Employee = {
-  id: number;
-  name: string;
-  role: string;
-  email: string;
-  loginAccess: "Enabled" | "Disabled";
-  assignSince: string;
-  status: "Active" | "Inactive" | "Pending";
-  actions: string;
-};
+import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
 
-const employeeData: Employee[] = [
-  {
-    id: 1234,
-    name: "Aarav Sharma",
-    role: "Branch Manager",
-    email: "aarav.sharma@example.com",
-    loginAccess: "Enabled",
-    assignSince: "12 Jan 2024",
-    status: "Active",
-    actions: "Edit/Delete",
-  },
-  {
-    id: 2356,
-    name: "Priya Verma",
-    role: "Cashier",
-    email: "priya.verma@example.com",
-    loginAccess: "Enabled",
-    assignSince: "05 Mar 2024",
-    status: "Active",
-    actions: "Edit/Delete",
-  },
-  {
-    id: 45734,
-    name: "Rohan Patil",
-    role: "Inventory Manager",
-    email: "rohan.patil@example.com",
-    loginAccess: "Disabled",
-    assignSince: "18 Feb 2024",
-    status: "Inactive",
-    actions: "Edit/Delete",
-  },
-  {
-    id: 346468,
-    name: "Sneha Joshi",
-    role: "Store Admin",
-    email: "sneha.joshi@example.com",
-    loginAccess: "Enabled",
-    assignSince: "22 Apr 2024",
-    status: "Active",
-    actions: "Edit/Delete",
-  },
-  {
-    id: 344647,
-    name: "Karan Mehta",
-    role: "Sales Executive",
-    email: "karan.mehta@example.com",
-    loginAccess: "Enabled",
-    assignSince: "10 May 2024",
-    status: "Pending",
-    actions: "Edit/Delete",
-  },
-];
+const formatRole = (role: string) =>
+  role
+    .replace("ROLE_", "")
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+
+const formatDate = (date: string) =>
+  new Date(date).toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 
 export default function EmployeeTable() {
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeFormValues>();
 
-  const handleOpenEditDialog = () => {
+  const [actionDialog, setActionDialog] = useState<{
+    open: boolean;
+    type: "enable" | "disable" | "delete" | null;
+    employee: Employee | null;
+  }>({
+    open: false,
+    type: null,
+    employee: null,
+  });
+
+  const dispatch = useAppDispatch();
+
+  const employees = useAppSelector((state) => state.employee.employees);
+
+  const handleOpenEditDialog = (employee: (typeof employees)[number]) => {
     setSelectedEmployee({
-      fullName: "John Doe",
-      role: "ROLE_BRANCH_CASHIER",
-      email: "john.doe@gmail.com",
-      password: "john234@345!doe",
-      phone: "+91 7400345689",
-      branchId: "",
+      employeeId: employee._id,
+      fullName: employee.fullName,
+      role: employee.role,
+      email: employee.email,
+      phone: employee.phone,
+      password: "",
+      branchId: employee.branch?._id ?? "",
     });
   };
 
+  const handleConfirmAction = async () => {
+    if (!actionDialog.employee || !actionDialog.type) {
+      return;
+    }
+
+    try {
+      switch (actionDialog.type) {
+        case "enable":
+          await dispatch(enableEmployee(actionDialog.employee._id)).unwrap();
+          break;
+
+        case "disable":
+          await dispatch(disableEmployee(actionDialog.employee._id)).unwrap();
+          break;
+
+        case "delete":
+          await dispatch(deleteEmployee(actionDialog.employee._id)).unwrap();
+          break;
+      }
+    } finally {
+      setActionDialog({
+        open: false,
+        type: null,
+        employee: null,
+      });
+    }
+  };
+
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          {[
-            "Name",
-            "Role",
-            "Email",
-            "Login Access",
-            "Assign Since",
-            "Status",
-            "Actions",
-          ].map((head) => (
-            <TableHead key={head}>
-              <div
-                className={`flex items-center gap-1 text-xs font-semibold text-gray-600 ${
-                  head === "Actions" ? "justify-end" : ""
-                }`}
-              >
-                {head}
+    <div className="overflow-hidden rounded-xl bg-background">
+      <div className="max-h-[600px] overflow-auto">
+        <Table>
+          <TableHeader className="bg-muted/30">
+            <TableRow>
+              {[
+                "Employee",
+                "Role",
+                "Email",
+                "Phone",
+                "Login Access",
+                "Assigned Since",
+                "Actions",
+              ].map((head) => (
+                <TableHead key={head}>
+                  <div
+                    className={`flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground ${
+                      head === "Actions" ? "justify-end" : ""
+                    }`}
+                  >
+                    {head}
+                    {head !== "Actions" && <ArrowUpDown className="h-3 w-3 opacity-60" />}
+                  </div>
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
 
-                <ArrowUpDown className="h-3 w-3 opacity-60" />
-              </div>
-            </TableHead>
-          ))}
-        </TableRow>
-      </TableHeader>
+          <TableBody>
+            {employees.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
+                  No employees found.
+                </TableCell>
+              </TableRow>
+            ) : (
+              employees.map((employee) => (
+                <TableRow
+                  key={employee._id}
+                  className="group transition-all duration-200 hover:bg-muted/50"
+                >
+                  {/* Employee */}
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-10 w-10">
+                        <AvatarFallback>
+                          {employee.fullName
+                            .split(" ")
+                            .map((name) => name[0])
+                            .slice(0, 2)
+                            .join("")}
+                        </AvatarFallback>
+                      </Avatar>
 
-      <TableBody>
-        {employeeData.map((employee) => (
-          <TableRow key={employee.id}>
-            <TableCell>{employee.name}</TableCell>
-            <TableCell>{employee.role}</TableCell>
-            <TableCell>{employee.email}</TableCell>
-            <TableCell>{employee.loginAccess}</TableCell>
-            <TableCell>{employee.assignSince}</TableCell>
+                      <div>
+                        <p className="font-medium leading-none">{employee.fullName}</p>
 
-            <TableCell>{employee.status}</TableCell>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          {employee.branch?.name ?? "No Branch Assigned"}
+                        </p>
+                      </div>
+                    </div>
+                  </TableCell>
 
-            <TableCell className="text-right">
-              <div className="flex justify-end gap-1">
-                <EditEmployeeDialog
-                  selectedEmployee={selectedEmployee}
-                  handleOpenEditDialog={handleOpenEditDialog}
-                />
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+                  {/* Role */}
+                  <TableCell>
+                    <Badge variant="secondary">{formatRole(employee.role)}</Badge>
+                  </TableCell>
+
+                  {/* Email */}
+                  <TableCell>
+                    <div className="max-w-[240px] truncate" title={employee.email}>
+                      {employee.email}
+                    </div>
+                  </TableCell>
+
+                  {/* Phone */}
+                  <TableCell>{employee.phone}</TableCell>
+
+                  {/* Login Access */}
+                  <TableCell>
+                    <Badge variant={employee.verified ? "default" : "secondary"}>
+                      {employee.verified ? "Enabled" : "Disabled"}
+                    </Badge>
+                  </TableCell>
+
+                  {/* Assigned Since */}
+                  <TableCell>
+                    <div className="flex flex-col">
+                      <span>{formatDate(employee.createdAt)}</span>
+
+                      <span className="text-xs text-muted-foreground">Joined</span>
+                    </div>
+                  </TableCell>
+
+                  {/* Actions */}
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+
+                      <DropdownMenuContent align="end">
+                        {employee.verified ? (
+                          <DropdownMenuItem
+                            onClick={() =>
+                              setActionDialog({
+                                open: true,
+                                type: "disable",
+                                employee,
+                              })
+                            }
+                          >
+                            <UserX className="mr-2 h-4 w-4" />
+                            Disable Employee
+                          </DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem
+                            onClick={() =>
+                              setActionDialog({
+                                open: true,
+                                type: "enable",
+                                employee,
+                              })
+                            }
+                          >
+                            <UserCheck className="mr-2 h-4 w-4" />
+                            Enable Employee
+                          </DropdownMenuItem>
+                        )}
+
+                        <DropdownMenuItem
+                          className="text-destructive"
+                          onClick={() =>
+                            setActionDialog({
+                              open: true,
+                              type: "delete",
+                              employee,
+                            })
+                          }
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete Employee
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <EditEmployeeDialog
+                      selectedEmployee={selectedEmployee}
+                      handleOpenEditDialog={() => handleOpenEditDialog(employee)}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      <AlertDialog
+        open={actionDialog.open}
+        onOpenChange={(open) =>
+          setActionDialog((prev) => ({
+            ...prev,
+            open,
+          }))
+        }
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {actionDialog.type === "delete"
+                ? "Delete Employee"
+                : actionDialog.type === "disable"
+                  ? "Disable Employee"
+                  : "Enable Employee"}
+            </AlertDialogTitle>
+
+            <AlertDialogDescription>
+              {actionDialog.type === "delete"
+                ? `Are you sure you want to delete ${actionDialog.employee?.fullName}? This action cannot be undone.`
+                : actionDialog.type === "disable"
+                  ? `Are you sure you want to disable ${actionDialog.employee?.fullName}? They won't be able to login.`
+                  : `Are you sure you want to enable ${actionDialog.employee?.fullName}? They will regain login access.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+
+            <AlertDialogAction onClick={handleConfirmAction}>Confirm</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   );
 }

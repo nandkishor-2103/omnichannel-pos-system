@@ -8,7 +8,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-import type { Order } from "../../types/order.ts";
+import type { Order } from "@/app/store/order/orderTypes";
 
 type Props = {
   open: boolean;
@@ -39,6 +39,14 @@ export default function OrderDetailsDialog({
             </div>
 
             <div>
+              <strong>Customer:</strong> {selectedOrder.customer.fullName}
+            </div>
+
+            <div>
+              <strong>Cashier:</strong> {selectedOrder.cashier.fullName}
+            </div>
+
+            <div>
               <strong>Status:</strong>{" "}
               <Badge className={getStatusColor(selectedOrder.status)}>
                 {selectedOrder.status}
@@ -57,8 +65,23 @@ export default function OrderDetailsDialog({
               <strong>Amount:</strong> ₹{selectedOrder.totalAmount}
             </div>
 
+            <div>
+              <strong>Items:</strong>
+              <div className="mt-2 space-y-2">
+                {selectedOrder.items.map((item, index) => (
+                  <div key={index} className="flex justify-between rounded-md border p-2">
+                    <span>{item.product?.name}</span>
+
+                    <span>
+                      {item.quantity} × ₹{item.price}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <DialogClose asChild>
-              <Button className="w-full mt-4" variant="outline">
+              <Button className="w-full mt-4 cursor-pointer" variant="outline">
                 Close
               </Button>
             </DialogClose>

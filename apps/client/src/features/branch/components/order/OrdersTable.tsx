@@ -12,7 +12,13 @@ import { Button } from "@/components/ui/button";
 
 import { Search, FileText } from "lucide-react";
 
-import type { Order } from "../../types/order.ts";
+import type { Order } from "@/app/store/order/orderTypes";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type Props = {
   orders: Order[];
@@ -49,13 +55,13 @@ export default function OrdersTable({
       <TableBody>
         {orders.map((order) => (
           <TableRow key={order.id}>
-            <TableCell>{order.id}</TableCell>
+            <TableCell>#{order.id.slice(-8).toUpperCase()}</TableCell>
 
-            <TableCell>{order.customer}</TableCell>
+            <TableCell>{order.customer.fullName}</TableCell>
 
-            <TableCell>{order.cashier}</TableCell>
+            <TableCell>{order.cashier.fullName}</TableCell>
 
-            <TableCell>{order.createdAt}</TableCell>
+            <TableCell>{new Date(order.createdAt).toLocaleDateString("en-IN")}</TableCell>
 
             <TableCell>₹{order.totalAmount}</TableCell>
 
@@ -72,21 +78,41 @@ export default function OrdersTable({
 
             <TableCell className="text-right">
               <div className="flex justify-end gap-2">
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => onViewDetails(order.id)}
-                >
-                  <Search className="h-4 w-4" />
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        className="cursor-pointer"
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => onViewDetails(order.id)}
+                      >
+                        <Search className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
 
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => onPrintInvoice(order.id)}
-                >
-                  <FileText className="h-4 w-4" />
-                </Button>
+                    <TooltipContent>
+                      <p>View Details</p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        className="cursor-pointer"
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => onPrintInvoice(order.id)}
+                      >
+                        <FileText className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+
+                    <TooltipContent>
+                      <p>Print Invoice</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             </TableCell>
           </TableRow>

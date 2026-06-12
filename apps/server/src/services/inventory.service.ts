@@ -58,8 +58,15 @@ export const createInventoryService = async ({
   });
 
   const inventoryWithDetails = await Inventory.findById(inventory._id)
-    .populate("branch")
-    .populate("product");
+    .populate("branch", "name address")
+    .populate({
+      path: "product",
+      select: "name sku brand image category",
+      populate: {
+        path: "category",
+        select: "name",
+      },
+    });
 
   return inventoryWithDetails as IInventory;
 };
@@ -113,8 +120,15 @@ export const updateInventoryService = async (
   await inventory.save();
 
   const updatedInventory = await Inventory.findById(id)
-    .populate("branch")
-    .populate("product");
+    .populate("branch", "name address")
+    .populate({
+      path: "product",
+      select: "name sku brand image category",
+      populate: {
+        path: "category",
+        select: "name",
+      },
+    });
 
   return updatedInventory as IInventory;
 };
@@ -147,7 +161,16 @@ export const getInventoryByIdService = async (id: string): Promise<IInventory> =
     });
   }
 
-  const inventory = await Inventory.findById(id).populate("branch").populate("product");
+  const inventory = await Inventory.findById(id)
+    .populate("branch", "name address")
+    .populate({
+      path: "product",
+      select: "name sku brand image category",
+      populate: {
+        path: "category",
+        select: "name",
+      },
+    });
 
   if (!inventory) {
     throw new ApiError({
@@ -172,8 +195,15 @@ export const getInventoryByProductIdService = async (
   const inventories = await Inventory.find({
     product: productId,
   })
-    .populate("branch")
-    .populate("product");
+    .populate("branch", "name address")
+    .populate({
+      path: "product",
+      select: "name sku brand image category",
+      populate: {
+        path: "category",
+        select: "name",
+      },
+    });
 
   return inventories as IInventory[];
 };
@@ -191,8 +221,18 @@ export const getInventoryByBranchService = async (
   const inventories = await Inventory.find({
     branch: branchId,
   })
-    .populate("branch")
-    .populate("product");
+    .populate({
+      path: "branch",
+      select: "name address",
+    })
+    .populate({
+      path: "product",
+      select: "name sku brand image category",
+      populate: {
+        path: "category",
+        select: "name",
+      },
+    });
 
   return inventories as IInventory[];
 };

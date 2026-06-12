@@ -29,6 +29,7 @@ export default function EditEmployeeDialog({
   selectedEmployee,
   handleOpenEditDialog,
 }: EditEmployeeDialogProps) {
+  console.log("Selected Employee: ", selectedEmployee);
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -51,7 +52,6 @@ export default function EditEmployeeDialog({
         <EmployeeForm
           roles={roles}
           initialData={selectedEmployee}
-          onSubmit={() => console.log("Submitted")}
         />
       </DialogContent>
     </Dialog>

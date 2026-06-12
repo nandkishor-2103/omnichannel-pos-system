@@ -146,6 +146,32 @@ export const updateBranchService = async (
     });
   }
 
+  // ADMIN can update any branch
+  if (user.role === "ROLE_ADMIN") {
+    Object.assign(branch, data);
+
+    await branch.save();
+
+    return branch;
+  }
+
+  // BRANCH ADMIN / MANAGER can update only their own branch
+  if (user.role === "ROLE_BRANCH_ADMIN" || user.role === "ROLE_BRANCH_MANAGER") {
+    if (!user.branch || user.branch.toString() !== branch._id.toString()) {
+      throw new ApiError({
+        statusCode: 403,
+        message: "You can only update your own branch",
+      });
+    }
+
+    Object.assign(branch, data);
+
+    await branch.save();
+
+    return branch;
+  }
+
+  // STORE ADMIN / STORE MANAGER access
   checkStoreAccess(branch.store, user);
 
   Object.assign(branch, data);
