@@ -117,7 +117,6 @@ export default function PaymentDialog({
         dispatch(getProductsByStore(user.store.id));
       }
 
-    //   toast.success("Order created successfully");
 
       setShowPaymentDialog(false);
 
