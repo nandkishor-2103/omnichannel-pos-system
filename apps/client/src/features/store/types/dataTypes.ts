@@ -3,9 +3,8 @@ import type { ReactNode } from "react";
 export type StoreDashboardStats = {
   title: string;
   value: number;
+  isCurrency: boolean;
   icon: ReactNode;
-  change: number;
-  loading: boolean;
 };
 
 export type RecentSalesData = {

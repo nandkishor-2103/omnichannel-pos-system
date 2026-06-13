@@ -11,6 +11,7 @@ import {
   getPaymentBreakdownController,
   getBranchPerformanceController,
   getStoreAlertsController,
+  getTodaySalesByBranchController,
 } from "../controllers/storeAnalytics.controller.js";
 
 import { isAuthenticated } from "../middleware/auth.middleware.js";
@@ -20,24 +21,26 @@ const router = Router();
 
 router.use(isAuthenticated, authorizeRoles("ROLE_STORE_ADMIN", "ROLE_STORE_MANAGER"));
 
-router.get("/:storeAdminId/overview", getStoreOverviewController);
+router.get("/:storeId/overview", getStoreOverviewController);
 
-router.get("/:storeAdminId/sales-trends", getSalesTrendsController);
+router.get("/:storeId/sales-trends", getSalesTrendsController);
 
-router.get("/:storeAdminId/sales/monthly", getMonthlySalesController);
+router.get("/:storeId/sales/monthly", getMonthlySalesController);
 
-router.get("/:storeAdminId/sales/daily", getDailySalesController);
+router.get("/:storeId/sales/daily", getDailySalesController);
 
-router.get("/:storeAdminId/sales/category", getSalesByCategoryController);
+router.get("/:storeId/sales/category", getSalesByCategoryController);
 
-router.get("/:storeAdminId/sales/payment-method", getSalesByPaymentMethodController);
+router.get("/:storeId/sales/payment-method", getSalesByPaymentMethodController);
 
-router.get("/:storeAdminId/sales/branch", getSalesByBranchController);
+router.get("/:storeId/sales/branch", getSalesByBranchController);
 
-router.get("/:storeAdminId/payments", getPaymentBreakdownController);
+router.get("/:storeId/payments", getPaymentBreakdownController);
 
-router.get("/:storeAdminId/branch-performance", getBranchPerformanceController);
+router.get("/:storeId/branch-performance", getBranchPerformanceController);
 
-router.get("/:storeAdminId/alerts", getStoreAlertsController);
+router.get("/:storeId/alerts", getStoreAlertsController);
+
+router.get("/:storeId/today-sales-by-branch", getTodaySalesByBranchController);
 
 export { router as storeAnalyticsRoutes };

@@ -1,61 +1,111 @@
-import { DollarSign, ShoppingCart, Store, Users } from "lucide-react";
-import type { StoreDashboardStats } from "../../types/dataTypes";
+import {
+  DollarSign,
+  ShoppingCart,
+  Store,
+  Users,
+  RefreshCcw,
+  Building2,
+} from "lucide-react";
+
 import { Card, CardContent } from "@/components/ui/card";
 
-const loading = false;
+import { useAppSelector } from "@/app/store/hooks";
 
-const stats: StoreDashboardStats[] = [
-  {
-    title: "Total Sales",
-    value: 4599,
-    icon: <DollarSign className="w-8 h-8 text-emerald-500" />,
-    change: 50,
-    loading: loading,
-  },
-  {
-    title: "Total Branches",
-    value: 15,
-    icon: <Store className="w-8 h-8 text-emerald-500" />,
-    change: 4,
-    loading: loading,
-  },
-  {
-    title: "Total Products",
-    value: 7899,
-    icon: <ShoppingCart className="w-8 h-8 text-emerald-500" />,
-    change: 40,
-    loading: loading,
-  },
-  {
-    title: "Total Employees",
-    value: 300,
-    icon: <Users className="w-8 h-8 text-emerald-500" />,
-    change: 30,
-    loading: loading,
-  },
-];
+import type { StoreDashboardStats } from "../../types/dataTypes";
 
 export default function DashboardState() {
+  const storeOverview = useAppSelector((state) => state.storeAnalytics.storeOverview);
+
+  const stats: StoreDashboardStats[] = [
+    {
+      title: "Total Sales",
+      value: storeOverview?.totalSales ?? 0,
+      isCurrency: true,
+      icon: <DollarSign className="w-8 h-8 text-emerald-500" />,
+    },
+    // {
+    //   title: "Total Orders",
+    //   value: storeOverview?.totalOrders ?? 0,
+    //   isCurrency: false,
+    //   icon: <ShoppingCart className="w-8 h-8 text-emerald-500" />,
+    // },
+    {
+      title: "Total Branches",
+      value: storeOverview?.totalBranches ?? 0,
+      isCurrency: false,
+      icon: <Store className="w-8 h-8 text-emerald-500" />,
+    },
+    {
+      title: "Total Employees",
+      value: storeOverview?.totalEmployees ?? 0,
+      isCurrency: false,
+      icon: <Users className="w-8 h-8 text-emerald-500" />,
+    },
+    // {
+    //   title: "Total Customers",
+    //   value: storeOverview?.totalCustomers ?? 0,
+    //   isCurrency: false,
+    //   icon: <Users className="w-8 h-8 text-emerald-500" />,
+    // },
+    {
+      title: "Total Products",
+      value: storeOverview?.totalProducts ?? 0,
+      isCurrency: false,
+      icon: <ShoppingCart className="w-8 h-8 text-emerald-500" />,
+    },
+    {
+      title: "Total Refunds",
+      value: storeOverview?.totalRefunds ?? 0,
+      isCurrency: false,
+      icon: <RefreshCcw className="w-8 h-8 text-emerald-500" />,
+    },
+  ];
+
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
       {stats.map((stat) => (
-        <Card>
-          <CardContent>
+        <Card key={stat.title}>
+          <CardContent className="pt-6">
             <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-500"> {stat.title} </p>
-                <h3 className="font-bold text-lg">{stat.value}</h3>
-                <p
-                  className={`text-xs font-medium mt-1 ${stat.change > 0 ? "text-emerald-500" : "text-red-500"}`}
-                >
-                  {stat.change < 0 ? `-${stat.change}` : `${stat.change}`}
-                </p>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
+
+                <h3 className="mt-2 text-2xl font-bold">
+                  {stat.isCurrency
+                    ? `₹${stat.value.toLocaleString("en-IN", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}`
+                    : stat.value.toLocaleString("en-IN")}
+                </h3>
               </div>
-              <div className="p-3 bg-emerald-50 rounded-full">{stat.icon}</div>
+
+              <div className="rounded-full bg-emerald-50 p-3">{stat.icon}</div>
             </div>
           </CardContent>
         </Card>
       ))}
+
+      {/* Top Branch Card */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">
+                Top Performing Branch
+              </p>
+
+              <h3 className="mt-2 text-2xl font-bold">
+                {storeOverview?.topBranchName ?? "N/A"}
+              </h3>
+            </div>
+
+            <div className="rounded-full bg-emerald-50 p-3">
+              <Building2 className="w-8 h-8 text-emerald-500" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

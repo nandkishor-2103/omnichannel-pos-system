@@ -16,10 +16,16 @@ export interface StoreOverviewDto {
   topBranchName: string | null;
 }
 
+export interface TodaySalesByBranchDto {
+  branchName: string;
+  totalSales: number;
+  totalOrders: number;
+}
+
 export interface TimeSeriesPointDto {
   date: Date;
-
   totalAmount: number;
+  branchName: string;
 }
 
 export interface TimeSeriesDataDto {

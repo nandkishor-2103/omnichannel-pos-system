@@ -14,12 +14,13 @@ import {
   getPaymentBreakdownService,
   getBranchPerformanceService,
   getStoreAlertsService,
+  getTodaySalesByBranchService,
 } from "../services/storeAnalytics.service.js";
 
 export const getStoreOverviewController = asyncHandler(
   async (req: Request, res: Response) => {
-    const storeAdminId = String(req.params.storeAdminId);
-    const data = await getStoreOverviewService(storeAdminId);
+    const storeId = String(req.params.storeId);
+    const data = await getStoreOverviewService(storeId);
 
     return res.status(200).json(
       new ApiResponse({
@@ -35,9 +36,9 @@ export const getStoreOverviewController = asyncHandler(
 
 export const getSalesTrendsController = asyncHandler(
   async (req: Request, res: Response) => {
-    const storeAdminId = String(req.params.storeAdminId);
+    const storeId = String(req.params.storeId);
     const data = await getSalesTrendsService(
-      storeAdminId,
+      storeId,
       String(req.query.period || "DAILY") as "DAILY" | "WEEKLY" | "MONTHLY"
     );
 
@@ -55,8 +56,8 @@ export const getSalesTrendsController = asyncHandler(
 
 export const getMonthlySalesController = asyncHandler(
   async (req: Request, res: Response) => {
-    const storeAdminId = String(req.params.storeAdminId);
-    const data = await getMonthlySalesGraphService(storeAdminId);
+    const storeId = String(req.params.storeId);
+    const data = await getMonthlySalesGraphService(storeId);
 
     return res.status(200).json(
       new ApiResponse({
@@ -72,8 +73,8 @@ export const getMonthlySalesController = asyncHandler(
 
 export const getDailySalesController = asyncHandler(
   async (req: Request, res: Response) => {
-    const storeAdminId = String(req.params.storeAdminId);
-    const data = await getDailySalesGraphService(storeAdminId);
+    const storeId = String(req.params.storeId);
+    const data = await getDailySalesGraphService(storeId);
 
     return res.status(200).json(
       new ApiResponse({
@@ -89,8 +90,8 @@ export const getDailySalesController = asyncHandler(
 
 export const getSalesByCategoryController = asyncHandler(
   async (req: Request, res: Response) => {
-    const storeAdminId = String(req.params.storeAdminId);
-    const data = await getSalesByCategoryService(storeAdminId);
+    const storeId = String(req.params.storeId);
+    const data = await getSalesByCategoryService(storeId);
 
     return res.status(200).json(
       new ApiResponse({
@@ -106,8 +107,8 @@ export const getSalesByCategoryController = asyncHandler(
 
 export const getSalesByPaymentMethodController = asyncHandler(
   async (req: Request, res: Response) => {
-    const storeAdminId = String(req.params.storeAdminId);
-    const data = await getSalesByPaymentMethodService(storeAdminId);
+    const storeId = String(req.params.storeId);
+    const data = await getSalesByPaymentMethodService(storeId);
 
     return res.status(200).json(
       new ApiResponse({
@@ -123,8 +124,8 @@ export const getSalesByPaymentMethodController = asyncHandler(
 
 export const getSalesByBranchController = asyncHandler(
   async (req: Request, res: Response) => {
-    const storeAdminId = String(req.params.storeAdminId);
-    const data = await getSalesByBranchService(storeAdminId);
+    const storeId = String(req.params.storeId);
+    const data = await getSalesByBranchService(storeId);
 
     return res.status(200).json(
       new ApiResponse({
@@ -140,8 +141,8 @@ export const getSalesByBranchController = asyncHandler(
 
 export const getPaymentBreakdownController = asyncHandler(
   async (req: Request, res: Response) => {
-    const storeAdminId = String(req.params.storeAdminId);
-    const data = await getPaymentBreakdownService(storeAdminId);
+    const storeId = String(req.params.storeId);
+    const data = await getPaymentBreakdownService(storeId);
 
     return res.status(200).json(
       new ApiResponse({
@@ -157,8 +158,8 @@ export const getPaymentBreakdownController = asyncHandler(
 
 export const getBranchPerformanceController = asyncHandler(
   async (req: Request, res: Response) => {
-    const storeAdminId = String(req.params.storeAdminId);
-    const data = await getBranchPerformanceService(storeAdminId);
+    const storeId = String(req.params.storeId);
+    const data = await getBranchPerformanceService(storeId);
 
     return res.status(200).json(
       new ApiResponse({
@@ -174,8 +175,8 @@ export const getBranchPerformanceController = asyncHandler(
 
 export const getStoreAlertsController = asyncHandler(
   async (req: Request, res: Response) => {
-    const storeAdminId = String(req.params.storeAdminId);
-    const data = await getStoreAlertsService(storeAdminId);
+    const storeId = String(req.params.storeId);
+    const data = await getStoreAlertsService(storeId);
 
     return res.status(200).json(
       new ApiResponse({
@@ -183,6 +184,24 @@ export const getStoreAlertsController = asyncHandler(
         message: "Store alerts fetched successfully",
         payload: {
           alerts: data,
+        },
+      })
+    );
+  }
+);
+
+export const getTodaySalesByBranchController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const storeId = String(req.params.storeId);
+
+    const data = await getTodaySalesByBranchService(storeId);
+
+    return res.status(200).json(
+      new ApiResponse({
+        statusCode: 200,
+        message: "Today's sales by branch fetched successfully",
+        payload: {
+          sales: data,
         },
       })
     );

@@ -15,23 +15,23 @@ export default function ProductSection() {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const dispatch = useAppDispatch();
 
-  const branch = useAppSelector((state) => state.branch.branch);
+  const user = useAppSelector((state) => state.auth.user);
   const products = useAppSelector((state) => state.product.products);
   const loading = useAppSelector((state) => state.product.loading);
   const searchResults = useAppSelector((state) => state.product.searchResults);
 
   useEffect(() => {
-    if (!branch?.store?._id) return;
+    if (!user?.store?.id) return;
 
-    dispatch(getProductsByStore(branch.store._id));
+    dispatch(getProductsByStore(user?.store?.id));
 
     const interval = setInterval(() => {
-      if (!branch?.store?._id) return;
-      dispatch(getProductsByStore(branch.store._id));
+      if (!user?.store?.id) return;
+      dispatch(getProductsByStore(user?.store?.id));
     }, 15000); // 15 seconds
 
     return () => clearInterval(interval);
-  }, [dispatch, branch?.store?._id]);
+  }, [dispatch, user?.store?.id]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -40,7 +40,7 @@ export default function ProductSection() {
   };
 
   useEffect(() => {
-    if (!branch?.store?._id) return;
+    if (!user?.store?.id) return;
 
     const timeout = setTimeout(async () => {
       const query = searchTerm.trim();
@@ -53,7 +53,7 @@ export default function ProductSection() {
       const resultAction = await dispatch(
         searchProducts({
           query,
-          storeId: branch?.store?._id,
+          storeId: user?.store?.id,
         })
       );
 
@@ -63,7 +63,7 @@ export default function ProductSection() {
     }, 500);
 
     return () => clearTimeout(timeout);
-  }, [dispatch, searchTerm, branch?.store?._id]);
+  }, [dispatch, searchTerm, user?.store?.id]);
 
   const displayedProducts = searchTerm.trim() !== "" ? searchResults : products;
 

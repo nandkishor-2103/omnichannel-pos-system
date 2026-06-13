@@ -12,8 +12,8 @@ import {
 import { Edit } from "lucide-react";
 
 import type { EmployeeFormValues } from "../../types/employee";
-import EmployeeForm from "@/features/store/components/employee/EmployeeForm";
 import { useState } from "react";
+import BranchEmployeeForm from "./BranchEmployeeForm";
 
 const roles: string[] = [
   "ROLE_BRANCH_ADMIN",
@@ -50,7 +50,7 @@ export default function EditEmployeeDialog({
           <DialogDescription>Fill employee information below.</DialogDescription>
         </DialogHeader>
 
-        <EmployeeForm
+        <BranchEmployeeForm
           key={selectedEmployee?.employeeId ?? "edit"}
           roles={roles}
           initialData={selectedEmployee}

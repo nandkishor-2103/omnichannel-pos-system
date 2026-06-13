@@ -59,7 +59,10 @@ const errorHandler = (
       }
     }
 
-    response.errors = [err?.stack?.split("\n")[0] ?? err?.message ?? "Unknown Error"];
+    response.errors =
+      Array.isArray(err?.errors) && err.errors.length > 0
+        ? err.errors
+        : [err?.message ?? "Unknown Error"];
 
     if (file) {
       response.file = file;

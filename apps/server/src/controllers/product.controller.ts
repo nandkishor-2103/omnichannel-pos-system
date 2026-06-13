@@ -19,6 +19,7 @@ import type { IUser } from "../models/user.model.js";
  */
 export const createProductController = asyncHandler(
   async (req: Request, res: Response) => {
+    console.log("Product Data:", req.body);
     const product = await createProductService(req.body, req.user!);
 
     return res.status(201).json(

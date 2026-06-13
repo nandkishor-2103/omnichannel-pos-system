@@ -70,7 +70,7 @@ const branchSlice = createSlice({
       })
       .addCase(getAllBranchesByStore.fulfilled, (state, action) => {
         state.loading = false;
-        state.branches = action.payload.branches;
+        state.branches = action.payload.payload.branches;
       })
       .addCase(getAllBranchesByStore.rejected, (state, action) => {
         state.loading = false;

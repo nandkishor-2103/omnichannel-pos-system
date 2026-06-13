@@ -50,7 +50,8 @@ const productSlice = createSlice({
 
       .addCase(createProduct.fulfilled, (state, action) => {
         state.loading = false;
-        state.products.push(action.payload.payload.product);
+
+        state.products.unshift(action.payload.payload.product);
       })
 
       .addCase(createProduct.rejected, (state, action) => {
@@ -66,24 +67,38 @@ const productSlice = createSlice({
 
       // UPDATE
 
+      .addCase(updateProduct.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+
       .addCase(updateProduct.fulfilled, (state, action) => {
+        state.loading = false;
+
         const updatedProduct = action.payload.payload.product;
 
-        const index = state.products.findIndex((p) => p._id === updatedProduct._id);
+        state.products = state.products.filter(
+          (product) => product._id !== updatedProduct._id
+        );
 
-        if (index !== -1) {
-          state.products[index] = updatedProduct;
-        }
+        state.products.unshift(updatedProduct);
 
         if (state.product?._id === updatedProduct._id) {
           state.product = updatedProduct;
         }
       })
 
+      .addCase(updateProduct.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload ?? "Failed to update product";
+      })
+
       // DELETE
 
       .addCase(deleteProduct.fulfilled, (state, action) => {
-        state.products = state.products.filter((p) => p._id !== action.payload);
+        state.products = state.products.filter(
+          (product) => product._id !== action.payload
+        );
 
         if (state.product?._id === action.payload) {
           state.product = null;

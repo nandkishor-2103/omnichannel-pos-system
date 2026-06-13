@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import DashboardState from "./DashboardState";
 import RecentSales from "./RecentSales";
 import SalesTrends from "./SalesTrends";
@@ -10,7 +11,7 @@ export default function StoreDashboard() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <RecentSales />
-        <SalesTrends/>
+        <SalesTrends />
       </div>
     </div>
   );

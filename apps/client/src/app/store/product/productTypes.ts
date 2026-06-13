@@ -57,7 +57,8 @@ export interface CreateProductPayload {
   brand?: string;
   image?: string;
 
-  categoryId: string;
+  category: string;
+  store: string;
 }
 
 export interface UpdateProductPayload {
