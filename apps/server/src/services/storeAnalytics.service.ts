@@ -19,22 +19,25 @@ import type {
   BranchPerformanceDto,
   TimeSeriesDataDto,
   StoreAlertDto,
+  TodaySalesByBranchDto,
 } from "../types/storeAnalytics.types.js";
 import type { CategorySalesDto } from "../types/branchAnalytics.types.js";
 
 export const getStoreOverviewService = async (
-  storeAdminId: string
+  storeId: string
 ): Promise<StoreOverviewDto> => {
-  if (!mongoose.Types.ObjectId.isValid(storeAdminId)) {
+  if (!mongoose.Types.ObjectId.isValid(storeId)) {
     throw new ApiError({
       statusCode: 400,
-      message: "Invalid store admin ID",
+      message: "Invalid store ID",
     });
   }
 
   const store = await Store.findOne({
-    storeAdmin: storeAdminId,
+    _id: storeId,
   });
+
+  console.log("store", store);
 
   if (!store) {
     throw new ApiError({
@@ -81,6 +84,7 @@ export const getStoreOverviewService = async (
     store: store._id,
     role: {
       $in: [
+        "ROLE_STORE_ADMIN",
         "ROLE_STORE_MANAGER",
         "ROLE_BRANCH_MANAGER",
         "ROLE_BRANCH_ADMIN",
@@ -169,10 +173,10 @@ export const getStoreOverviewService = async (
 };
 
 export const getDailySalesGraphService = async (
-  storeAdminId: string
+  storeId: string
 ): Promise<TimeSeriesPointDto[]> => {
   const store = await Store.findOne({
-    storeAdmin: storeAdminId,
+    _id: storeId,
   });
 
   if (!store) {
@@ -200,29 +204,54 @@ export const getDailySalesGraphService = async (
       $gte: startDate,
       $lte: endDate,
     },
-  });
+  }).populate("branch", "name");
 
-  const grouped = new Map<string, number>();
+  const grouped = new Map<
+    string,
+    {
+      date: string;
+      branchName: string;
+      totalAmount: number;
+    }
+  >();
 
   orders.forEach((order) => {
-    const key = order.createdAt!.toISOString().slice(0, 10);
+    const branch = order.branch as unknown as {
+      _id: string;
+      name: string;
+    };
 
-    grouped.set(key, (grouped.get(key) ?? 0) + order.totalAmount);
+    const date = order.createdAt!.toISOString().slice(0, 10);
+
+    const key = `${date}-${branch.name}`;
+
+    const existing = grouped.get(key);
+
+    if (existing) {
+      existing.totalAmount += order.totalAmount;
+    } else {
+      grouped.set(key, {
+        date,
+        branchName: branch.name,
+        totalAmount: order.totalAmount,
+      });
+    }
   });
 
-  return [...grouped.entries()]
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([date, totalAmount]) => ({
-      date: new Date(date),
-      totalAmount,
+  return [...grouped.values()]
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .map((item) => ({
+      date: new Date(item.date),
+      totalAmount: item.totalAmount,
+      branchName: item.branchName,
     }));
 };
 
 export const getMonthlySalesGraphService = async (
-  storeAdminId: string
+  storeId: string
 ): Promise<TimeSeriesPointDto[]> => {
   const store = await Store.findOne({
-    storeAdmin: storeAdminId,
+    _id: storeId,
   });
 
   if (!store) {
@@ -250,31 +279,55 @@ export const getMonthlySalesGraphService = async (
       $gte: startDate,
       $lte: endDate,
     },
-  });
+  }).populate("branch", "name");
 
-  const grouped = new Map<string, number>();
+  const grouped = new Map<
+    string,
+    {
+      month: string;
+      branchName: string;
+      totalAmount: number;
+    }
+  >();
 
   orders.forEach((order) => {
+    const branch = order.branch as unknown as {
+      name: string;
+    };
+
     const date = order.createdAt!;
 
-    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+    const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 
-    grouped.set(key, (grouped.get(key) ?? 0) + order.totalAmount);
+    const key = `${month}-${branch.name}`;
+
+    const existing = grouped.get(key);
+
+    if (existing) {
+      existing.totalAmount += order.totalAmount;
+    } else {
+      grouped.set(key, {
+        month,
+        branchName: branch.name,
+        totalAmount: order.totalAmount,
+      });
+    }
   });
 
-  return [...grouped.entries()]
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([month, totalAmount]) => ({
-      date: new Date(`${month}-01`),
-      totalAmount,
+  return [...grouped.values()]
+    .sort((a, b) => a.month.localeCompare(b.month))
+    .map((item) => ({
+      date: new Date(`${item.month}-01`),
+      totalAmount: item.totalAmount,
+      branchName: item.branchName,
     }));
 };
 
 export const getSalesByCategoryService = async (
-  storeAdminId: string
+  storeId: string
 ): Promise<CategorySalesDto[]> => {
   const store = await Store.findOne({
-    storeAdmin: storeAdminId,
+    _id: storeId,
   });
 
   if (!store) {
@@ -358,10 +411,10 @@ export const getSalesByCategoryService = async (
 };
 
 export const getSalesByPaymentMethodService = async (
-  storeAdminId: string
+  storeId: string
 ): Promise<PaymentInsightDto[]> => {
   const store = await Store.findOne({
-    storeAdmin: storeAdminId,
+    _id: storeId,
   });
 
   if (!store) {
@@ -408,10 +461,10 @@ export const getSalesByPaymentMethodService = async (
 };
 
 export const getSalesByBranchService = async (
-  storeAdminId: string
+  storeId: string
 ): Promise<BranchSalesDto[]> => {
   const store = await Store.findOne({
-    storeAdmin: storeAdminId,
+    _id: storeId,
   });
 
   if (!store) {
@@ -465,20 +518,20 @@ export const getSalesByBranchService = async (
 };
 
 export const getSalesTrendsService = async (
-  storeAdminId: string,
+  storeId: string,
   period: "DAILY" | "WEEKLY" | "MONTHLY"
 ): Promise<TimeSeriesDataDto> => {
   let points: TimeSeriesPointDto[];
 
   switch (period.toUpperCase()) {
     case "MONTHLY":
-      points = await getMonthlySalesGraphService(storeAdminId);
+      points = await getMonthlySalesGraphService(storeId);
       break;
 
     case "DAILY":
     case "WEEKLY":
     default:
-      points = await getDailySalesGraphService(storeAdminId);
+      points = await getDailySalesGraphService(storeId);
       break;
   }
 
@@ -489,16 +542,16 @@ export const getSalesTrendsService = async (
 };
 
 export const getPaymentBreakdownService = async (
-  storeAdminId: string
+  storeId: string
 ): Promise<PaymentInsightDto[]> => {
-  return getSalesByPaymentMethodService(storeAdminId);
+  return getSalesByPaymentMethodService(storeId);
 };
 
 export const getBranchPerformanceService = async (
-  storeAdminId: string
+  storeId: string
 ): Promise<BranchPerformanceDto> => {
   const store = await Store.findOne({
-    storeAdmin: storeAdminId,
+    _id: storeId,
   });
 
   if (!store) {
@@ -508,7 +561,7 @@ export const getBranchPerformanceService = async (
     });
   }
 
-  const branchSales = await getSalesByBranchService(storeAdminId);
+  const branchSales = await getSalesByBranchService(storeId);
 
   const startOfMonth = new Date();
   startOfMonth.setDate(1);
@@ -530,18 +583,16 @@ export const getBranchPerformanceService = async (
   };
 };
 
-export const getStoreAlertsService = async (
-  storeAdminId: string
-): Promise<StoreAlertDto> => {
-  if (!mongoose.Types.ObjectId.isValid(storeAdminId)) {
+export const getStoreAlertsService = async (storeId: string): Promise<StoreAlertDto> => {
+  if (!mongoose.Types.ObjectId.isValid(storeId)) {
     throw new ApiError({
       statusCode: 400,
-      message: "Invalid store admin ID",
+      message: "Invalid store ID",
     });
   }
 
   const store = await Store.findOne({
-    storeAdmin: storeAdminId,
+    _id: storeId,
   });
 
   if (!store) {
@@ -735,4 +786,81 @@ export const getStoreAlertsService = async (
 
     inactiveCashiers,
   };
+};
+
+export const getTodaySalesByBranchService = async (
+  storeId: string
+): Promise<TodaySalesByBranchDto[]> => {
+  if (!mongoose.Types.ObjectId.isValid(storeId)) {
+    throw new ApiError({
+      statusCode: 400,
+      message: "Invalid store ID",
+    });
+  }
+
+  const store = await Store.findById(storeId);
+
+  if (!store) {
+    throw new ApiError({
+      statusCode: 404,
+      message: "Store not found",
+    });
+  }
+
+  const branchIds = await Branch.find({
+    store: store._id,
+  }).distinct("_id");
+
+  const todayStart = new Date();
+
+  todayStart.setHours(0, 0, 0, 0);
+
+  const result = await Order.aggregate([
+    {
+      $match: {
+        branch: {
+          $in: branchIds,
+        },
+        createdAt: {
+          $gte: todayStart,
+          $lte: new Date(),
+        },
+      },
+    },
+    {
+      $lookup: {
+        from: "branches",
+        localField: "branch",
+        foreignField: "_id",
+        as: "branchInfo",
+      },
+    },
+    {
+      $unwind: "$branchInfo",
+    },
+    {
+      $group: {
+        _id: "$branchInfo.name",
+
+        totalSales: {
+          $sum: "$totalAmount",
+        },
+
+        totalOrders: {
+          $sum: 1,
+        },
+      },
+    },
+    {
+      $sort: {
+        totalSales: -1,
+      },
+    },
+  ]);
+
+  return result.map((item) => ({
+    branchName: item._id,
+    totalSales: item.totalSales,
+    totalOrders: item.totalOrders,
+  }));
 };

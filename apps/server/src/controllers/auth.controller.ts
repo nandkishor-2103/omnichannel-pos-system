@@ -152,6 +152,9 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     .populate("store", "brand")
     .populate("branch", "name");
 
+  console.log("STORE =>", user?.store);
+  console.log("BRAND =>", (user?.store as any)?.brand);
+
   if (!user) {
     throw new ApiError({
       statusCode: 400,
@@ -179,7 +182,6 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 
   await generateToken(res, user);
 
-  console.log("LOGIN RESPONSE", mapUserToResponseDto(user));
   res.status(200).json(
     new ApiResponse({
       statusCode: 200,

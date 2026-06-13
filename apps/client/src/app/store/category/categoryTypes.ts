@@ -1,20 +1,28 @@
 export interface Category {
-  _id: string;
+  id: string;
   name: string;
   description?: string;
-  storeId: string;
+  store?: string;
   createdAt?: string;
   updatedAt?: string;
 }
 
 export interface CategoryResponse {
-  category: Category;
-  message?: string;
+  statusCode: number;
+  success: boolean;
+  message: string;
+  payload: {
+    category: Category;
+  };
 }
 
 export interface CategoriesResponse {
-  categories: Category[];
-  message?: string;
+  statusCode: number;
+  success: boolean;
+  message: string;
+  payload: {
+    categories: Category[];
+  };
 }
 
 export interface CreateCategoryPayload {

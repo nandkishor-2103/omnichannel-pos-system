@@ -3,7 +3,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { api, getErrorMessage } from "@/lib/axios";
 
 import type {
-  StoreOverview,
+  StoreOverviewResponse,
   SalesTrend,
   MonthlySales,
   DailySales,
@@ -14,17 +14,22 @@ import type {
   BranchPerformance,
   StoreAlert,
   SalesTrendsPayload,
+  TodaySalesByBranchResponse,
+  TodaySalesByBranch,
+  SalesTrendsResponse,
 } from "./storeAnalyticsTypes";
 
 // ================= STORE OVERVIEW =================
 
 export const getStoreOverview = createAsyncThunk<
-  StoreOverview,
+  StoreOverviewResponse,
   string,
   { rejectValue: string }
 >("storeAnalytics/getStoreOverview", async (storeAdminId, { rejectWithValue }) => {
   try {
-    const res = await api.get<StoreOverview>(`/store/analytics/${storeAdminId}/overview`);
+    const res = await api.get<StoreOverviewResponse>(
+      `/store/analytics/${storeAdminId}/overview`
+    );
 
     return res.data;
   } catch (error) {
@@ -35,15 +40,13 @@ export const getStoreOverview = createAsyncThunk<
 // ================= SALES TRENDS =================
 
 export const getSalesTrends = createAsyncThunk<
-  SalesTrend[],
+  SalesTrendsResponse,
   SalesTrendsPayload,
   { rejectValue: string }
->("storeAnalytics/getSalesTrends", async (payload, { rejectWithValue }) => {
+>("storeAnalytics/getSalesTrends", async ({ storeId, period }, { rejectWithValue }) => {
   try {
-    const { storeAdminId, period } = payload;
-
-    const res = await api.get<SalesTrend[]>(
-      `/store/analytics/${storeAdminId}/sales-trends?period=${period}`
+    const res = await api.get<SalesTrendsResponse>(
+      `/store/analytics/${storeId}/sales-trends?period=${period}`
     );
 
     return res.data;
@@ -189,6 +192,22 @@ export const getStoreAlerts = createAsyncThunk<
     const res = await api.get<StoreAlert[]>(`/store/analytics/${storeAdminId}/alerts`);
 
     return res.data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+export const getTodaySalesByBranch = createAsyncThunk<
+  TodaySalesByBranch[],
+  string,
+  { rejectValue: string }
+>("storeAnalytics/getTodaySalesByBranch", async (storeId, { rejectWithValue }) => {
+  try {
+    const res = await api.get<TodaySalesByBranchResponse>(
+      `/store/analytics/${storeId}/today-sales-by-branch`
+    );
+
+    return res.data.payload.sales;
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
   }

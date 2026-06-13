@@ -28,11 +28,11 @@ const navLinks: NavLinks[] = [
     name: "Dashboard",
     icon: <LayoutDashboard className="w-5 h-5" />,
   },
-  {
-    path: "/store/stores",
-    name: "Stores",
-    icon: <Store className="w-5 h-5" />,
-  },
+//   {
+//     path: "/store/stores",
+//     name: "Stores",
+//     icon: <Store className="w-5 h-5" />,
+//   },
   {
     path: "/store/branches",
     name: "Branches",

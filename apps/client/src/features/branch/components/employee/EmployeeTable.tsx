@@ -78,6 +78,13 @@ export default function EmployeeTable() {
 
   const employees = useAppSelector((state) => state.employee.employees);
 
+  const user = useAppSelector((state) => state.auth.user);
+
+  const filteredEmployees =
+    user?.role === "ROLE_BRANCH_MANAGER"
+      ? employees.filter((employee) => employee.role !== "ROLE_BRANCH_ADMIN")
+      : employees;
+
   const handleOpenEditDialog = (employee: (typeof employees)[number]) => {
     setSelectedEmployee({
       employeeId: employee._id,
@@ -148,14 +155,14 @@ export default function EmployeeTable() {
           </TableHeader>
 
           <TableBody>
-            {employees.length === 0 ? (
+            {filteredEmployees.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
                   No employees found.
                 </TableCell>
               </TableRow>
             ) : (
-              employees.map((employee) => (
+              filteredEmployees.map((employee) => (
                 <TableRow
                   key={employee._id}
                   className="group transition-all duration-200 hover:bg-muted/50"

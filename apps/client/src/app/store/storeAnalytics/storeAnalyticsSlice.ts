@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+
 import type { StoreAnalyticsState } from "./storeAnalyticsTypes";
 
 import {
@@ -12,12 +13,13 @@ import {
   getPaymentBreakdown,
   getBranchPerformance,
   getStoreAlerts,
+  getTodaySalesByBranch,
 } from "./storeAnalyticsThunk";
 
 const initialState: StoreAnalyticsState = {
   storeOverview: null,
 
-  salesTrends: null,
+  salesTrends: [],
   monthlySales: [],
   dailySales: [],
 
@@ -26,8 +28,9 @@ const initialState: StoreAnalyticsState = {
   paymentBreakdown: [],
 
   salesByBranch: [],
-  branchPerformance: null,
+  todaySalesByBranch: [],
 
+  branchPerformance: null,
   storeAlerts: null,
 
   loading: false,
@@ -45,7 +48,7 @@ const storeAnalyticsSlice = createSlice({
     },
 
     clearSalesData: (state) => {
-      state.salesTrends = null;
+      state.salesTrends = [];
       state.monthlySales = [];
       state.dailySales = [];
       state.salesByCategory = [];
@@ -61,49 +64,87 @@ const storeAnalyticsSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
+      // STORE OVERVIEW
       .addCase(getStoreOverview.fulfilled, (state, action) => {
-        state.storeOverview = action.payload;
+        state.storeOverview = action.payload.payload.overview;
       })
 
+      // SALES TRENDS
       .addCase(getSalesTrends.fulfilled, (state, action) => {
-        state.salesTrends = action.payload;
+        state.salesTrends = action.payload.payload.trends.points;
+
+        state.dailySales = action.payload.payload.trends.points.map(
+          (point) => ({
+            date: point.date,
+            sales: point.totalAmount,
+            branchName: point.branchName,
+          })
+        );
       })
 
+      // MONTHLY SALES
       .addCase(getMonthlySales.fulfilled, (state, action) => {
         state.monthlySales = action.payload;
       })
 
+      // DAILY SALES
       .addCase(getDailySales.fulfilled, (state, action) => {
         state.dailySales = action.payload;
       })
 
+      // CATEGORY SALES
       .addCase(getSalesByCategory.fulfilled, (state, action) => {
         state.salesByCategory = action.payload;
       })
 
+      // PAYMENT METHOD SALES
       .addCase(getSalesByPaymentMethod.fulfilled, (state, action) => {
         state.salesByPaymentMethod = action.payload;
       })
 
+      // SALES BY BRANCH
       .addCase(getSalesByBranch.fulfilled, (state, action) => {
         state.salesByBranch = action.payload;
       })
 
+      // PAYMENT BREAKDOWN
       .addCase(getPaymentBreakdown.fulfilled, (state, action) => {
         state.paymentBreakdown = action.payload;
       })
 
+      // BRANCH PERFORMANCE
       .addCase(getBranchPerformance.fulfilled, (state, action) => {
         state.branchPerformance = action.payload;
       })
 
+      // STORE ALERTS
       .addCase(getStoreAlerts.fulfilled, (state, action) => {
         state.storeAlerts = action.payload;
+      })
+
+      // TODAY SALES BY BRANCH
+      .addCase(getTodaySalesByBranch.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+
+      .addCase(getTodaySalesByBranch.fulfilled, (state, action) => {
+        state.loading = false;
+        state.todaySalesByBranch = action.payload;
+      })
+
+      .addCase(getTodaySalesByBranch.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.payload ?? "Failed to fetch today's branch sales";
       });
   },
 });
 
-export const { clearStoreAnalyticsState, clearSalesData, clearBranchData } =
-  storeAnalyticsSlice.actions;
+export const {
+  clearStoreAnalyticsState,
+  clearSalesData,
+  clearBranchData,
+} = storeAnalyticsSlice.actions;
 
 export default storeAnalyticsSlice.reducer;

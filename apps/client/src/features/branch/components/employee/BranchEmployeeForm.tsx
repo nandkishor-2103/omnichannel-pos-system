@@ -16,47 +16,26 @@ import { Eye, EyeOff } from "lucide-react";
 
 import { useFormik } from "formik";
 
-import { Check, ChevronsUpDown } from "lucide-react";
-
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-
-import { cn } from "@/lib/utils";
-
-import type { StoreEmployeeFormValues } from "../../types/employee";
+import type { EmployeeFormValues } from "../../types/employee";
 import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
-import { createStoreEmployee, updateEmployee } from "@/app/store/employee/employeeThunk";
-import { getAllBranchesByStore } from "@/app/store/branch/branchThunk";
+import { createBranchEmployee, updateEmployee } from "@/app/store/employee/employeeThunk";
 
 type EmployeeFormProps = {
-  initialData?: StoreEmployeeFormValues;
+  initialData?: EmployeeFormValues;
   roles: string[];
   onSuccess?: () => void;
 };
 
-export default function EmployeeForm({
+export default function BranchEmployeeForm({
   initialData,
   roles,
   onSuccess,
 }: EmployeeFormProps) {
   const dispatch = useAppDispatch();
   const [showPassword, setShowPassword] = useState(false);
-  const user = useAppSelector((state) => state.auth.user);
-  const branches = useAppSelector((state) => state.branch.branches);
-  useEffect(() => {
-    if (user?.store?.id) {
-      dispatch(getAllBranchesByStore(user.store.id));
-    }
-  }, [dispatch, user]);
-  const formik = useFormik<StoreEmployeeFormValues>({
+  const branch = useAppSelector((state) => state.branch.branch);
+
+  const formik = useFormik<EmployeeFormValues>({
     enableReinitialize: true,
 
     initialValues: initialData || {
@@ -66,7 +45,6 @@ export default function EmployeeForm({
       password: "",
       phone: "",
       role: "",
-      storeId: "",
       branchId: "",
     },
 
@@ -94,18 +72,15 @@ export default function EmployeeForm({
       }
 
       // CREATE EMPLOYEE
-      if (user?.store?.id) {
+      if (branch?._id) {
         const result = await dispatch(
-          createStoreEmployee({
-            employee: {
-              ...values,
-              branch: values.role === "ROLE_BRANCH_ADMIN" ? values.branchId : undefined,
-            },
-            storeId: user.store.id,
+          createBranchEmployee({
+            employee: values,
+            branchId: branch._id,
           })
         );
 
-        if (createStoreEmployee.fulfilled.match(result)) {
+        if (createBranchEmployee.fulfilled.match(result)) {
           formik.resetForm();
           onSuccess?.();
         }
@@ -212,60 +187,6 @@ export default function EmployeeForm({
           </SelectContent>
         </Select>
       </div>
-
-      {formik.values.role === "ROLE_BRANCH_ADMIN" && (
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">Assign Branch</Label>
-
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                type="button"
-                variant="outline"
-                role="combobox"
-                className="w-full justify-between"
-              >
-                {formik.values.branchId
-                  ? branches.find((branch) => branch._id === formik.values.branchId)?.name
-                  : "Search and select branch"}
-
-                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-
-            <PopoverContent className="w-full p-0">
-              <Command>
-                <CommandInput placeholder="Search branch..." />
-
-                <CommandList>
-                  <CommandEmpty>No branch found.</CommandEmpty>
-
-                  <CommandGroup className="max-h-60 overflow-y-auto">
-                    {branches.map((branch) => (
-                      <CommandItem
-                        key={branch._id}
-                        value={branch.name}
-                        onSelect={() => formik.setFieldValue("branchId", branch._id)}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            formik.values.branchId === branch._id
-                              ? "opacity-100"
-                              : "opacity-0"
-                          )}
-                        />
-
-                        {branch.name}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
-        </div>
-      )}
 
       {/* Submit Button */}
       <div className="pt-2">

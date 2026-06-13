@@ -35,7 +35,8 @@ interface UpdateEmployeeInput {
 
 export const createStoreEmployeeService = async (
   employeeData: CreateEmployeeInput,
-  storeId: string
+  storeId: string,
+  currentUser: Express.User
 ) => {
   if (!mongoose.Types.ObjectId.isValid(storeId)) {
     throw new ApiError({
@@ -53,6 +54,28 @@ export const createStoreEmployeeService = async (
     });
   }
 
+  // ==================================================
+  // ROLE ACCESS CONTROL
+  // ==================================================
+
+  const currentUserRole = currentUser.role;
+
+  if (currentUserRole === "ROLE_BRANCH_ADMIN") {
+    throw new ApiError({
+      statusCode: 403,
+      message: "Branch admin is not allowed to create employees",
+    });
+  }
+
+  if (currentUserRole === "ROLE_STORE_MANAGER") {
+    if (employeeData.role !== "ROLE_BRANCH_ADMIN") {
+      throw new ApiError({
+        statusCode: 403,
+        message: "Store manager can create only branch admins",
+      });
+    }
+  }
+
   const allowedRoles = ["ROLE_STORE_MANAGER", "ROLE_BRANCH_ADMIN"];
 
   if (!allowedRoles.includes(employeeData.role)) {
@@ -62,7 +85,29 @@ export const createStoreEmployeeService = async (
     });
   }
 
+  // ==================================================
+  // ONLY ONE STORE MANAGER PER STORE
+  // ==================================================
+
+  if (employeeData.role === "ROLE_STORE_MANAGER") {
+    const existingStoreManager = await User.findOne({
+      store: store._id,
+      role: "ROLE_STORE_MANAGER",
+    });
+
+    if (existingStoreManager) {
+      throw new ApiError({
+        statusCode: 409,
+        message: "Store already has a store manager",
+      });
+    }
+  }
+
   let branch = null;
+
+  // ==================================================
+  // BRANCH ADMIN VALIDATIONS
+  // ==================================================
 
   if (employeeData.role === "ROLE_BRANCH_ADMIN") {
     if (!employeeData.branch) {
@@ -108,6 +153,10 @@ export const createStoreEmployeeService = async (
     }
   }
 
+  // ==================================================
+  // EMAIL UNIQUE CHECK
+  // ==================================================
+
   const existingUser = await User.findOne({
     email: employeeData.email,
   });
@@ -118,6 +167,10 @@ export const createStoreEmployeeService = async (
       message: "Employee already exists with this email",
     });
   }
+
+  // ==================================================
+  // CREATE EMPLOYEE
+  // ==================================================
 
   const employeePayload: {
     fullName: string;
@@ -358,6 +411,33 @@ export const deleteEmployeeService = async (employeeId: string, currentUser: IUs
         message: "You can only delete employees from your own store",
       });
     }
+  }
+
+  if (employee.role === "ROLE_STORE_MANAGER" && currentUser.role !== "ROLE_STORE_ADMIN") {
+    throw new ApiError({
+      statusCode: 403,
+      message: "Only Store Admin can delete Store Manager",
+    });
+  }
+
+  if (
+    employee.role === "ROLE_BRANCH_ADMIN" &&
+    currentUser.role !== "ROLE_STORE_MANAGER"
+  ) {
+    throw new ApiError({
+      statusCode: 403,
+      message: "Only Store Manager can delete Branch Admin",
+    });
+  }
+
+  if (
+    ["ROLE_BRANCH_MANAGER", "ROLE_BRANCH_CASHIER"].includes(employee.role) &&
+    currentUser.role !== "ROLE_BRANCH_ADMIN"
+  ) {
+    throw new ApiError({
+      statusCode: 403,
+      message: "Only Branch Admin can delete Branch Employees",
+    });
   }
 
   if (currentUser.role === "ROLE_BRANCH_ADMIN") {

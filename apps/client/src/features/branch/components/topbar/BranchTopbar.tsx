@@ -24,6 +24,9 @@ export default function BranchTopbar() {
       )}`
     : undefined;
 
+  const roleLabel =
+    user?.role?.replace("ROLE_", "").replaceAll("_", " ").toUpperCase() ?? "";
+
   return (
     <header className="flex items-center justify-between border-b bg-background px-6 py-2">
       {/* Left Section */}
@@ -48,6 +51,13 @@ export default function BranchTopbar() {
               <span>{branch.address}</span>
             </>
           )}
+        </div>
+      </div>
+
+      {/* Center Section */}
+      <div className="hidden md:flex items-center">
+        <div className="rounded-full border bg-muted px-4 py-2 text-sm font-semibold tracking-wide">
+          {roleLabel}
         </div>
       </div>
 
