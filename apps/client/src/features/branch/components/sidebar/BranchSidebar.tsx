@@ -59,11 +59,11 @@ export default function BranchSidebar({ navItems }: BranchSidebarProps) {
       {user?.branch?.id && (
         <div className="mx-2 my-4 rounded-xl bg-sidebar-accent px-4 py-3">
           <h3 className="text-sm font-semibold text-sidebar-accent-foreground">
-            {branch?.store?.brand}
+            {user.store?.brand}
           </h3>
 
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-            {branch?.store?.contact.address}
+            {user.store?.contact.address}
           </p>
         </div>
       )}

@@ -13,11 +13,18 @@ export interface User {
   store?: {
     id: string;
     brand: string;
+
+    contact: {
+      address: string;
+      phone: string;
+      email: string;
+    };
   } | null;
 
   branch?: {
     id: string;
     name: string;
+    address: string;
   } | null;
 
   lastLogin?: string;

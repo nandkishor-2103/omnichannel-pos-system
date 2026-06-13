@@ -26,13 +26,13 @@ export default function Sidebar({ navItems, onClose }: SidebarProps) {
   const navigate = useNavigate();
 
   const userProfile = useAppSelector((state) => state.user.userProfile);
+  const user = useAppSelector((state) => state.auth.user);
   const branch = useAppSelector((state) => state.branch.branch);
 
   const handleLogout = async () => {
     const resultAction = await dispatch(logout());
 
     if (logout.fulfilled.match(resultAction)) {
-
       navigate("/login", { replace: true });
     }
   };
@@ -82,11 +82,11 @@ export default function Sidebar({ navItems, onClose }: SidebarProps) {
 
             <div className="min-w-0 flex-1">
               <h3 className="truncate text-sm font-semibold text-sidebar-foreground">
-                {branch?.name || "Branch"}
+                {user?.branch?.name || "Branch"}
               </h3>
 
               <p className="text-xs font-medium text-primary">
-                {branch?.store?.brand || "Store"}
+                {user?.store?.brand || "Store"}
               </p>
 
               <div className="mt-3 space-y-2">
@@ -94,7 +94,7 @@ export default function Sidebar({ navItems, onClose }: SidebarProps) {
                   <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
 
                   <p className="line-clamp-2 text-xs text-muted-foreground">
-                    {branch?.address || "Address not available"}
+                    {user?.branch?.address || "Address not available"}
                   </p>
                 </div>
 

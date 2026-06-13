@@ -149,11 +149,9 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 
   const user = await User.findOne({ email })
     .select("+password")
-    .populate("store", "brand")
-    .populate("branch", "name");
+    .populate("store", "brand contact")
+    .populate("branch", "name address");
 
-  console.log("STORE =>", user?.store);
-  console.log("BRAND =>", (user?.store as any)?.brand);
 
   if (!user) {
     throw new ApiError({

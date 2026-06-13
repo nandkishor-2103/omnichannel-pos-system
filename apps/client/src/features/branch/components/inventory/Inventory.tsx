@@ -28,7 +28,7 @@ export default function Inventory() {
 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
 
-  const branch = useAppSelector((state) => state.branch.branch);
+  const user = useAppSelector((state) => state.auth.user);
 
   const dispatch = useAppDispatch();
 
@@ -41,7 +41,7 @@ export default function Inventory() {
       return;
     }
 
-    if (!branch?._id) {
+    if (!user?.branch?.id) {
       toast.error("Branch not found");
 
       return;
@@ -49,14 +49,14 @@ export default function Inventory() {
 
     const resultAction = await dispatch(
       createInventory({
-        branchId: branch._id,
+        branchId: user?.branch?.id,
         productId: selectedProductId,
         quantity,
       })
     );
 
     if (createInventory.fulfilled.match(resultAction)) {
-      dispatch(getInventoryByBranch(branch._id));
+      dispatch(getInventoryByBranch(user?.branch?.id));
 
       setSelectedProductId("");
       setQuantity(1);
@@ -81,8 +81,8 @@ export default function Inventory() {
     );
 
     if (updateInventory.fulfilled.match(resultAction)) {
-      if (branch?._id) {
-        dispatch(getInventoryByBranch(branch._id));
+      if (user?.branch?.id) {
+        dispatch(getInventoryByBranch(user?.branch?.id));
       }
 
       setSelectedInventoryId("");
@@ -94,11 +94,11 @@ export default function Inventory() {
   };
 
   useEffect(() => {
-    if (branch?._id && branch.store?._id) {
-      dispatch(getInventoryByBranch(branch._id));
-      dispatch(getProductsByStore(branch.store._id));
+    if (user?.branch?.id && user.store?.id) {
+      dispatch(getInventoryByBranch(user?.branch?.id));
+      dispatch(getProductsByStore(user?.branch?.id));
     }
-  }, [dispatch, branch?._id, branch?.store?._id]);
+  }, [dispatch, user?.branch?.id, user?.store?.id]);
 
   return (
     <div>
