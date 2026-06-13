@@ -38,7 +38,7 @@ export const signin = createAsyncThunk<
 >("auth/signin", async (loginData, { rejectWithValue }) => {
   try {
     const res = await api.post<SignInResponse>("/auth/signin", loginData);
-
+    console.log("SIGNIN: ", res.data);
     return res.data;
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));

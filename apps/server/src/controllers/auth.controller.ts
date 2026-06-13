@@ -149,8 +149,9 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 
   const user = await User.findOne({ email })
     .select("+password")
-    .populate("store", "brand")
-    .populate("branch", "name");
+    .populate("store", "brand contact")
+    .populate("branch", "name address");
+
 
   if (!user) {
     throw new ApiError({
@@ -179,7 +180,6 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 
   await generateToken(res, user);
 
-  console.log("LOGIN RESPONSE", mapUserToResponseDto(user));
   res.status(200).json(
     new ApiResponse({
       statusCode: 200,

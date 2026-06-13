@@ -27,19 +27,20 @@ export interface Branch {
   name: string;
   address: string;
 
-  phone?: string;
-  email?: string;
+  phone: string;
+  email: string;
 
-  workingDays?: string[];
+  workingDays: string[];
 
-  openTime?: string;
-  closeTime?: string;
+  openTime: string;
+  closeTime: string;
 
-  store?: StoreInfo;
-  manager?: BranchManager;
+  store?: string | StoreInfo;
 
-  createdAt?: string;
-  updatedAt?: string;
+  manager: BranchManager | null;
+
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface BranchResponse {
@@ -52,17 +53,23 @@ export interface BranchResponse {
 }
 
 export interface BranchesResponse {
-  branches: Branch[];
-  message?: string;
+  statusCode: number;
+  success: boolean;
+  message: string;
+  payload: {
+    branches: Branch[];
+  };
 }
 
 export interface CreateBranchPayload {
   name: string;
   address: string;
-  phone?: string;
-  email?: string;
+  phone: string;
+  email: string;
+  workingDays: string[];
+  openTime: string;
+  closeTime: string;
   storeId: string;
-  workingDays?: string[];
 }
 
 export interface UpdateBranchPayload {

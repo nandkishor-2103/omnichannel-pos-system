@@ -1,3 +1,19 @@
+import { useState } from "react";
+
+import type { Product } from "@/app/store/product/productTypes";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -8,182 +24,153 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Edit, Trash2Icon } from "lucide-react";
 
+import { AlertTriangle, Edit, Trash2 } from "lucide-react";
 
-
-type ProductDataType = {
-  image: string;
-  name: string;
-  category: string;
-  price: string;
-  stock: string;
+type ProductTableProps = {
+  products: Product[];
+  onEdit: (product: Product) => void;
+  onDelete: (productId: string) => void;
 };
 
-const products: ProductDataType[] = [
-  {
-    image: "https://picsum.photos/100?random=1",
-    name: "Apple iPhone 15",
-    category: "Electronics",
-    price: "₹79,999",
-    stock: "25",
-  },
-  {
-    image: "https://picsum.photos/100?random=2",
-    name: "Samsung Galaxy S24",
-    category: "Electronics",
-    price: "₹74,999",
-    stock: "18",
-  },
-  {
-    image: "https://picsum.photos/100?random=3",
-    name: "Nike Air Max",
-    category: "Footwear",
-    price: "₹5,499",
-    stock: "40",
-  },
-  {
-    image: "https://picsum.photos/100?random=4",
-    name: "Adidas Running Shoes",
-    category: "Footwear",
-    price: "₹4,999",
-    stock: "32",
-  },
-  {
-    image: "https://picsum.photos/100?random=5",
-    name: "Sony WH-1000XM5",
-    category: "Electronics",
-    price: "₹29,999",
-    stock: "12",
-  },
-  {
-    image: "https://picsum.photos/100?random=6",
-    name: "Dell Inspiron 15",
-    category: "Computers",
-    price: "₹62,999",
-    stock: "10",
-  },
-  {
-    image: "https://picsum.photos/100?random=7",
-    name: "HP Pavilion Laptop",
-    category: "Computers",
-    price: "₹58,999",
-    stock: "14",
-  },
-  {
-    image: "https://picsum.photos/100?random=8",
-    name: "Boat Rockerz 550",
-    category: "Accessories",
-    price: "₹1,999",
-    stock: "60",
-  },
-  {
-    image: "https://picsum.photos/100?random=9",
-    name: "Logitech MX Master 3S",
-    category: "Accessories",
-    price: "₹8,999",
-    stock: "20",
-  },
-  {
-    image: "https://picsum.photos/100?random=10",
-    name: "Apple Watch Series 9",
-    category: "Wearables",
-    price: "₹39,999",
-    stock: "15",
-  },
-  {
-    image: "https://picsum.photos/100?random=11",
-    name: "Samsung Galaxy Watch 6",
-    category: "Wearables",
-    price: "₹24,999",
-    stock: "22",
-  },
-  {
-    image: "https://picsum.photos/100?random=12",
-    name: "Canon EOS R50",
-    category: "Cameras",
-    price: "₹74,500",
-    stock: "8",
-  },
-  {
-    image: "https://picsum.photos/100?random=13",
-    name: "Puma Sports T-Shirt",
-    category: "Clothing",
-    price: "₹1,299",
-    stock: "75",
-  },
-  {
-    image: "https://picsum.photos/100?random=14",
-    name: "Levi's Slim Fit Jeans",
-    category: "Clothing",
-    price: "₹2,499",
-    stock: "35",
-  },
-  {
-    image: "https://picsum.photos/100?random=15",
-    name: "Wildcraft Backpack",
-    category: "Bags",
-    price: "₹1,799",
-    stock: "28",
-  },
-];
+export default function ProductTable({ products, onEdit, onDelete }: ProductTableProps) {
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
 
-type BranchTableProps = {
-  onEdit: (product: ProductDataType) => void;
-};
-
-export default function ProductTable({ onEdit }: BranchTableProps) {
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="font-semibold">Image</TableHead>
-          <TableHead className="font-semibold">Product Name</TableHead>
-          <TableHead className="font-semibold">Category</TableHead>
-          <TableHead className="font-semibold">Price</TableHead>
-          <TableHead className="font-semibold">Stock</TableHead>
-          <TableHead className="text-right font-semibold">Action</TableHead>
-        </TableRow>
-      </TableHeader>
+    <>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[60px]">#</TableHead>
 
-      <TableBody>
-        {products.map((product) => (
-          <TableRow key={product.name} className="transition-colors hover:bg-muted/30">
-            <TableCell>
-              <img
-                src={product.image}
-                alt={product.name}
-                className="h-12 w-12 rounded-md object-cover border"
-              />
-            </TableCell>
+            <TableHead>Product</TableHead>
 
-            <TableCell>{product.name}</TableCell>
+            <TableHead>Category</TableHead>
 
-            <TableCell>{product.category}</TableCell>
+            <TableHead>SKU</TableHead>
 
-            <TableCell>{product.price}</TableCell>
+            <TableHead>MRP</TableHead>
 
-            <TableCell>{product.stock}</TableCell>
+            <TableHead>Selling Price</TableHead>
 
-            <TableCell className="text-right space-x-1">
-              <Button
-                variant={"outline"}
-                className="cursor-pointer"
-                onClick={() => onEdit(product)}
-              >
-                <Edit />
-              </Button>
-              <Button
-                variant={"outline"}
-                className="cursor-pointer hover:text-red-500"
-                // onClick={() => onEdit(branch)}
-              >
-                <Trash2Icon />
-              </Button>
-            </TableCell>
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+
+        <TableBody>
+          {products.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={8} className="py-10 text-center text-muted-foreground">
+                No products found
+              </TableCell>
+            </TableRow>
+          ) : (
+            products.map((product, index) => (
+              <TableRow
+                key={product._id}
+                className={`transition-colors hover:bg-muted/30 ${
+                  !product.category
+                    ? "bg-amber-50/60 hover:bg-amber-100/60 dark:bg-amber-950/20"
+                    : ""
+                }`}
+              >
+                <TableCell className="font-medium">{index + 1}</TableCell>
+
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={product.image || "https://placehold.co/60x60?text=No+Image"}
+                      alt={product.name}
+                      className="h-12 w-12 rounded-md border object-cover"
+                    />
+
+                    <div>
+                      <p className="font-medium">{product.name}</p>
+
+                      <p className="max-w-[250px] truncate text-xs text-muted-foreground">
+                        {product.brand}
+                      </p>
+                    </div>
+                  </div>
+                </TableCell>
+
+                <TableCell>
+                  {product.category?.name ? (
+                    product.category.name
+                  ) : (
+                    <div className="flex items-center gap-2 text-amber-600 font-medium">
+                      <AlertTriangle className="h-4 w-4" />
+                      <span>Not Assigned</span>
+                    </div>
+                  )}
+                </TableCell>
+
+                <TableCell>{product.sku}</TableCell>
+
+                <TableCell>₹{product.mrp.toLocaleString()}</TableCell>
+
+                <TableCell className="font-medium text-green-600">
+                  ₹{product.sellingPrice.toLocaleString()}
+                </TableCell>
+
+                <TableCell className="text-right">
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => onEdit(product)}
+                      className="cursor-pointer"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="cursor-pointer hover:text-red-500"
+                      onClick={() => setProductToDelete(product)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
+
+      <AlertDialog open={!!productToDelete} onOpenChange={() => setProductToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Product?</AlertDialogTitle>
+
+            <AlertDialogDescription>
+              Are you sure you want to delete <strong>{productToDelete?.name}</strong>
+              ?
+              <br />
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+
+            <AlertDialogAction
+              className="cursor-pointer"
+              onClick={() => {
+                if (productToDelete) {
+                  onDelete(productToDelete._id);
+                }
+
+                setProductToDelete(null);
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

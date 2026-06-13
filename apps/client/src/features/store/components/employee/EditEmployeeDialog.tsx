@@ -11,17 +11,14 @@ import {
 
 import { Edit } from "lucide-react";
 
-import EmployeeForm from "./EmployeeForm";
-import type { EmployeeFormValues } from "../../types/employee";
+import type { StoreEmployeeFormValues } from "../../types/employee";
+import EmployeeForm from "@/features/store/components/employee/EmployeeForm";
+import { useState } from "react";
 
-const roles: string[] = [
-  "ROLE_BRANCH_ADMIN",
-  "ROLE_BRANCH_MANAGER",
-  "ROLE_BRANCH_CASHIER",
-];
+const roles: string[] = ["ROLE_STORE_MANAGER", "ROLE_BRANCH_ADMIN"];
 
 type EditEmployeeDialogProps = {
-  selectedEmployee?: EmployeeFormValues;
+  selectedEmployee?: StoreEmployeeFormValues;
   handleOpenEditDialog: () => void;
 };
 
@@ -29,9 +26,9 @@ export default function EditEmployeeDialog({
   selectedEmployee,
   handleOpenEditDialog,
 }: EditEmployeeDialogProps) {
-  console.log("Selected Employee: ", selectedEmployee);
+  const [open, setOpen] = useState(false);
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
           onClick={handleOpenEditDialog}
@@ -50,8 +47,10 @@ export default function EditEmployeeDialog({
         </DialogHeader>
 
         <EmployeeForm
+          key={selectedEmployee?.employeeId ?? "edit"}
           roles={roles}
           initialData={selectedEmployee}
+          onSuccess={() => setOpen(false)}
         />
       </DialogContent>
     </Dialog>

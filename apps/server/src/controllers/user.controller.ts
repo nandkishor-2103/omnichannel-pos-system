@@ -5,6 +5,8 @@ import ApiResponse from "../utils/ApiResponse.js";
 
 import { getUserByIdService } from "../services/user.service.js";
 import { mapUserToResponseDto } from "../mappers/user.mapper.js";
+import User from "../models/user.model.js";
+import ApiError from "../utils/ApiError.js";
 
 /**
  * @desc    Get Current Logged In User Profile
@@ -13,7 +15,16 @@ import { mapUserToResponseDto } from "../mappers/user.mapper.js";
  */
 export const getUserProfileController = asyncHandler(
   async (req: Request, res: Response) => {
-    const user = req.user;
+    const user = await User.findById(req.user!._id)
+      .populate("store", "brand")
+      .populate("branch", "name");
+
+    if (!user) {
+      throw new ApiError({
+        statusCode: 404,
+        message: "User not found",
+      });
+    }
 
     return res.status(200).json(
       new ApiResponse({

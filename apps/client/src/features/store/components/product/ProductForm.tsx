@@ -1,36 +1,25 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
+
 import { Field, Form, Formik, type FieldProps } from "formik";
 
-type CategoryData = {
-  id: number;
-  name: string;
-};
+import type { Category } from "@/app/store/category/categoryTypes";
 
-const categoryList: CategoryData[] = [
-  {
-    id: 234,
-    name: "vegetables",
-  },
-  {
-    id: 435,
-    name: "clothes",
-  },
-  {
-    id: 678,
-    name: "electronics",
-  },
-];
+import { Check, ChevronsUpDown } from "lucide-react";
 
-const loading: boolean = false;
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+
+import { Textarea } from "@/components/ui/textarea";
 
 export type ProductFormValues = {
   name: string;
@@ -40,11 +29,11 @@ export type ProductFormValues = {
   sellingPrice: string;
   brand: string;
   categoryId: string;
-  color: string;
   image: string;
 };
 
 type ProductFormProps = {
+  categories: Category[];
   initialValues?: Partial<ProductFormValues>;
   onSubmit: (values: ProductFormValues) => void;
   onCancel?: () => void;
@@ -52,12 +41,15 @@ type ProductFormProps = {
 };
 
 export default function ProductForm({
+  categories,
   initialValues,
   onSubmit,
   onCancel,
   isEditing = false,
 }: ProductFormProps) {
-  const defaultValues = {
+  const [openCategory, setOpenCategory] = useState(false);
+
+  const defaultValues: ProductFormValues = {
     name: "",
     sku: "",
     description: "",
@@ -65,161 +57,165 @@ export default function ProductForm({
     sellingPrice: "",
     brand: "",
     categoryId: "",
-    color: "",
     image: "",
     ...initialValues,
   };
 
-  const handleSubmit = (values: ProductFormValues) => {
-    console.log("Product Data: ", values);
-    onSubmit(values);
-  };
-
   return (
-    <Formik initialValues={defaultValues} onSubmit={handleSubmit} enableReinitialize>
+    <Formik<ProductFormValues>
+      enableReinitialize
+      initialValues={defaultValues}
+      onSubmit={onSubmit}
+    >
       {({ isSubmitting, setFieldValue }) => (
-        <Form className="space-y-4 py-2 pr-2">
-          <div className="space-y-2">
-            <label htmlFor="name" className="block text-sm font-medium">
-              Product Name
-            </label>
-            <Field
-              as={Input}
-              id="name"
-              name="name"
-              placeholder="Enter product name"
-              type="text"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="sku" className="block text-sm font-medium">
-              SKU
-            </label>
-            <Field as={Input} id="sku" name="sku" placeholder="Enter SKU" type="text" />
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="brand" className="block text-sm font-medium">
-              Brand
-            </label>
-            <Field
-              as={Input}
-              id="brand"
-              name="brand"
-              placeholder="Enter brand"
-              type="text"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="categoryId" className="block text-sm font-medium">
-              Category
-            </label>
-            <Field as={Input} name="categoryId">
-              {({ field }: FieldProps) => (
-                <Select
-                  value={field.value}
-                  onValueChange={(value) => setFieldValue("categoryId", value)}
-                >
-                  <SelectTrigger className="w-1/2">
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    {categoryList.map((category) => (
-                      <SelectItem key={category.id} value={category.id.toString()}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            </Field>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
+        <Form className="space-y-5">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {/* Product Name */}
             <div className="space-y-2">
-              <label htmlFor="mrp" className="block text-sm font-medium">
-                MRP
-              </label>
-              <Field
-                as={Input}
-                id="mrp"
-                name="mrp"
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="0.00"
-              />
+              <label className="text-sm font-medium">Product Name</label>
+
+              <Field as={Input} name="name" placeholder="Enter product name" />
             </div>
 
+            {/* SKU */}
             <div className="space-y-2">
-              <label htmlFor="sellingPrice" className="block text-sm font-medium">
-                Selling Price
-              </label>
+              <label className="text-sm font-medium">SKU</label>
+
+              <Field as={Input} name="sku" placeholder="Enter SKU" />
+            </div>
+
+            {/* Brand */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Brand</label>
+
+              <Field as={Input} name="brand" placeholder="Enter brand name" />
+            </div>
+
+            {/* Category */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Category</label>
+
+              <Field name="categoryId">
+                {({ field }: FieldProps) => (
+                  <Popover open={openCategory} onOpenChange={setOpenCategory}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        role="combobox"
+                        className="w-full justify-between"
+                      >
+                        {field.value
+                          ? categories.find(
+                              (category) => (category.id ?? category.id) === field.value
+                            )?.name
+                          : "Select category"}
+
+                        <ChevronsUpDown className="h-4 w-4 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+
+                    <PopoverContent className="w-[300px] p-0">
+                      <Command>
+                        <CommandInput placeholder="Search category..." />
+
+                        <CommandEmpty>No category found.</CommandEmpty>
+
+                        <CommandGroup className="h-[200px] overflow-y-auto">
+                          {categories.map((category) => {
+                            const categoryId = category.id ?? category.id;
+
+                            return (
+                              <CommandItem
+                                key={categoryId}
+                                value={category.name}
+                                onSelect={() => {
+                                  setFieldValue("categoryId", categoryId);
+
+                                  setOpenCategory(false);
+                                }}
+                              >
+                                <Check
+                                  className={`mr-2 h-4 w-4 ${
+                                    field.value === categoryId
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                  }`}
+                                />
+
+                                {category.name}
+                              </CommandItem>
+                            );
+                          })}
+                        </CommandGroup>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                )}
+              </Field>
+            </div>
+
+            {/* MRP */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">MRP</label>
+
+              <Field as={Input} type="number" name="mrp" placeholder="Enter MRP" />
+            </div>
+
+            {/* Selling Price */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Selling Price</label>
+
               <Field
                 as={Input}
-                id="sellingPrice"
+                type="number"
                 name="sellingPrice"
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="0.00"
+                placeholder="Enter selling price"
               />
             </div>
+          </div>
 
-            <div className="space-y-2">
-              <label htmlFor="color" className="block text-sm font-medium">
-                Color
-              </label>
-              <Field
-                as={Input}
-                id="color"
-                name="color"
-                placeholder="Enter product color"
-              />
-            </div>
+          {/* Image URL */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Product Image URL</label>
 
-            <div className="space-y-2">
-              <label htmlFor="image" className="block text-sm font-medium">
-                Image URL
-              </label>
-              <Field as={Input} id="image" name="image" placeholder="Paste image URL" />
-            </div>
+            <Field as={Input} name="image" placeholder="Paste image URL" />
+          </div>
 
-            <div className="space-y-2">
-              <label htmlFor="description" className="block text-sm font-medium">
-                Description
-              </label>
-              <Field
-                as={Textarea}
-                id="description"
-                name="description"
-                placeholder="Enter product description"
-                rows={3}
-              />
-            </div>
+          {/* Description */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Description</label>
 
-            <div className="flex justify-end gap-3 pt-4">
-              {onCancel && (
-                <Button
-                  className="cursor-pointer"
-                  type="button"
-                  variant={"outline"}
-                  onClick={onCancel}
-                >
-                  Cancel
-                </Button>
-              )}
+            <Field
+              as={Textarea}
+              name="description"
+              rows={4}
+              placeholder="Enter product description"
+            />
+          </div>
+
+          {/* Buttons */}
+          <div className="flex justify-end gap-2 pt-2">
+            {onCancel && (
               <Button
-                type="submit"
-                className="bg-emerald-600 hover:bg-emerald-700 cursor-pointer"
-                disabled={isSubmitting || loading}
+                type="button"
+                variant="outline"
+                onClick={onCancel}
+                className="cursor-pointer"
               >
-                {isEditing ? "Update Product" : "Add Product"}
+                Cancel
               </Button>
-            </div>
+            )}
+
+            <Button className="cursor-pointer" type="submit" disabled={isSubmitting}>
+              {isSubmitting
+                ? isEditing
+                  ? "Updating..."
+                  : "Creating..."
+                : isEditing
+                  ? "Update Product"
+                  : "Create Product"}
+            </Button>
           </div>
         </Form>
       )}

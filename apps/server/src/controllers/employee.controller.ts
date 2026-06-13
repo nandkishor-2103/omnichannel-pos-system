@@ -19,7 +19,8 @@ export const createStoreEmployeeController = asyncHandler(
   async (req: Request, res: Response) => {
     const employee = await createStoreEmployeeService(
       req.body,
-      req.params.storeId as string
+      req.params.storeId as string,
+      req.user!
     );
 
     return res.status(201).json(

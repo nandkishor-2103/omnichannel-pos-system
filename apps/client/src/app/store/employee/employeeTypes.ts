@@ -70,9 +70,11 @@ export interface EmployeesResponse {
 export interface CreateEmployeePayload {
   fullName: string;
   email: string;
-  phone?: string;
-  role: string;
   password: string;
+  phone: string;
+  role: string;
+
+  branch?: string;
 }
 
 export interface CreateStoreEmployeePayload {
