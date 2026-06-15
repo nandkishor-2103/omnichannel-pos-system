@@ -96,7 +96,7 @@ export default function Inventory() {
   useEffect(() => {
     if (user?.branch?.id && user.store?.id) {
       dispatch(getInventoryByBranch(user?.branch?.id));
-      dispatch(getProductsByStore(user?.branch?.id));
+      dispatch(getProductsByStore(user.store.id));
     }
   }, [dispatch, user?.branch?.id, user?.store?.id]);
 
