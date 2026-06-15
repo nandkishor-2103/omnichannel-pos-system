@@ -21,6 +21,32 @@ interface CreateStoreInput {
   adminId: string;
 }
 
+interface AddEmployeeInput {
+  fullName: string;
+  email: string;
+  password: string;
+  phone: string;
+  role:
+    | "ROLE_STORE_ADMIN"
+    | "ROLE_STORE_MANAGER"
+    | "ROLE_BRANCH_MANAGER"
+    | "ROLE_BRANCH_ADMIN"
+    | "ROLE_BRANCH_CASHIER";
+  branch?: string;
+}
+
+interface UpdateStoreInput {
+  brand?: string;
+  description?: string;
+  storeType?: string;
+
+  contact?: {
+    address?: string;
+    phone?: string;
+    email?: string;
+  };
+}
+
 export const createStoreService = async ({
   brand,
   description,
@@ -97,18 +123,6 @@ export const getStoreByIdService = async (storeId: string) => {
 
   return store;
 };
-
-interface UpdateStoreInput {
-  brand?: string;
-  description?: string;
-  storeType?: string;
-
-  contact?: {
-    address?: string;
-    phone?: string;
-    email?: string;
-  };
-}
 
 export const updateStoreService = async (
   storeId: string,
@@ -219,20 +233,6 @@ export const getStoreEmployeesService = async (storeId: string) => {
   return employees;
 };
 
-interface AddEmployeeInput {
-  fullName: string;
-  email: string;
-  password: string;
-  phone: string;
-  role:
-    | "ROLE_STORE_ADMIN"
-    | "ROLE_STORE_MANAGER"
-    | "ROLE_BRANCH_MANAGER"
-    | "ROLE_BRANCH_ADMIN"
-    | "ROLE_BRANCH_CASHIER";
-  branch?: string;
-}
-
 export const addEmployeeService = async (
   adminId: string,
   employeeData: AddEmployeeInput
@@ -292,7 +292,7 @@ export const moderateStoreService = async (storeId: string, action: string) => {
     });
   }
 
-  store.status = action as "ACTIVE" | "PENDING" | "BLOCKED";
+  store.status = action as "ACTIVE" | "PENDING" | "BLOCKED" | "INACTIVE";
 
   await store.save();
 
