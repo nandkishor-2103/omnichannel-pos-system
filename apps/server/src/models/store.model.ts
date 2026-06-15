@@ -2,24 +2,23 @@ import mongoose, { model, Schema } from "mongoose";
 import type { HydratedDocument } from "mongoose";
 
 export interface IStoreContact {
-  address?: string;
-  phone?: string;
-  email?: string;
+  address: string;
+  phone: string;
+  email: string;
 }
 
 export interface IStore {
   _id: mongoose.Types.ObjectId;
-  brand: string;
 
+  brand: string;
   storeAdmin: mongoose.Types.ObjectId;
 
   description?: string;
-
   storeType?: string;
 
-  status: "ACTIVE" | "PENDING" | "BLOCKED";
+  status: "ACTIVE" | "PENDING" | "BLOCKED" | "INACTIVE";
 
-  contact?: IStoreContact;
+  contact: IStoreContact;
 
   createdAt?: Date;
   updatedAt?: Date;
@@ -78,12 +77,15 @@ const storeSchema = new Schema<IStore>(
     status: {
       type: String,
 
-      enum: ["ACTIVE", "PENDING", "BLOCKED"],
+      enum: ["ACTIVE", "PENDING", "BLOCKED", "INACTIVE"],
 
       default: "PENDING",
     },
 
-    contact: storeContactSchema,
+    contact: {
+      type: storeContactSchema,
+      required: true,
+    },
   },
   {
     timestamps: true,

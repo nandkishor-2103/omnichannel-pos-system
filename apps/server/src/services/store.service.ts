@@ -298,3 +298,22 @@ export const moderateStoreService = async (storeId: string, action: string) => {
 
   return store;
 };
+
+export const deactivateStoreService = async (storeAdminId: mongoose.Types.ObjectId) => {
+  const store = await Store.findOne({
+    storeAdmin: storeAdminId,
+  });
+
+  if (!store) {
+    throw new ApiError({
+      statusCode: 404,
+      message: "Store not found",
+    });
+  }
+
+  store.status = "INACTIVE";
+
+  await store.save();
+
+  return store;
+};

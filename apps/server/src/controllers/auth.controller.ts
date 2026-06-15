@@ -149,9 +149,8 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 
   const user = await User.findOne({ email })
     .select("+password")
-    .populate("store", "brand contact")
+    .populate("store", "brand contact status")
     .populate("branch", "name address");
-
 
   if (!user) {
     throw new ApiError({
@@ -164,6 +163,17 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError({
       statusCode: 400,
       message: "Please verify your email before logging in",
+    });
+  }
+
+  const store = user.store as {
+    status?: string;
+  };
+
+  if (store?.status === "INACTIVE") {
+    throw new ApiError({
+      statusCode: 403,
+      message: "This store has been deactivated. Contact support for assistance.",
     });
   }
 

@@ -4,6 +4,7 @@ import type { UserResponseDto } from "../types/user.dto.js";
 
 type PopulatedStore = {
   _id: mongoose.Types.ObjectId;
+
   brand: string;
 
   contact: {
@@ -16,7 +17,7 @@ type PopulatedStore = {
 type PopulatedBranch = {
   _id: mongoose.Types.ObjectId;
   name: string;
-  address: string;
+  address?: string;
 };
 
 export const mapUserToResponseDto = (user: any): UserResponseDto => {
@@ -49,7 +50,7 @@ export const mapUserToResponseDto = (user: any): UserResponseDto => {
       ? {
           id: branch._id.toString(),
           name: branch.name,
-          address: branch.address,
+          address: branch.address ?? "",
         }
       : null,
 

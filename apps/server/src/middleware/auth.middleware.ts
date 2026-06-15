@@ -22,12 +22,27 @@ export const isAuthenticated = asyncHandler(
 
     const decoded = jwt.verify(token, ENV_VAR.JWT_SECRET as string) as JwtPayload;
 
-    const user = await User.findById(decoded.userId).select("-password");
+    const user = await User.findById(decoded.userId)
+      .select("-password")
+      .populate("store", "status");
 
     if (!user) {
       throw new ApiError({
         statusCode: 401,
         message: "User not found",
+      });
+    }
+
+    const store = user.store as {
+      status?: string;
+    };
+
+    if (store?.status === "INACTIVE") {
+      res.clearCookie("infotactToken");
+
+      throw new ApiError({
+        statusCode: 403,
+        message: "Store has been deactivated",
       });
     }
 

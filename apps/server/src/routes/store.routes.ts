@@ -10,6 +10,7 @@ import {
   addEmployeeController,
   getAllStoresController,
   moderateStoreController,
+  deactivateStoreController,
 } from "../controllers/store.controller.js";
 import { isAuthenticated } from "../middleware/auth.middleware.js";
 import { authorizeRoles } from "../middleware/role.middleware.js";
@@ -73,6 +74,14 @@ router.post(
   authorizeRoles("ROLE_STORE_ADMIN", "ROLE_STORE_MANAGER"),
   addEmployeeValidation,
   addEmployeeController
+);
+
+// =================== Deactivate Store ✅ =====================
+router.patch(
+  "/deactivate",
+  isAuthenticated,
+  authorizeRoles("ROLE_STORE_ADMIN"),
+  deactivateStoreController
 );
 
 // ===================== MODERATE STORE (Only Super Admin) ✅ =====================
