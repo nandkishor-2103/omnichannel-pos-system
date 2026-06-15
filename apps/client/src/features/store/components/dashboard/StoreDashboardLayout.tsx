@@ -53,11 +53,11 @@ const navLinks: NavLinks[] = [
     name: "Employees",
     icon: <Users className="w-5 h-5" />,
   },
-  {
-    path: "/store/alerts",
-    name: "Alerts",
-    icon: <Truck className="w-5 h-5" />,
-  },
+//   {
+//     path: "/store/alerts",
+//     name: "Alerts",
+//     icon: <Truck className="w-5 h-5" />,
+//   },
   {
     path: "/store/sales",
     name: "Sales",

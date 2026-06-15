@@ -12,7 +12,10 @@ import {
   getStoreEmployeesService,
   moderateStoreService,
   getAllStoresService,
+  deactivateStoreService,
 } from "../services/store.service.js";
+import type { IUser } from "../models/user.model.js";
+import ApiError from "../utils/ApiError.js";
 
 /**
  * @desc Create Store
@@ -222,3 +225,24 @@ export const getAllStoresController = asyncHandler(
     );
   }
 );
+
+export const deactivateStoreController = asyncHandler(async (req, res) => {
+  if (!req.user) {
+    throw new ApiError({
+      statusCode: 401,
+      message: "Unauthorized",
+    });
+  }
+
+  const store = await deactivateStoreService(req.user._id);
+
+  return res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "Store deactivated successfully",
+      payload: {
+        store,
+      },
+    })
+  );
+});

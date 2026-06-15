@@ -250,9 +250,7 @@ export const getDailySalesGraphService = async (
 export const getMonthlySalesGraphService = async (
   storeId: string
 ): Promise<TimeSeriesPointDto[]> => {
-  const store = await Store.findOne({
-    _id: storeId,
-  });
+  const store = await Store.findById(storeId);
 
   if (!store) {
     throw new ApiError({
@@ -269,58 +267,69 @@ export const getMonthlySalesGraphService = async (
 
   const startDate = new Date();
 
-  startDate.setFullYear(startDate.getFullYear() - 1);
+  startDate.setMonth(startDate.getMonth() - 11);
+  startDate.setDate(1);
+  startDate.setHours(0, 0, 0, 0);
 
-  const orders = await Order.find({
-    branch: {
-      $in: branchIds,
-    },
-    createdAt: {
-      $gte: startDate,
-      $lte: endDate,
-    },
-  }).populate("branch", "name");
-
-  const grouped = new Map<
-    string,
+  const sales = await Order.aggregate([
     {
-      month: string;
-      branchName: string;
-      totalAmount: number;
-    }
-  >();
+      $match: {
+        branch: {
+          $in: branchIds,
+        },
+        createdAt: {
+          $gte: startDate,
+          $lte: endDate,
+        },
+      },
+    },
 
-  orders.forEach((order) => {
-    const branch = order.branch as unknown as {
-      name: string;
-    };
+    {
+      $lookup: {
+        from: "branches",
+        localField: "branch",
+        foreignField: "_id",
+        as: "branch",
+      },
+    },
 
-    const date = order.createdAt!;
+    {
+      $unwind: "$branch",
+    },
 
-    const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+    {
+      $group: {
+        _id: {
+          year: {
+            $year: "$createdAt",
+          },
 
-    const key = `${month}-${branch.name}`;
+          month: {
+            $month: "$createdAt",
+          },
 
-    const existing = grouped.get(key);
+          branchName: "$branch.name",
+        },
 
-    if (existing) {
-      existing.totalAmount += order.totalAmount;
-    } else {
-      grouped.set(key, {
-        month,
-        branchName: branch.name,
-        totalAmount: order.totalAmount,
-      });
-    }
-  });
+        totalAmount: {
+          $sum: "$totalAmount",
+        },
+      },
+    },
 
-  return [...grouped.values()]
-    .sort((a, b) => a.month.localeCompare(b.month))
-    .map((item) => ({
-      date: new Date(`${item.month}-01`),
-      totalAmount: item.totalAmount,
-      branchName: item.branchName,
-    }));
+    {
+      $sort: {
+        "_id.year": 1,
+        "_id.month": 1,
+      },
+    },
+  ]);
+
+  return sales.map((item) => ({
+    date: new Date(item._id.year, item._id.month - 1, 1),
+    totalAmount: item.totalAmount,
+    branchName: item._id.branchName,
+  }));
 };
 
 export const getSalesByCategoryService = async (

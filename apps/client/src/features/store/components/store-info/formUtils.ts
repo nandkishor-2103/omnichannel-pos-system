@@ -1,20 +1,12 @@
-export type StoreContact = {
-  address: string;
-  phone: string;
-  email: string;
-};
-
-export type StoreData = {
-  brand?: string;
-  description?: string;
-  storeType?: string;
-  contact?: StoreContact;
-};
+import type { Store } from "@/app/store/store/storeTypes";
 
 export type StoreFormValues = {
   brand: string;
+
   description: string;
+
   storeType: string;
+
   contact: {
     address: string;
     phone: string;
@@ -22,28 +14,20 @@ export type StoreFormValues = {
   };
 };
 
-export const getInitialValues = (storeData?: StoreData | null): StoreFormValues => {
-  if (!storeData) {
-    return {
-      brand: "",
-      description: "",
-      storeType: "",
-      contact: {
-        address: "",
-        phone: "",
-        email: "",
-      },
-    };
-  }
-
+export const getInitialValues = (store?: Store | null): StoreFormValues => {
   return {
-    brand: storeData.brand || "",
-    description: storeData.description || "",
-    storeType: storeData.storeType || "",
+    brand: store?.brand ?? "",
+
+    description: store?.description ?? "",
+
+    storeType: store?.storeType ?? "",
+
     contact: {
-      address: storeData.contact?.address || "",
-      phone: storeData.contact?.phone || "",
-      email: storeData.contact?.email || "",
+      address: store?.contact?.address ?? "",
+
+      phone: store?.contact?.phone ?? "",
+
+      email: store?.contact?.email ?? "",
     },
   };
 };

@@ -16,13 +16,26 @@ import ApiError from "../utils/ApiError.js";
 export const getUserProfileController = asyncHandler(
   async (req: Request, res: Response) => {
     const user = await User.findById(req.user!._id)
-      .populate("store", "brand")
-      .populate("branch", "name");
+      .populate("store", "brand contact status")
+      .populate("branch", "name address");
 
     if (!user) {
       throw new ApiError({
         statusCode: 404,
         message: "User not found",
+      });
+    }
+
+    const store = user.store as {
+      status?: string;
+    };
+
+    if (store?.status === "INACTIVE") {
+      res.clearCookie("infotactToken");
+
+      throw new ApiError({
+        statusCode: 403,
+        message: "Store has been deactivated",
       });
     }
 
