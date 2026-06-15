@@ -544,7 +544,11 @@ export const getStoreEmployeesService = async (storeId: string, currentUser: IUs
     });
   }
 
-  if (!currentUser.store || currentUser.store.toString() !== store._id.toString()) {
+  const currentStore = currentUser.store as {
+    _id: mongoose.Types.ObjectId;
+  };
+
+  if (currentStore._id.toString() !== storeId) {
     throw new ApiError({
       statusCode: 403,
       message: "You can only access your own store employees",
