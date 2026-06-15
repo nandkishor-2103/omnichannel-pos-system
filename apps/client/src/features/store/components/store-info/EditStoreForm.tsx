@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
 import {
   Select,
   SelectContent,
@@ -7,7 +8,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 import { Textarea } from "@/components/ui/textarea";
+
 import { Field, Form, Formik, type FieldProps } from "formik";
 
 import type { StoreFormValues } from "./formUtils";
@@ -18,8 +21,8 @@ const storeTypeList = [
     label: "Retail Store",
   },
   {
-    value: "Supermarket",
-    label: "Supermarket",
+    value: "Super Market",
+    label: "Super Market",
   },
   {
     value: "Mall",
@@ -41,7 +44,9 @@ const storeTypeList = [
 
 type EditStoreFormProps = {
   initialValues: StoreFormValues;
+
   onSubmit: (values: StoreFormValues) => void;
+
   onCancel?: () => void;
 };
 
@@ -53,7 +58,8 @@ export default function EditStoreForm({
   return (
     <Formik initialValues={initialValues} onSubmit={onSubmit} enableReinitialize>
       {({ isSubmitting, setFieldValue }) => (
-        <Form className="space-y-4">
+        <Form className="space-y-5">
+          {/* Store Name */}
           <div className="space-y-2">
             <label className="text-sm font-medium">
               Store Name <span className="text-red-500">*</span>
@@ -62,6 +68,7 @@ export default function EditStoreForm({
             <Field as={Input} name="brand" placeholder="Enter store name" />
           </div>
 
+          {/* Store Type */}
           <div className="space-y-2">
             <label className="text-sm font-medium">
               Store Type <span className="text-red-500">*</span>
@@ -89,6 +96,7 @@ export default function EditStoreForm({
             </Field>
           </div>
 
+          {/* Description */}
           <div className="space-y-2">
             <label className="text-sm font-medium">Description</label>
 
@@ -100,49 +108,58 @@ export default function EditStoreForm({
             />
           </div>
 
-          <div className="border-t pt-4">
-            <h3 className="font-semibold mb-4">Contact Information</h3>
+          {/* Contact Section */}
+          <div className="border-t pt-5">
+            <h3 className="mb-4 font-semibold">Contact Information</h3>
 
             <div className="space-y-4">
-              <div>
+              {/* Address */}
+              <div className="space-y-2">
                 <label className="text-sm font-medium">
                   Address <span className="text-red-500">*</span>
                 </label>
 
                 <Field
                   as={Textarea}
-                  name="address"
+                  name="contact.address"
                   rows={3}
-                  placeholder="Enter address"
+                  placeholder="Enter store address"
                 />
               </div>
 
-              <div>
+              {/* Phone */}
+              <div className="space-y-2">
                 <label className="text-sm font-medium">
                   Contact Number <span className="text-red-500">*</span>
                 </label>
 
-                <Field as={Input} name="phone" placeholder="Enter contact number" />
+                <Field
+                  as={Input}
+                  name="contact.phone"
+                  placeholder="Enter contact number"
+                />
               </div>
 
-              <div>
+              {/* Email */}
+              <div className="space-y-2">
                 <label className="text-sm font-medium">
                   Email <span className="text-red-500">*</span>
                 </label>
 
-                <Field as={Input} name="email" type="email" placeholder="Enter email" />
+                <Field
+                  as={Input}
+                  name="contact.email"
+                  type="email"
+                  placeholder="Enter email"
+                />
               </div>
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4">
+          {/* Actions */}
+          <div className="flex justify-end gap-2 border-t pt-4">
             {onCancel && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onCancel}
-                className="cursor-pointer"
-              >
+              <Button type="button" variant="outline" onClick={onCancel}>
                 Cancel
               </Button>
             )}
@@ -150,7 +167,7 @@ export default function EditStoreForm({
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-emerald-600 cursor-pointer"
+              className="bg-emerald-600 hover:bg-emerald-700"
             >
               Update Store
             </Button>

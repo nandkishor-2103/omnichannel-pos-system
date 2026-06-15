@@ -17,6 +17,10 @@ import type {
   TodaySalesByBranchResponse,
   TodaySalesByBranch,
   SalesTrendsResponse,
+  DailySalesResponse,
+  PaymentMethodSalesResponse,
+  MonthlySalesResponse,
+  CategorySalesResponse,
 } from "./storeAnalyticsTypes";
 
 // ================= STORE OVERVIEW =================
@@ -58,12 +62,12 @@ export const getSalesTrends = createAsyncThunk<
 // ================= MONTHLY SALES =================
 
 export const getMonthlySales = createAsyncThunk<
-  MonthlySales[],
+  MonthlySalesResponse,
   string,
   { rejectValue: string }
 >("storeAnalytics/getMonthlySales", async (storeAdminId, { rejectWithValue }) => {
   try {
-    const res = await api.get<MonthlySales[]>(
+    const res = await api.get<MonthlySalesResponse>(
       `/store/analytics/${storeAdminId}/sales/monthly`
     );
 
@@ -81,11 +85,11 @@ export const getDailySales = createAsyncThunk<
   { rejectValue: string }
 >("storeAnalytics/getDailySales", async (storeAdminId, { rejectWithValue }) => {
   try {
-    const res = await api.get<DailySales[]>(
+    const res = await api.get<DailySalesResponse>(
       `/store/analytics/${storeAdminId}/sales/daily`
     );
 
-    return res.data;
+    return res.data.payload.dailySales;
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
   }
@@ -94,12 +98,12 @@ export const getDailySales = createAsyncThunk<
 // ================= SALES BY CATEGORY =================
 
 export const getSalesByCategory = createAsyncThunk<
-  CategorySale[],
+  CategorySalesResponse,
   string,
   { rejectValue: string }
 >("storeAnalytics/getSalesByCategory", async (storeAdminId, { rejectWithValue }) => {
   try {
-    const res = await api.get<CategorySale[]>(
+    const res = await api.get<CategorySalesResponse>(
       `/store/analytics/${storeAdminId}/sales/category`
     );
 
@@ -117,11 +121,14 @@ export const getSalesByPaymentMethod = createAsyncThunk<
   { rejectValue: string }
 >("storeAnalytics/getSalesByPaymentMethod", async (storeAdminId, { rejectWithValue }) => {
   try {
-    const res = await api.get<PaymentMethodSale[]>(
+    const res = await api.get<PaymentMethodSalesResponse>(
       `/store/analytics/${storeAdminId}/sales/payment-method`
     );
 
-    return res.data;
+    return res.data.payload.paymentMethods.map((item) => ({
+      method: item.paymentMethod,
+      amount: item.totalAmount,
+    }));
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
   }

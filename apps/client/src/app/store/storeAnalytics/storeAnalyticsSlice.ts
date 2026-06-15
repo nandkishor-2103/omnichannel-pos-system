@@ -73,28 +73,33 @@ const storeAnalyticsSlice = createSlice({
       .addCase(getSalesTrends.fulfilled, (state, action) => {
         state.salesTrends = action.payload.payload.trends.points;
 
-        state.dailySales = action.payload.payload.trends.points.map(
-          (point) => ({
-            date: point.date,
-            sales: point.totalAmount,
-            branchName: point.branchName,
-          })
-        );
+        state.dailySales = action.payload.payload.trends.points.map((point) => ({
+          date: point.date,
+          sales: point.totalAmount,
+          branchName: point.branchName,
+        }));
       })
 
       // MONTHLY SALES
       .addCase(getMonthlySales.fulfilled, (state, action) => {
-        state.monthlySales = action.payload;
+        state.monthlySales = action.payload.payload.monthlySales;
       })
 
       // DAILY SALES
       .addCase(getDailySales.fulfilled, (state, action) => {
-        state.dailySales = action.payload;
+        state.dailySales = action.payload.map((item) => ({
+          date: item.date,
+          sales: item.totalAmount,
+          branchName: item.branchName,
+        }));
       })
 
       // CATEGORY SALES
       .addCase(getSalesByCategory.fulfilled, (state, action) => {
-        state.salesByCategory = action.payload;
+        state.salesByCategory = action.payload.payload.categorySales.map((item) => ({
+          category: item.categoryName,
+          amount: item.totalSales,
+        }));
       })
 
       // PAYMENT METHOD SALES
@@ -135,16 +140,12 @@ const storeAnalyticsSlice = createSlice({
 
       .addCase(getTodaySalesByBranch.rejected, (state, action) => {
         state.loading = false;
-        state.error =
-          action.payload ?? "Failed to fetch today's branch sales";
+        state.error = action.payload ?? "Failed to fetch today's branch sales";
       });
   },
 });
 
-export const {
-  clearStoreAnalyticsState,
-  clearSalesData,
-  clearBranchData,
-} = storeAnalyticsSlice.actions;
+export const { clearStoreAnalyticsState, clearSalesData, clearBranchData } =
+  storeAnalyticsSlice.actions;
 
 export default storeAnalyticsSlice.reducer;

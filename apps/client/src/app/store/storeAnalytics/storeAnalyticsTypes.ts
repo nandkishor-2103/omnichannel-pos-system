@@ -57,15 +57,39 @@ export interface SalesTrendsResponse {
 }
 
 export interface MonthlySales {
-  month: string;
+  date: string;
+  totalAmount: number;
+  branchName: string;
+}
+
+export interface MonthlySalesResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  payload: {
+    monthlySales: MonthlySales[];
+  };
+}
+
+export interface DailySalesChart {
+  date: string;
   sales: number;
   branchName: string;
 }
 
 export interface DailySales {
   date: string;
-  sales: number;
+  totalAmount: number;
   branchName: string;
+}
+
+export interface DailySalesResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  payload: {
+    dailySales: DailySales[];
+  };
 }
 
 export interface CategorySale {
@@ -73,9 +97,33 @@ export interface CategorySale {
   amount: number;
 }
 
+export interface CategorySalesResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  payload: {
+    categorySales: {
+      categoryName: string;
+      totalSales: number;
+    }[];
+  };
+}
+
 export interface PaymentMethodSale {
   method: string;
   amount: number;
+}
+
+export interface PaymentMethodSalesResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  payload: {
+    paymentMethods: {
+      paymentMethod: string;
+      totalAmount: number;
+    }[];
+  };
 }
 
 export interface BranchSale {
@@ -112,7 +160,7 @@ export interface StoreAnalyticsState {
   salesTrends: SalesTrendPoint[];
 
   monthlySales: MonthlySales[];
-  dailySales: DailySales[];
+  dailySales: DailySalesChart[];
 
   salesByCategory: CategorySale[];
   salesByPaymentMethod: PaymentMethodSale[];

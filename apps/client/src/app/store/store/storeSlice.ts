@@ -11,6 +11,7 @@ import {
   getStoreEmployees,
   addEmployee,
   moderateStore,
+  deactivateStore,
 } from "./storeThunk";
 
 import type { StoreState } from "./storeTypes";
@@ -109,12 +110,16 @@ const storeSlice = createSlice({
         const updatedStore = action.payload.payload.store;
 
         state.stores = state.stores.map((store) =>
-          store.id === updatedStore.id ? updatedStore : store
+          store._id === updatedStore._id ? updatedStore : store
         );
 
-        if (state.store?.id === updatedStore.id) {
+        if (state.store?._id === updatedStore._id) {
           state.store = updatedStore;
         }
+      })
+
+      .addCase(deactivateStore.fulfilled, (state, action) => {
+        state.store = action.payload.payload.store;
       });
   },
 });

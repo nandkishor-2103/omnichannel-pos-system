@@ -155,7 +155,7 @@ export const addEmployee = createAsyncThunk<
   }
 });
 
-// ================= MODERATE STORE =================
+// ================= MODERATE STORE (SUPER ADMIN) =================
 
 export const moderateStore = createAsyncThunk<
   StoreResponse,
@@ -166,6 +166,21 @@ export const moderateStore = createAsyncThunk<
     const res = await api.put<StoreResponse>(`/stores/${storeId}/moderate`, null, {
       params: { action },
     });
+
+    return res.data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+// ====================== DEACTIVATE STORE ======================
+export const deactivateStore = createAsyncThunk<
+  StoreResponse,
+  void,
+  { rejectValue: string }
+>("store/deactivate", async (_, { rejectWithValue }) => {
+  try {
+    const res = await api.patch<StoreResponse>("/stores/deactivate");
 
     return res.data;
   } catch (error) {
