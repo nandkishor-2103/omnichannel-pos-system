@@ -6,7 +6,14 @@ import ApiError from "../utils/ApiError.js";
 import User from "../models/user.model.js";
 import generateOtp from "../utils/generateOtp.js";
 import { sendMail } from "../services/mail.service.js";
-import { storeOtp, getOtp, deleteOtp } from "../services/redis.service.js";
+import {
+  storeOtp,
+  getOtp,
+  deleteOtp,
+  markForgotPasswordVerified,
+  isForgotPasswordVerified,
+  removeForgotPasswordVerified,
+} from "../services/redis.service.js";
 import generateToken from "../utils/generateToken.js";
 import ENV_VAR from "../config/env.js";
 import { mapUserToResponseDto } from "../mappers/user.mapper.js";
@@ -140,6 +147,129 @@ export const verifyOtp = asyncHandler(async (req: Request, res: Response) => {
   );
 });
 
+// ============================== FORGOT PASSWORD ==============================
+export const forgotPassword = asyncHandler(async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  if (!email) {
+    throw new ApiError({
+      statusCode: 400,
+      message: "Email is required",
+    });
+  }
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new ApiError({
+      statusCode: 404,
+      message: "User not found",
+    });
+  }
+
+  const otp = generateOtp();
+
+  await storeOtp(`forgot:${email}`, otp);
+
+  await sendMail({
+    to: email,
+    subject: "Reset Password OTP",
+    html: `
+        <h2>Password Reset Request</h2>
+        <p>Your OTP is:</p>
+        <h1>${otp}</h1>
+        <p>This OTP is valid for 5 minutes.</p>
+      `,
+  });
+
+  res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "OTP sent successfully",
+    })
+  );
+});
+
+// ============================== VERIFY RESET OTP ==============================
+export const verifyResetOtp = asyncHandler(async (req: Request, res: Response) => {
+  const { email, otp } = req.body;
+
+  if (!email || !otp) {
+    throw new ApiError({
+      statusCode: 400,
+      message: "Email and OTP are required",
+    });
+  }
+
+  const storedOtp = await getOtp(`forgot:${email}`);
+
+  if (!storedOtp) {
+    throw new ApiError({
+      statusCode: 400,
+      message: "OTP expired",
+    });
+  }
+
+  if (storedOtp !== otp) {
+    throw new ApiError({
+      statusCode: 400,
+      message: "Invalid OTP",
+    });
+  }
+
+  await markForgotPasswordVerified(email);
+
+  res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "OTP verified successfully",
+    })
+  );
+});
+
+// ============================ RESET PASSWORD ==============================
+export const resetPassword = asyncHandler(async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    throw new ApiError({
+      statusCode: 400,
+      message: "Email and password are required",
+    });
+  }
+
+  const verified = await isForgotPasswordVerified(email);
+
+  if (!verified) {
+    throw new ApiError({
+      statusCode: 403,
+      message: "OTP verification required",
+    });
+  }
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new ApiError({
+      statusCode: 404,
+      message: "User not found",
+    });
+  }
+
+  user.password = password;
+
+  await user.save();
+
+  await Promise.all([deleteOtp(`forgot:${email}`), removeForgotPasswordVerified(email)]);
+
+  res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "Password reset successfully",
+    })
+  );
+});
+
 /**
  * @desc    Login a user
  * @route   POST /api/auth/login
@@ -173,7 +303,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 
-  if (user.role !== "ROLE_ADMIN") {
+  if (user.role !== "ROLE_ADMIN" && user.role !== "ROLE_STORE_ADMIN") {
     const store = user.store as {
       status?: string;
     };

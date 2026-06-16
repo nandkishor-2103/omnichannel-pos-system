@@ -17,6 +17,7 @@ import { ArrowUpDown, Power } from "lucide-react";
 
 import StoreStatusBadge from "./StoreStatusBadge";
 import ActivateStoreDialog from "./ActivateStoreDialog";
+import SubscriptionStatusBadge from "./SubscriptionStatusBadge";
 
 type Props = {
   stores: Store[];
@@ -93,7 +94,11 @@ export default function StoreTable({ stores, searchTerm }: Props) {
 
             <TableHead>Store Type</TableHead>
 
+            <TableHead>Subscription</TableHead>
+
             <TableHead>Status</TableHead>
+            
+            <TableHead>Store Status</TableHead>
 
             <TableHead>Created On</TableHead>
 
@@ -129,6 +134,31 @@ export default function StoreTable({ stores, searchTerm }: Props) {
               </TableCell>
 
               <TableCell>{store.storeType || "-"}</TableCell>
+
+              <TableCell>
+                {store.currentSubscription ? (
+                  <div>
+                    <p className="font-medium">{store.currentSubscription.planName}</p>
+
+                    <p className="text-xs text-muted-foreground">
+                      Expires{" "}
+                      {new Date(store.currentSubscription.endDate).toLocaleDateString(
+                        "en-IN"
+                      )}
+                    </p>
+                  </div>
+                ) : (
+                  "-"
+                )}
+              </TableCell>
+
+              <TableCell>
+                {store.currentSubscription ? (
+                  <SubscriptionStatusBadge status={store.currentSubscription.status} />
+                ) : (
+                  "-"
+                )}
+              </TableCell>
 
               <TableCell>
                 <StoreStatusBadge status={store.status} />

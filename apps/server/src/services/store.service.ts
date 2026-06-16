@@ -4,6 +4,8 @@ import Store from "../models/store.model.js";
 import User from "../models/user.model.js";
 
 import ApiError from "../utils/ApiError.js";
+import StoreSubscription from "../models/storeSubscription.model.js";
+import { SubscriptionStatus } from "../enums/subscriptionStatus.enum.js";
 
 interface CreateStoreInput {
   brand: string;
@@ -269,7 +271,6 @@ export const addEmployeeService = async (
 };
 
 export const getAllStoresService = async (status?: string) => {
-  // status can be "ACTIVE" | "PENDING" | "BLOCKED" | "INACTIVE" 
   const filter: Record<string, unknown> = {};
 
   if (status) {
@@ -280,7 +281,39 @@ export const getAllStoresService = async (status?: string) => {
     .populate("storeAdmin", "fullName email phone role verified")
     .lean();
 
-  return stores;
+  const storesWithSubscription = await Promise.all(
+    stores.map(async (store) => {
+      const currentSubscription = await StoreSubscription.findOne({
+        store: store._id,
+      })
+        .populate("subscriptionPlan", "name")
+        .sort({ createdAt: -1 })
+        .lean();
+
+      return {
+        ...store,
+
+        currentSubscription: currentSubscription
+          ? {
+              planName:
+                (
+                  currentSubscription.subscriptionPlan as {
+                    name?: string;
+                  }
+                )?.name ?? "-",
+
+              status: currentSubscription.status,
+
+              startDate: currentSubscription.startDate,
+
+              endDate: currentSubscription.endDate,
+            }
+          : null,
+      };
+    })
+  );
+
+  return storesWithSubscription;
 };
 
 export const moderateStoreService = async (storeId: string, action: string) => {
