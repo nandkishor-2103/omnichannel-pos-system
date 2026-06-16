@@ -19,6 +19,8 @@ import { useNavigate } from "react-router-dom";
 import type { UserRole } from "./types/types";
 
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
+import { getStoreStatusMessage } from "@/lib/storeStatus";
+import { toast } from "sonner";
 
 const roleRoutes: Record<UserRole, string> = {
   ROLE_ADMIN: "/super-admin/dashboard",
@@ -57,24 +59,7 @@ export default function Login() {
     password: "",
   });
 
-  const user = useAppSelector((state) => state.auth.user);
   const loading = useAppSelector((state) => state.auth.loading);
-
-  useEffect(() => {
-    if (!user) return;
-
-    if (user.role === "ROLE_STORE_ADMIN" && !user.store) {
-      navigate("/create-store", {
-        replace: true,
-      });
-
-      return;
-    }
-
-    navigate(roleRoutes[user.role], {
-      replace: true,
-    });
-  }, [user, navigate]);
 
   const handleLogin = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -84,9 +69,24 @@ export default function Login() {
     if (signin.fulfilled.match(resultAction)) {
       const loggedInUser = resultAction.payload.payload.user;
 
-      if (loggedInUser.role === "ROLE_STORE_ADMIN" && !loggedInUser.store) {
-        navigate("/create-store");
-        return;
+      if (loggedInUser.role === "ROLE_STORE_ADMIN") {
+        // no store created
+        if (!loggedInUser.store) {
+          navigate("/create-store");
+
+          return;
+        }
+
+        // store pending/blocked
+        if (loggedInUser.store.status === "PENDING") {
+          navigate("/store-pending");
+          return;
+        }
+
+        if (loggedInUser.store.status === "BLOCKED") {
+          navigate("/store-blocked");
+          return;
+        }
       }
 
       navigate(roleRoutes[loggedInUser.role] ?? "/");

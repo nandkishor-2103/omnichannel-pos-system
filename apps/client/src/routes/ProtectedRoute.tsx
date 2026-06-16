@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 import { useAppSelector } from "@/app/store/hooks";
 
 import type { UserRole } from "@/features/auth/types/types";
+import { toast } from "sonner";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -32,6 +33,16 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
     };
 
     return <Navigate to={roleRoutes[user.role]} replace />;
+  }
+
+  if (user.role === "ROLE_STORE_ADMIN" && user.store) {
+    if (user.store.status === "PENDING") {
+      return <Navigate to="/store-pending" replace />;
+    }
+
+    if (user.store.status === "BLOCKED") {
+      return <Navigate to="/store-blocked" replace />;
+    }
   }
 
   return <>{children}</>;
