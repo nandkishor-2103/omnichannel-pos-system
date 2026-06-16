@@ -11,6 +11,7 @@ export interface UserResponseDto {
   store: {
     id: string;
     brand: string;
+    status: string;
 
     contact: {
       address: string;

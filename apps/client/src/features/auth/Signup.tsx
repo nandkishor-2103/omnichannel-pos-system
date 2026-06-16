@@ -36,7 +36,7 @@ export default function Signup() {
     }));
   };
 
-  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignup = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const result = await dispatch(signup(formData));

@@ -90,11 +90,31 @@ export default function CreateStore() {
 
     if (createStore.fulfilled.match(result)) {
       // Optional: refresh current user profile
-      await dispatch(getUserProfile());
+      const profile = await dispatch(getUserProfile());
 
-      navigate("/store/dashboard", {
-        replace: true,
-      });
+      if (getUserProfile.fulfilled.match(profile)) {
+        const updatedUser = profile.payload;
+
+        if (updatedUser.store?.status === "ACTIVE") {
+          navigate("/store/dashboard", {
+            replace: true,
+          });
+
+          return;
+        }
+
+        if (updatedUser.store?.status === "BLOCKED") {
+          navigate("/store-blocked", {
+            replace: true,
+          });
+
+          return;
+        }
+
+        navigate("/store-pending", {
+          replace: true,
+        });
+      }
     }
   };
 

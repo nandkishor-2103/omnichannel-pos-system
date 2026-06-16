@@ -6,6 +6,7 @@ type PopulatedStore = {
   _id: mongoose.Types.ObjectId;
 
   brand: string;
+  status: string;
 
   contact: {
     address: string;
@@ -37,6 +38,7 @@ export const mapUserToResponseDto = (user: any): UserResponseDto => {
       ? {
           id: store._id.toString(),
           brand: store.brand,
+          status: store.status,
 
           contact: {
             address: store.contact.address,

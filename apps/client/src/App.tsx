@@ -16,6 +16,8 @@ import VerifyOtp from "./features/auth/VerifyOtp";
 import Home from "./pages/Home";
 import CreateStore from "./features/store/CreateStore";
 import ContactSales from "./features/home/components/ContactSales";
+import StorePending from "./pages/StorePending";
+import StoreBlocked from "./pages/StoreBlocked";
 
 export default function App() {
   return (
@@ -30,6 +32,10 @@ export default function App() {
         <Route path="/verify-otp" element={<VerifyOtp />} />
 
         <Route path="/contact-sales" element={<ContactSales />} />
+
+        <Route path="/store-pending" element={<StorePending />} />
+
+        <Route path="/store-blocked" element={<StoreBlocked />} />
 
         {/* <Route path="/create-store" element={<CreateStore />} /> */}
 
