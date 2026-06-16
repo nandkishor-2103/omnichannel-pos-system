@@ -1,9 +1,14 @@
 import type { UserRole } from "@/features/auth/types/types";
 
+export type StoreStatus = "PENDING" | "ACTIVE" | "BLOCKED";
+
 export interface User {
   id: string;
+
   fullName: string;
+
   email: string;
+
   phone?: string;
 
   role: UserRole;
@@ -12,7 +17,10 @@ export interface User {
 
   store?: {
     id: string;
+
     brand: string;
+
+    status: StoreStatus;
 
     contact: {
       address: string;

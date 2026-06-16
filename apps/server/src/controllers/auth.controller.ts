@@ -24,7 +24,6 @@ import { mapUserToResponseDto } from "../mappers/user.mapper.js";
  * @access  Public
  */
 export const signup = asyncHandler(async (req: Request, res: Response) => {
-  console.log("SIGNUP CONTROLLER HIT");
   const { fullName, email, password, phone, role } = req.body;
 
   if (role === "ROLE_ADMIN") {
@@ -64,8 +63,6 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
   console.log("OTP Generated:", otp);
   await storeOtp(email, otp);
 
-  console.log("OTP Stored");
-
   // Send verification email
   await sendMail({
     to: email,
@@ -77,8 +74,6 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
         <p>This OTP is valid for <strong>5 minutes</strong> only.</p>
     `,
   });
-
-  console.log("Email Sent Successfully");
 
   // Create new user
   const user = await User.create({
