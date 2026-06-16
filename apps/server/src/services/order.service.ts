@@ -30,6 +30,14 @@ interface CreateOrderPayload {
     price: number;
     total: number;
   }[];
+
+  razorpayOrderId?: string;
+
+  razorpayPaymentId?: string;
+
+  razorpaySignature?: string;
+
+  paymentStatus?: "PENDING" | "SUCCESS" | "FAILED";
 }
 
 export async function createOrderService(
@@ -170,12 +178,28 @@ export async function createOrderService(
 
   const orderPayload: any = {
     totalAmount,
+
     branch: currentUser.branch,
+
     cashier: currentUser._id,
+
     customer: customer._id,
+
     paymentType: orderData.paymentType,
+
     status: OrderStatus.COMPLETED,
+
     items: orderItems,
+
+    razorpayOrderId: orderData.razorpayOrderId,
+
+    razorpayPaymentId: orderData.razorpayPaymentId,
+
+    razorpaySignature: orderData.razorpaySignature,
+
+    paymentStatus:
+      orderData.paymentStatus ??
+      (orderData.paymentType === PaymentType.CASH ? "SUCCESS" : "PENDING"),
   };
 
   if (orderData.note?.trim()) {
