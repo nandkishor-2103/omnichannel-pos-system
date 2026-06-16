@@ -69,7 +69,10 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
 
   // Generate and store OTP
   const otp = generateOtp();
+  console.log("OTP Generated:", otp);
   await storeOtp(email, otp);
+
+  console.log("OTP Stored");
 
   // Send verification email
   await sendMail({
@@ -82,6 +85,8 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
         <p>This OTP is valid for <strong>5 minutes</strong> only.</p>
     `,
   });
+
+  console.log("Email Sent Successfully");
 
   res.status(201).json(
     new ApiResponse({
