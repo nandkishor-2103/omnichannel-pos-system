@@ -97,3 +97,39 @@ export const deleteSubscriptionPlan = createAsyncThunk<
     return rejectWithValue(getErrorMessage(error));
   }
 });
+
+// ================= ACTIVATE PLAN =================
+
+export const activateSubscriptionPlan = createAsyncThunk<
+  SubscriptionPlanResponse,
+  string,
+  { rejectValue: string }
+>("subscriptionPlan/activate", async (planId, { rejectWithValue }) => {
+  try {
+    const res = await api.patch<SubscriptionPlanResponse>(
+      `/super-admin/subscription-plans/${planId}/activate`
+    );
+
+    return res.data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+// ================= DEACTIVATE PLAN =================
+
+export const deactivateSubscriptionPlan = createAsyncThunk<
+  SubscriptionPlanResponse,
+  string,
+  { rejectValue: string }
+>("subscriptionPlan/deactivate", async (planId, { rejectWithValue }) => {
+  try {
+    const res = await api.patch<SubscriptionPlanResponse>(
+      `/super-admin/subscription-plans/${planId}/deactivate`
+    );
+
+    return res.data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});

@@ -19,6 +19,13 @@ import { mapUserToResponseDto } from "../mappers/user.mapper.js";
 export const signup = asyncHandler(async (req: Request, res: Response) => {
   const { fullName, email, password, phone, role } = req.body;
 
+  if (role === "ROLE_ADMIN") {
+    throw new ApiError({
+      statusCode: 403,
+      message: "Super Admin cannot be created",
+    });
+  }
+
   // Validate required fields
   if (!fullName || !email || !password || !phone || !role) {
     throw new ApiError({
@@ -166,15 +173,24 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 
-  const store = user.store as {
-    status?: string;
-  };
+  if (user.role !== "ROLE_ADMIN") {
+    const store = user.store as {
+      status?: string;
+    };
 
-  if (store?.status === "INACTIVE") {
-    throw new ApiError({
-      statusCode: 403,
-      message: "This store has been deactivated. Contact support for assistance.",
-    });
+    if (store?.status !== "ACTIVE") {
+      const messages = {
+        PENDING: "Your store is awaiting approval from Super Admin.",
+        BLOCKED: "Your store has been blocked. Contact support.",
+        INACTIVE: "Your store has been deactivated.",
+      };
+
+      throw new ApiError({
+        statusCode: 403,
+        message:
+          messages[store?.status as keyof typeof messages] ?? "Store access denied.",
+      });
+    }
   }
 
   const isPasswordMatch = await user.comparePassword(password);

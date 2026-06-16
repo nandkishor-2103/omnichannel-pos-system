@@ -1,198 +1,240 @@
-import { CheckCircle, StarsIcon, Store, UsersIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
 
-const plans = [
-  {
-    id: 1,
-    name: "Starter",
-    price: 499,
-    billingCycle: "monthly",
-    description: "Perfect for small retail stores and startups getting started with POS.",
-    maxBranches: 1,
-    maxUsers: 5,
-    maxProducts: 1000,
-    extraFeatures: [
-      "Sales & inventory management",
-      "Basic reporting dashboard",
-      "Barcode support",
-      "Customer management",
-      "Email support",
-    ],
-  },
-  {
-    id: 2,
-    name: "Growth",
-    price: 1499,
-    billingCycle: "monthly",
-    description: "Designed for growing businesses managing multiple locations.",
-    maxBranches: 10,
-    maxUsers: 50,
-    maxProducts: 10000,
-    extraFeatures: [
-      "Everything in Starter",
-      "Multi-branch management",
-      "Advanced inventory tracking",
-      "Employee management",
-      "Purchase & supplier management",
-      "Priority support",
-    ],
-  },
-  {
-    id: 3,
-    name: "Professional",
-    price: 2999,
-    billingCycle: "monthly",
-    description:
-      "Ideal for established businesses requiring advanced analytics and controls.",
-    maxBranches: 50,
-    maxUsers: 200,
-    maxProducts: 50000,
-    extraFeatures: [
-      "Everything in Growth",
-      "Advanced sales analytics",
-      "Role-based access control",
-      "Custom invoices & receipts",
-      "API access",
-      "WhatsApp & SMS integrations",
-      "Dedicated account manager",
-    ],
-  },
-];
+import { toast } from "sonner";
 
-const currentSubscription = {
-  plan: {
-    id: 1,
-    name: "Starter",
-  },
-  status: "Active",
-  validUntil: "09 Aug 2026",
-};
+import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
+
+import { getAllSubscriptionPlans } from "@/app/store/subscriptionPlan/subscriptionPlanThunk";
+
+import {
+  getCurrentSubscription,
+  getMySubscriptions,
+} from "@/app/store/store-subscription/storeSubscriptionThunk";
+
+import {
+  createSubscriptionPaymentOrder,
+  verifySubscriptionPayment,
+  getSubscriptionPaymentHistory,
+} from "@/app/store/subscription-payment/subscriptionPaymentThunk";
+
+import {
+  getSubscriptionInvoices,
+  resendSubscriptionInvoice,
+  downloadSubscriptionInvoice,
+} from "@/app/store/subscription-invoice/subscriptionInvoiceThunk";
+
+import { loadRazorpay } from "./utils/loadRazorpay";
+
+import CurrentSubscriptionCard from "./components/CurrentSubscriptionCard";
+import SubscriptionPlansGrid from "./components/SubscriptionPlansGrid";
+import PaymentHistoryTable from "./components/PaymentHistoryTable";
+import InvoiceHistoryTable from "./components/InvoiceHistoryTable";
+
+import type { UpgradePlan } from "./types/upgradeTypes";
+import type { RazorpayOptions, RazorpaySuccessResponse } from "./types/razorpay.types";
 
 export default function Upgrade() {
+  const dispatch = useAppDispatch();
+
+  const { plans, loading: plansLoading } = useAppSelector(
+    (state) => state.subscriptionPlan
+  );
+
+  const { currentSubscription, loadingCurrent } = useAppSelector(
+    (state) => state.storeSubscription
+  );
+
+  const { creatingOrder, verifyingPayment, payments } = useAppSelector(
+    (state) => state.subscriptionPayment
+  );
+
+  const { invoices } = useAppSelector((state) => state.subscriptionInvoice);
+
+  const subscriptionLoading = loadingCurrent;
+
+  const paymentLoading = creatingOrder || verifyingPayment;
+
+  useEffect(() => {
+    dispatch(getAllSubscriptionPlans());
+
+    dispatch(getCurrentSubscription());
+
+    dispatch(getMySubscriptions());
+
+    dispatch(getSubscriptionPaymentHistory());
+
+    dispatch(getSubscriptionInvoices());
+  }, [dispatch]);
+
+  const handleUpgrade = async (plan: UpgradePlan) => {
+    try {
+      const razorpayLoaded = await loadRazorpay();
+
+      if (!razorpayLoaded) {
+        toast.error("Failed to load Razorpay");
+        return;
+      }
+
+      const orderResponse = await dispatch(
+        createSubscriptionPaymentOrder({
+          subscriptionPlanId: plan._id,
+        })
+      ).unwrap();
+
+      console.log("orderResponse =", orderResponse);
+
+      const { orderId, amount, currency, key } = orderResponse.payload;
+
+      const options: RazorpayOptions = {
+        key,
+
+        amount,
+
+        currency,
+
+        name: "POS System",
+
+        description: `${plan.name} Subscription`,
+
+        order_id: orderId,
+
+        handler: async (response: RazorpaySuccessResponse) => {
+          try {
+            await dispatch(
+              verifySubscriptionPayment({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              })
+            ).unwrap();
+
+            await Promise.all([
+              dispatch(getCurrentSubscription()),
+              dispatch(getMySubscriptions()),
+              dispatch(getSubscriptionPaymentHistory()),
+              dispatch(getSubscriptionInvoices()),
+            ]);
+
+            toast.success("Subscription activated successfully");
+          } catch (error) {
+            console.error(error);
+
+            toast.error("Payment verification failed");
+          }
+        },
+
+        theme: {
+          color: "#2563eb",
+        },
+
+        modal: {
+          ondismiss: () => {
+            toast.info("Payment cancelled");
+          },
+        },
+      };
+
+      const Razorpay = (
+        window as typeof window & {
+          Razorpay?: new (options: RazorpayOptions) => {
+            open: () => void;
+          };
+        }
+      ).Razorpay;
+
+      if (!Razorpay) {
+        toast.error("Razorpay SDK not loaded");
+        return;
+      }
+
+      const razorpay = new Razorpay(options);
+
+      razorpay.open();
+    } catch (error) {
+      console.error(error);
+
+      toast.error("Failed to initiate payment");
+    }
+  };
+
+  const handleDownloadInvoice = async (invoiceId: string) => {
+    try {
+      const blob = await dispatch(downloadSubscriptionInvoice(invoiceId)).unwrap();
+
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+
+      link.href = url;
+
+      link.download = `invoice-${invoiceId}.pdf`;
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      link.remove();
+
+      window.URL.revokeObjectURL(url);
+
+      toast.success("Invoice downloaded successfully");
+    } catch (error) {
+      console.error(error);
+
+      toast.error("Failed to download invoice");
+    }
+  };
+
+  const handleResendInvoice = async (invoiceId: string) => {
+    try {
+      await dispatch(resendSubscriptionInvoice(invoiceId)).unwrap();
+
+      toast.success("Invoice sent successfully");
+
+      dispatch(getSubscriptionInvoices());
+    } catch (error) {
+      console.error(error);
+
+      toast.error("Failed to resend invoice");
+    }
+  };
+
+  const isLoading = plansLoading || subscriptionLoading || paymentLoading;
+
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="text-center mb-10">
+    <div className="mx-auto max-w-7xl space-y-8">
+      <div className="text-center">
         <h1 className="text-3xl font-bold">Upgrade Your Subscription</h1>
-        <p className="text-muted-foreground mt-2">
-          Choose the perfect plan for your business growth
+
+        <p className="mt-2 text-muted-foreground">
+          Choose the perfect subscription plan for your business growth.
         </p>
       </div>
 
-      {/* Current Plan */}
-      <div className="mb-8 rounded-xl border border-green-200 bg-green-50 p-5">
-        <div className="flex items-start gap-3">
-          <CheckCircle className="h-6 w-6 text-green-600 mt-0.5" />
+      <CurrentSubscriptionCard subscription={currentSubscription} />
 
-          <div>
-            <h2 className="font-semibold text-green-900">
-              Current Plan: {currentSubscription.plan.name}
-            </h2>
-
-            <p className="text-sm text-green-700">
-              {currentSubscription.status} Subscription
-            </p>
-
-            <p className="text-sm text-green-700">
-              Valid Until: {currentSubscription.validUntil}
-            </p>
-          </div>
+      {isLoading ? (
+        <div className="flex items-center justify-center py-20">
+          <p className="text-muted-foreground">Loading subscription plans...</p>
         </div>
-      </div>
+      ) : (
+        <>
+          <SubscriptionPlansGrid
+            plans={plans}
+            currentSubscription={currentSubscription}
+            onUpgrade={handleUpgrade}
+            loading={paymentLoading}
+          />
 
-      {/* Plans */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {plans.map((plan) => {
-          const isCurrentPlan = currentSubscription.plan.id === plan.id;
+          <PaymentHistoryTable payments={payments} />
 
-          return (
-            <div
-              key={plan.id}
-              className={`relative rounded-xl border bg-card p-6 shadow-sm transition-all hover:shadow-lg flex flex-col ${
-                isCurrentPlan ? "border-green-500 ring-2 ring-green-500/20" : ""
-              }`}
-            >
-              {isCurrentPlan && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="rounded-full bg-green-600 px-3 py-1 text-xs font-medium text-white">
-                    Current Plan
-                  </span>
-                </div>
-              )}
-
-              {/* Plan Header */}
-              <div className="text-center">
-                <h3 className="text-xl font-bold">{plan.name}</h3>
-
-                <div className="mt-4">
-                  <span className="text-4xl font-bold">₹{plan.price}</span>
-
-                  <span className="text-muted-foreground text-sm ml-1">
-                    /{plan.billingCycle}
-                  </span>
-                </div>
-
-                <p className="mt-4 text-sm text-muted-foreground">{plan.description}</p>
-              </div>
-
-              {/* Limits */}
-              <div className="my-6 border-y py-4 space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="flex items-center gap-2">
-                    <Store className="h-4 w-4" />
-                    Branches
-                  </span>
-
-                  <span className="font-medium">{plan.maxBranches}</span>
-                </div>
-
-                <div className="flex items-center justify-between text-sm">
-                  <span className="flex items-center gap-2">
-                    <UsersIcon className="h-4 w-4" />
-                    Users
-                  </span>
-
-                  <span className="font-medium">{plan.maxUsers}</span>
-                </div>
-
-                <div className="flex items-center justify-between text-sm">
-                  <span className="flex items-center gap-2">
-                    <StarsIcon className="h-4 w-4" />
-                    Products
-                  </span>
-
-                  <span className="font-medium">{plan.maxProducts}</span>
-                </div>
-              </div>
-
-              {/* Features */}
-              <div className="flex-1">
-                <h4 className="font-semibold mb-3">Included Features</h4>
-
-                <ul className="space-y-2">
-                  {plan.extraFeatures.map((feature) => (
-                    <li
-                      key={feature}
-                      className="flex items-start gap-2 text-sm text-muted-foreground"
-                    >
-                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Action Button */}
-              <Button
-                className="mt-6 w-full cursor-pointer"
-                variant={isCurrentPlan ? "secondary" : "default"}
-                disabled={isCurrentPlan}
-              >
-                {isCurrentPlan ? "Current Plan" : "Upgrade Plan"}
-              </Button>
-            </div>
-          );
-        })}
-      </div>
+          <InvoiceHistoryTable
+            invoices={invoices}
+            onDownload={handleDownloadInvoice}
+            onResend={handleResendInvoice}
+          />
+        </>
+      )}
     </div>
   );
 }

@@ -269,6 +269,7 @@ export const addEmployeeService = async (
 };
 
 export const getAllStoresService = async (status?: string) => {
+  // status can be "ACTIVE" | "PENDING" | "BLOCKED" | "INACTIVE" 
   const filter: Record<string, unknown> = {};
 
   if (status) {
@@ -276,7 +277,7 @@ export const getAllStoresService = async (status?: string) => {
   }
 
   const stores = await Store.find(filter)
-    .populate("storeAdmin", "fullName email phone role")
+    .populate("storeAdmin", "fullName email phone role verified")
     .lean();
 
   return stores;
@@ -312,6 +313,30 @@ export const deactivateStoreService = async (storeAdminId: mongoose.Types.Object
   }
 
   store.status = "INACTIVE";
+
+  await store.save();
+
+  return store;
+};
+
+export const activateStoreService = async (storeId: string) => {
+  const store = await Store.findById(storeId);
+
+  if (!store) {
+    throw new ApiError({
+      statusCode: 404,
+      message: "Store not found",
+    });
+  }
+
+  if (store.status !== "INACTIVE") {
+    throw new ApiError({
+      statusCode: 400,
+      message: "Only inactive stores can be activated",
+    });
+  }
+
+  store.status = "ACTIVE";
 
   await store.save();
 

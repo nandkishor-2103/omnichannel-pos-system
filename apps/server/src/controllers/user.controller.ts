@@ -26,19 +26,6 @@ export const getUserProfileController = asyncHandler(
       });
     }
 
-    const store = user.store as {
-      status?: string;
-    };
-
-    if (store?.status === "INACTIVE") {
-      res.clearCookie("infotactToken");
-
-      throw new ApiError({
-        statusCode: 403,
-        message: "Store has been deactivated",
-      });
-    }
-
     return res.status(200).json(
       new ApiResponse({
         statusCode: 200,

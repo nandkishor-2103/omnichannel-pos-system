@@ -12,6 +12,7 @@ import {
   addEmployee,
   moderateStore,
   deactivateStore,
+  activateStore,
 } from "./storeThunk";
 
 import type { StoreState } from "./storeTypes";
@@ -67,7 +68,7 @@ const storeSlice = createSlice({
       // GET ALL
 
       .addCase(getAllStores.fulfilled, (state, action) => {
-        state.stores = action.payload.stores;
+        state.stores = action.payload.payload.stores;
       })
 
       // UPDATE
@@ -118,8 +119,30 @@ const storeSlice = createSlice({
         }
       })
 
+      // Deactivate store
       .addCase(deactivateStore.fulfilled, (state, action) => {
-        state.store = action.payload.payload.store;
+        const updatedStore = action.payload.payload.store;
+
+        state.stores = state.stores.map((store) =>
+          store._id === updatedStore._id ? updatedStore : store
+        );
+
+        if (state.store?._id === updatedStore._id) {
+          state.store = updatedStore;
+        }
+      })
+
+      // ACTIVE STORE
+      .addCase(activateStore.fulfilled, (state, action) => {
+        const updatedStore = action.payload.payload.store;
+
+        state.stores = state.stores.map((store) =>
+          store._id === updatedStore._id ? updatedStore : store
+        );
+
+        if (state.store?._id === updatedStore._id) {
+          state.store = updatedStore;
+        }
       });
   },
 });

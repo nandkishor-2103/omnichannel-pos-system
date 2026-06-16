@@ -27,15 +27,15 @@ const navLinks: NavLinks[] = [
     icon: <FileText className="w-5 h-5" />,
   },
   {
-    name: "Pending Requests",
+    name: "Store Moderation",
     path: "/super-admin/requests",
     icon: <Clock className="w-5 h-5" />,
   },
-  {
-    name: "Settings",
-    path: "/super-admin/settings",
-    icon: <Settings className="w-5 h-5" />,
-  },
+//   {
+//     name: "Settings",
+//     path: "/super-admin/settings",
+//     icon: <Settings className="w-5 h-5" />,
+//   },
 ];
 
 export default function SuperAdminLayout() {

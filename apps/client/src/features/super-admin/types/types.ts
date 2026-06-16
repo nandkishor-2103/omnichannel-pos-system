@@ -1,8 +1,11 @@
 export interface PlanFormValues {
   name: string;
   description: string;
+
   price: string | number;
-  billingCycle: string;
+
+  billingCycle: "MONTHLY" | "YEARLY";
+
   maxBranches: string | number;
   maxUsers: string | number;
   maxProducts: string | number;
