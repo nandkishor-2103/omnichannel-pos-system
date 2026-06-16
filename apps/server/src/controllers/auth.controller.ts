@@ -24,6 +24,7 @@ import { mapUserToResponseDto } from "../mappers/user.mapper.js";
  * @access  Public
  */
 export const signup = asyncHandler(async (req: Request, res: Response) => {
+  console.log("SIGNUP CONTROLLER HIT");
   const { fullName, email, password, phone, role } = req.body;
 
   if (role === "ROLE_ADMIN") {
