@@ -1,10 +1,10 @@
-import PendingRequest from "@/features/super-admin/components/PendingRequest";
+import PendingRequest from "@/features/super-admin/components/StoreModerationPage";
 import StoreList from "@/features/super-admin/components/StoreList";
-import Subscription from "@/features/super-admin/components/subscription/Subscription";
 import SuperAdminDashboard from "@/features/super-admin/components/SuperAdminDashboard";
 import SuperAdminLayout from "@/features/super-admin/components/SuperAdminLayout";
-import SuperAdminSetting from "@/features/super-admin/components/SuperAdminSetting";
+// import SuperAdminSetting from "@/features/super-admin/components/SuperAdminSetting";
 import { Route, Routes } from "react-router";
+import SubscriptionPage from "@/features/super-admin/components/subscription/SubscriptionPage";
 
 export default function SuperAdminRoutes() {
   return (
@@ -14,8 +14,8 @@ export default function SuperAdminRoutes() {
         <Route path="dashboard" element={<SuperAdminDashboard />} />
         <Route path="stores" element={<StoreList />} />
         <Route path="requests" element={<PendingRequest />} />
-        <Route path="subscriptions" element={<Subscription />} />
-        <Route path="settings" element={<SuperAdminSetting />} />
+        <Route path="subscriptions" element={<SubscriptionPage />} />
+        {/* <Route path="settings" element={<SuperAdminSetting />} /> */}
       </Route>
     </Routes>
   );

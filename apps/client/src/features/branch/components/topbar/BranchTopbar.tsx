@@ -64,9 +64,9 @@ export default function BranchTopbar() {
       {/* Right Section */}
       <div className="flex items-center gap-4">
         {/* Notification */}
-        <Button variant="outline" size="icon" className="h-10 w-10 rounded-full">
+        {/* <Button variant="outline" size="icon" className="h-10 w-10 rounded-full">
           <Bell className="h-4 w-4" />
-        </Button>
+        </Button> */}
 
         {/* User Profile */}
         <div className="flex items-center gap-3 rounded-xl border bg-card px-3 py-2 shadow-sm">

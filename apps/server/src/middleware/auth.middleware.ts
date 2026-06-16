@@ -35,19 +35,26 @@ export const isAuthenticated = asyncHandler(
       });
     }
 
-    if (user.store) {
+    if (user.role !== "ROLE_ADMIN" && user.store) {
       const store = await Store.findById(user.store).select("status");
 
-      if (store?.status === "INACTIVE") {
+      if (store?.status !== "ACTIVE") {
         res.clearCookie("infotactToken", {
           httpOnly: true,
           secure: ENV_VAR.NODE_ENV === "production",
           sameSite: ENV_VAR.NODE_ENV === "production" ? "none" : "lax",
         });
 
+        const messages = {
+          PENDING: "Your store is awaiting approval from Super Admin.",
+          BLOCKED: "Your store has been blocked.",
+          INACTIVE: "Your store has been deactivated.",
+        };
+
         throw new ApiError({
           statusCode: 403,
-          message: "Store has been deactivated",
+          message:
+            messages[store?.status as keyof typeof messages] ?? "Store access denied.",
         });
       }
     }

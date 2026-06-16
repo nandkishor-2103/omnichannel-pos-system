@@ -8,6 +8,8 @@ import {
   getAllSubscriptionPlans,
   getSubscriptionPlanById,
   deleteSubscriptionPlan,
+  activateSubscriptionPlan,
+  deactivateSubscriptionPlan,
 } from "./subscriptionPlanThunk";
 
 const initialState: SubscriptionPlanState = {
@@ -34,78 +36,96 @@ const subscriptionPlanSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
-      // CREATE
+
+      // ================= CREATE =================
+
       .addCase(createSubscriptionPlan.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
+
       .addCase(createSubscriptionPlan.fulfilled, (state, action) => {
         state.loading = false;
-        state.plans.push(action.payload.plan);
+
+        state.plans.push(action.payload.payload.plan);
       })
+
       .addCase(createSubscriptionPlan.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload ?? "Failed to create subscription plan";
       })
 
-      // UPDATE
+      // ================= UPDATE =================
+
       .addCase(updateSubscriptionPlan.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
+
       .addCase(updateSubscriptionPlan.fulfilled, (state, action) => {
         state.loading = false;
 
-        const index = state.plans.findIndex(
-          (plan) => plan._id === action.payload.plan._id
-        );
+        const updatedPlan = action.payload.payload.plan;
+
+        const index = state.plans.findIndex((plan) => plan._id === updatedPlan._id);
 
         if (index !== -1) {
-          state.plans[index] = action.payload.plan;
+          state.plans[index] = updatedPlan;
         }
 
-        if (state.selectedPlan && state.selectedPlan._id === action.payload.plan._id) {
-          state.selectedPlan = action.payload.plan;
+        if (state.selectedPlan && state.selectedPlan._id === updatedPlan._id) {
+          state.selectedPlan = updatedPlan;
         }
       })
+
       .addCase(updateSubscriptionPlan.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload ?? "Failed to update subscription plan";
       })
 
-      // GET ALL
+      // ================= GET ALL =================
+
       .addCase(getAllSubscriptionPlans.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
+
       .addCase(getAllSubscriptionPlans.fulfilled, (state, action) => {
         state.loading = false;
-        state.plans = action.payload.plans;
+
+        state.plans = action.payload.payload.plans;
       })
+
       .addCase(getAllSubscriptionPlans.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload ?? "Failed to fetch plans";
       })
 
-      // GET BY ID
+      // ================= GET BY ID =================
+
       .addCase(getSubscriptionPlanById.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
+
       .addCase(getSubscriptionPlanById.fulfilled, (state, action) => {
         state.loading = false;
-        state.selectedPlan = action.payload.plan;
+
+        state.selectedPlan = action.payload.payload.plan;
       })
+
       .addCase(getSubscriptionPlanById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload ?? "Failed to fetch plan";
       })
 
-      // DELETE
+      // ================= DELETE =================
+
       .addCase(deleteSubscriptionPlan.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
+
       .addCase(deleteSubscriptionPlan.fulfilled, (state, action) => {
         state.loading = false;
 
@@ -115,9 +135,38 @@ const subscriptionPlanSlice = createSlice({
           state.selectedPlan = null;
         }
       })
+
       .addCase(deleteSubscriptionPlan.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload ?? "Failed to delete plan";
+      })
+
+      // ================= ACTIVATE =================
+
+      .addCase(activateSubscriptionPlan.fulfilled, (state, action) => {
+        const updatedPlan = action.payload.payload.plan;
+
+        state.plans = state.plans.map((plan) =>
+          plan._id === updatedPlan._id ? updatedPlan : plan
+        );
+
+        if (state.selectedPlan?._id === updatedPlan._id) {
+          state.selectedPlan = updatedPlan;
+        }
+      })
+
+      // ================= DEACTIVATE =================
+
+      .addCase(deactivateSubscriptionPlan.fulfilled, (state, action) => {
+        const updatedPlan = action.payload.payload.plan;
+
+        state.plans = state.plans.map((plan) =>
+          plan._id === updatedPlan._id ? updatedPlan : plan
+        );
+
+        if (state.selectedPlan?._id === updatedPlan._id) {
+          state.selectedPlan = updatedPlan;
+        }
       });
   },
 });

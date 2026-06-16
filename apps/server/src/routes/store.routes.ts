@@ -11,6 +11,7 @@ import {
   getAllStoresController,
   moderateStoreController,
   deactivateStoreController,
+  activateStoreController,
 } from "../controllers/store.controller.js";
 import { isAuthenticated } from "../middleware/auth.middleware.js";
 import { authorizeRoles } from "../middleware/role.middleware.js";
@@ -82,6 +83,14 @@ router.patch(
   isAuthenticated,
   authorizeRoles("ROLE_STORE_ADMIN"),
   deactivateStoreController
+);
+
+// =================== Activate Store (Only Super Admin) ✅ =====================
+router.put(
+  "/:storeId/activate",
+  isAuthenticated,
+  authorizeRoles("ROLE_ADMIN"),
+  activateStoreController
 );
 
 // ===================== MODERATE STORE (Only Super Admin) ✅ =====================

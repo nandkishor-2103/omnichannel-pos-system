@@ -1,8 +1,16 @@
+import { useAppDispatch } from "@/app/store/hooks";
 import StoreRegistrationChart from "./chart/StoreRegistrationChart";
 import StoreStatusChart from "./chart/StoreStatusChart";
 import SuperAdminOverview from "./SuperAdminOverview";
+import { useEffect } from "react";
+import { getAllStores } from "@/app/store/store/storeThunk";
 
 export default function SuperAdminDashboard() {
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    dispatch(getAllStores());
+  }, [dispatch]);
+  
   return (
     <div className="space-y-6">
       <div>

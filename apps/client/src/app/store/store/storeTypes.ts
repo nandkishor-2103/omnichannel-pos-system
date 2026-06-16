@@ -13,6 +13,10 @@ export interface StoreAdmin {
   verified: boolean;
 }
 
+export interface ActivateStorePayload {
+  storeId: string;
+}
+
 export interface Store {
   _id: string;
 
@@ -22,7 +26,7 @@ export interface Store {
 
   storeType?: string;
 
-  status?: "PENDING" | "ACTIVE" | "BLOCKED";
+  status?: "PENDING" | "ACTIVE" | "BLOCKED" | "INACTIVE";
 
   contact?: StoreContact;
 
@@ -44,8 +48,13 @@ export interface StoreResponse {
 }
 
 export interface StoresResponse {
-  stores: Store[];
-  message?: string;
+  statusCode: number;
+  success: boolean;
+  message: string;
+
+  payload: {
+    stores: Store[];
+  };
 }
 
 export interface StoreEmployee {
@@ -94,7 +103,7 @@ export interface UpdateStorePayload {
 
 export interface ModerateStorePayload {
   storeId: string;
-  action: "APPROVE" | "REJECT" | "BLOCK";
+  action: "ACTIVE" | "BLOCKED";
 }
 
 export interface StoreState {

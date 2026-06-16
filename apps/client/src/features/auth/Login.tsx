@@ -38,7 +38,6 @@ export default function Login() {
 
   const user = useAppSelector((state) => state.auth.user);
 
-
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -191,21 +190,6 @@ export default function Login() {
                 {loading ? <LoadingSpinner size={16} text="Signing In..." /> : "Sign In"}
               </Button>
             </form>
-
-            <div className="py-5">
-              <Separator />
-            </div>
-
-            {/* Demo Account */}
-            <div className="rounded-xl border bg-muted/40 p-4">
-              <p className="text-center text-sm text-muted-foreground">
-                <strong>Demo Account</strong>
-                <br />
-                Email: debugapicodes@gmail.com
-                <br />
-                Password: demo@21pos
-              </p>
-            </div>
           </div>
         )}
 

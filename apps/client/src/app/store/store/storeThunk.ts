@@ -187,3 +187,19 @@ export const deactivateStore = createAsyncThunk<
     return rejectWithValue(getErrorMessage(error));
   }
 });
+
+// ====================== ACTIVATE STORE ======================
+
+export const activateStore = createAsyncThunk<
+  StoreResponse,
+  string,
+  { rejectValue: string }
+>("store/activate", async (storeId, { rejectWithValue }) => {
+  try {
+    const res = await api.put<StoreResponse>(`/stores/${storeId}/activate`);
+
+    return res.data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
