@@ -59,15 +59,6 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 
-  // Create new user
-  const user = await User.create({
-    fullName,
-    email,
-    password,
-    phone,
-    role,
-  });
-
   // Generate and store OTP
   const otp = generateOtp();
   console.log("OTP Generated:", otp);
@@ -88,6 +79,15 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
   });
 
   console.log("Email Sent Successfully");
+
+  // Create new user
+  const user = await User.create({
+    fullName,
+    email,
+    password,
+    phone,
+    role,
+  });
 
   res.status(201).json(
     new ApiResponse({
