@@ -1,5 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { signin, signup, logout } from "./authThunk";
+import {
+  signin,
+  signup,
+  logout,
+  forgotPassword,
+  verifyResetOtp,
+  resetPassword,
+} from "./authThunk";
 import type { AuthState } from "./authTypes";
 import { getUserProfile } from "../user/userThunk";
 
@@ -33,7 +40,7 @@ const authSlice = createSlice({
 
       .addCase(signup.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user;
+        state.user = action.payload.payload.user;
       })
 
       .addCase(signup.rejected, (state, action) => {
@@ -90,6 +97,48 @@ const authSlice = createSlice({
         state.loading = false;
         state.initialized = true;
         state.user = null;
+      })
+
+      // ============== FORGOT PASSWORD ============
+      .addCase(forgotPassword.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(forgotPassword.fulfilled, (state) => {
+        state.loading = false;
+      })
+
+      .addCase(forgotPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload ?? "Failed to send OTP";
+      })
+
+      // ============== VERIFY RESET OTP =================
+      .addCase(verifyResetOtp.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(verifyResetOtp.fulfilled, (state) => {
+        state.loading = false;
+      })
+
+      .addCase(verifyResetOtp.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload ?? "OTP verification failed";
+      })
+
+      // ================ RESET PASSWORD ==============
+      .addCase(resetPassword.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(resetPassword.fulfilled, (state) => {
+        state.loading = false;
+      })
+
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload ?? "Password reset failed";
       });
   },
 });

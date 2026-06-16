@@ -1,8 +1,13 @@
 import type { User } from "@/types/user";
 
 export interface SignUpResponse {
-  user: User;
+  statusCode: number;
+  success: boolean;
   message: string;
+
+  payload: {
+    user: User;
+  };
 }
 
 export interface SignInResponse {
@@ -12,6 +17,12 @@ export interface SignInResponse {
   payload: {
     user: User;
   };
+}
+
+export interface BasicApiResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
 }
 
 export interface AuthState {

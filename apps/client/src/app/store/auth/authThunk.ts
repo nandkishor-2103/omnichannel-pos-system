@@ -1,24 +1,28 @@
 import { api, getErrorMessage } from "@/lib/axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-import type { SignInResponse, SignUpResponse } from "./authTypes";
+import type { BasicApiResponse, SignInResponse, SignUpResponse } from "./authTypes";
 
 // ==================== SignUp Start ====================
-type SignUpPayload = {
-  name: string;
+type SignupPayload = {
+  fullName: string;
   email: string;
   password: string;
+  phone: string;
 };
 
 export const signup = createAsyncThunk<
   SignUpResponse,
-  SignUpPayload,
+  SignupPayload,
   { rejectValue: string }
->("auth/signup", async (userData, { rejectWithValue }) => {
+>("auth/signup", async (data, { rejectWithValue }) => {
   try {
-    const response = await api.post<SignUpResponse>("/auth/signup", userData);
+    const res = await api.post("/auth/signup", {
+      ...data,
+      role: "ROLE_STORE_ADMIN",
+    });
 
-    return response.data;
+    return res.data;
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
   }
@@ -59,3 +63,82 @@ export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
     }
   }
 );
+
+// ================ FORGOT PASSWORD ==============
+type ForgotPasswordPayload = {
+  email: string;
+};
+
+export const forgotPassword = createAsyncThunk<
+  BasicApiResponse,
+  ForgotPasswordPayload,
+  { rejectValue: string }
+>("auth/forgotPassword", async (data, { rejectWithValue }) => {
+  try {
+    const response = await api.post<BasicApiResponse>("/auth/forgot-password", data);
+
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+// =================== VERIFY RESET OTP =================
+type VerifyResetOtpPayload = {
+  email: string;
+  otp: string;
+};
+
+export const verifyResetOtp = createAsyncThunk<
+  BasicApiResponse,
+  VerifyResetOtpPayload,
+  { rejectValue: string }
+>("auth/verifyResetOtp", async (data, { rejectWithValue }) => {
+  try {
+    const response = await api.post<BasicApiResponse>("/auth/verify-reset-otp", data);
+
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+// ======================= RESET PASSWORD ================
+type ResetPasswordPayload = {
+  email: string;
+  password: string;
+};
+
+export const resetPassword = createAsyncThunk<
+  BasicApiResponse,
+  ResetPasswordPayload,
+  { rejectValue: string }
+>("auth/resetPassword", async (data, { rejectWithValue }) => {
+  try {
+    const response = await api.post<BasicApiResponse>("/auth/reset-password", data);
+
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+// ============== VERIFY OTP =======================
+type VerifyOtpPayload = {
+  email: string;
+  otp: string;
+};
+
+export const verifyOtp = createAsyncThunk<
+  { message: string },
+  VerifyOtpPayload,
+  { rejectValue: string }
+>("auth/verifyOtp", async (data, { rejectWithValue }) => {
+  try {
+    const res = await api.post("/auth/verify-otp", data);
+
+    return res.data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});

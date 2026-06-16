@@ -32,6 +32,16 @@ export interface Store {
 
   storeAdmin?: StoreAdmin;
 
+  currentSubscription?: {
+    planName: string;
+
+    status: "ACTIVE" | "EXPIRED" | "CANCELLED";
+
+    startDate: string;
+
+    endDate: string;
+  } | null;
+
   createdAt?: string;
 
   updatedAt?: string;
