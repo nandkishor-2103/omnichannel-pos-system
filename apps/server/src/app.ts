@@ -26,6 +26,7 @@ import subscriptionPlanRoutes from "./routes/subscriptionPlan.routes.js";
 import subscriptionPaymentRoutes from "./routes/subscriptionPayment.routes.js";
 import storeSubscriptionRoutes from "./routes/storeSubscription.routes.js";
 import subscriptionInvoiceRoutes from "./routes/subscriptionInvoice.routes.js";
+import orderPaymentRoutes from "./routes/payment.routes.js";
 
 const app = express();
 
@@ -82,6 +83,7 @@ app.use("/api/super-admin/subscription-plans", subscriptionPlanRoutes);
 app.use("/api/subscription-payments", subscriptionPaymentRoutes);
 app.use("/api/store-subscriptions", storeSubscriptionRoutes);
 app.use("/api/subscription-invoices", subscriptionInvoiceRoutes);
+app.use("/api/order-payments", orderPaymentRoutes);
 // =========== 🚨 Global Error Handling Middleware ===========
 app.use(errorHandler);
 

@@ -33,6 +33,7 @@ import inventoryMovementReducer from "./store/inventoryMovement/inventoryMovemen
 import subscriptionPaymentReducer from "./store/subscription-payment/subscriptionPaymentSlice";
 import storeSubscriptionReducer from "./store/store-subscription/storeSubscriptionSlice";
 import subscriptionInvoiceReducer from "./store/subscription-invoice/subscriptionInvoiceSlice";
+import orderPaymentReducer from "./store/order-payment/orderPaymentSlice";
 
 const storage =
   (storageModule as { default?: typeof storageModule }).default ?? storageModule;
@@ -58,6 +59,7 @@ const rootReducer = combineReducers({
   subscriptionPayment: subscriptionPaymentReducer,
   storeSubscription: storeSubscriptionReducer,
   subscriptionInvoice: subscriptionInvoiceReducer,
+  orderPayment: orderPaymentReducer,
 
   cart: cartReducer,
 });

@@ -72,7 +72,6 @@ export default function ReturnItemSection({
       })
     );
 
-    console.log(resultAction);
 
     if (createRefund.fulfilled.match(resultAction)) {
       setShowReturnReceiptDialog(true);

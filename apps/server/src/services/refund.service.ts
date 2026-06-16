@@ -21,6 +21,8 @@ import {
 } from "../mappers/refund.mapper.js";
 import { Inventory } from "../models/inventory.model.js";
 import { createInventoryMovement } from "./inventoryMovement.service.js";
+import { PaymentType } from "../enums/paymentType.enums.js";
+import { createRazorpayRefund } from "./razorpay.service.js";
 
 // ============== CREATE REFUND SERVICE ==================
 export const createRefundService = async (
@@ -87,13 +89,34 @@ export const createRefundService = async (
     shiftEnd: null,
   });
 
+  let razorpayRefundId: string | undefined;
+
+  if (
+    (order.paymentType === PaymentType.UPI || order.paymentType === PaymentType.CARD) &&
+    order.razorpayPaymentId
+  ) {
+    const refundResponse = await createRazorpayRefund(
+      order.razorpayPaymentId,
+      refundAmount
+    );
+
+    razorpayRefundId = refundResponse.id;
+  }
+
   const refundPayload: any = {
     order: order._id,
+
     cashier: currentUser._id,
+
     branch: branch._id,
+
     reason,
+
     amount: refundAmount,
+
     paymentType: refundMethod,
+
+    razorpayRefundId,
   };
 
   if (activeShift) {
