@@ -12,14 +12,31 @@ export interface IOrderItem {
 
 export interface IOrder {
   totalAmount: number;
+
   note?: string;
+
   branch: Types.ObjectId;
+
   cashier: Types.ObjectId;
+
   customer: Types.ObjectId;
+
   paymentType: PaymentType;
+
   status: OrderStatus;
+
   items: IOrderItem[];
+
+  razorpayOrderId?: string;
+
+  razorpayPaymentId?: string;
+
+  razorpaySignature?: string;
+
+  paymentStatus?: "PENDING" | "SUCCESS" | "FAILED";
+
   createdAt?: Date;
+
   updatedAt?: Date;
 }
 
@@ -95,6 +112,24 @@ const orderSchema = new Schema<IOrder>(
     items: {
       type: [orderItemSchema],
       required: true,
+    },
+
+    razorpayOrderId: {
+      type: String,
+    },
+
+    razorpayPaymentId: {
+      type: String,
+    },
+
+    razorpaySignature: {
+      type: String,
+    },
+
+    paymentStatus: {
+      type: String,
+      enum: ["PENDING", "SUCCESS", "FAILED"],
+      default: "SUCCESS",
     },
   },
   {

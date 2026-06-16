@@ -20,6 +20,8 @@ export interface IRefund {
 
   paymentType: PaymentType;
 
+  razorpayRefundId?: string;
+
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -69,6 +71,10 @@ const refundSchema = new Schema<IRefund>(
       type: String,
       enum: Object.values(PaymentType),
       required: true,
+    },
+
+    razorpayRefundId: {
+      type: String,
     },
   },
   {
