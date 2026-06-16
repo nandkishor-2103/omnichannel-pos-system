@@ -1,5 +1,8 @@
 import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
-import { getRecentOrdersByBranch } from "@/app/store/order/orderThunk";
+import {
+  getRecentOrdersByBranch,
+  getTodayOrdersByBranch,
+} from "@/app/store/order/orderThunk";
 import { Badge } from "@/components/ui/badge.tsx";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.tsx";
@@ -15,14 +18,6 @@ import {
 import { useEffect } from "react";
 
 type OrderStatus = "COMPLETED" | "PENDING" | "REFUNDED" | "CANCELLED";
-
-type RecentOrder = {
-  id: string;
-  customerName: string;
-  totalAmount: number;
-  status: OrderStatus;
-  createdAt: string;
-};
 
 const getStatusColor = (status: OrderStatus) => {
   switch (status) {
@@ -47,11 +42,11 @@ export default function RecentOrders() {
   const dispatch = useAppDispatch();
 
   const branch = useAppSelector((state) => state.branch.branch);
-  const recentOrders = useAppSelector((state) => state.order.recentOrders);
+  const todayOrders = useAppSelector((state) => state.order.todayOrders);
 
   useEffect(() => {
     if (branch?._id) {
-      dispatch(getRecentOrdersByBranch(branch._id));
+      dispatch(getTodayOrdersByBranch(branch._id));
     }
   }, [dispatch, branch?._id]);
   return (
@@ -98,7 +93,7 @@ export default function RecentOrders() {
             </TableHeader>
 
             <TableBody>
-              {recentOrders.slice(0, 5).map((order) => (
+              {todayOrders.slice(0, 5).map((order) => (
                 <TableRow key={order.id} className="transition-colors hover:bg-muted/30">
                   <TableCell className="font-medium text-foreground">
                     #{order.id.slice(-6).toUpperCase()}

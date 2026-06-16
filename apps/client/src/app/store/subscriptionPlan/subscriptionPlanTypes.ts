@@ -1,40 +1,111 @@
 export interface SubscriptionPlan {
   _id: string;
+
   name: string;
+
   description?: string;
+
   price: number;
-  duration: number;
-  features?: string[];
+
+  billingCycle: "MONTHLY" | "YEARLY";
+
+  maxBranches: number;
+
+  maxUsers: number;
+
+  maxProducts: number;
+
+  enableAdvancedReports: boolean;
+
+  enableInventory: boolean;
+
+  enableIntegrations: boolean;
+
+  enableEcommerce: boolean;
+
+  enableInvoiceBranding: boolean;
+
+  prioritySupport: boolean;
+
+  enableMultiLocation: boolean;
+
+  extraFeatures: string[];
+
+  status: "ACTIVE" | "INACTIVE";
+
   createdAt?: string;
+
   updatedAt?: string;
 }
 
 export interface SubscriptionPlanResponse {
-  plan: SubscriptionPlan;
-  message?: string;
+  statusCode: number;
+
+  success: boolean;
+
+  message: string;
+
+  payload: {
+    plan: SubscriptionPlan;
+  };
 }
 
 export interface SubscriptionPlansResponse {
-  plans: SubscriptionPlan[];
-  message?: string;
+  statusCode: number;
+
+  success: boolean;
+
+  message: string;
+
+  payload: {
+    plans: SubscriptionPlan[];
+  };
 }
 
 export interface CreateSubscriptionPlanPayload {
   name: string;
+
   description?: string;
+
   price: number;
-  duration: number;
-  features?: string[];
+
+  billingCycle: "MONTHLY" | "YEARLY";
+
+  maxBranches: number;
+
+  maxUsers: number;
+
+  maxProducts: number;
+
+  enableAdvancedReports: boolean;
+
+  enableInventory: boolean;
+
+  enableIntegrations: boolean;
+
+  enableEcommerce: boolean;
+
+  enableInvoiceBranding: boolean;
+
+  prioritySupport: boolean;
+
+  enableMultiLocation: boolean;
+
+  extraFeatures: string[];
 }
 
 export interface UpdateSubscriptionPlanPayload {
   id: string;
+
   plan: Partial<CreateSubscriptionPlanPayload>;
 }
 
 export interface SubscriptionPlanState {
   plans: SubscriptionPlan[];
+
   selectedPlan: SubscriptionPlan | null;
+
   loading: boolean;
+
   error: string | null;
 }

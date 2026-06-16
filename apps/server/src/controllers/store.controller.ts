@@ -13,6 +13,7 @@ import {
   moderateStoreService,
   getAllStoresService,
   deactivateStoreService,
+  activateStoreService,
 } from "../services/store.service.js";
 import type { IUser } from "../models/user.model.js";
 import ApiError from "../utils/ApiError.js";
@@ -246,3 +247,21 @@ export const deactivateStoreController = asyncHandler(async (req, res) => {
     })
   );
 });
+
+export const activateStoreController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { storeId } = req.params;
+
+    const store = await activateStoreService(storeId as string);
+
+    return res.status(200).json(
+      new ApiResponse({
+        statusCode: 200,
+        message: "Store activated successfully",
+        payload: {
+          store,
+        },
+      })
+    );
+  }
+);

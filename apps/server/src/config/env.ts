@@ -12,6 +12,13 @@ const requiredEnvVars = [
   "CLIENT_URL",
   "EMAIL_USER",
   "EMAIL_PASS",
+  "SUPER_ADMIN_EMAIL",
+  "SUPER_ADMIN_PASSWORD",
+  "SUPER_ADMIN_PHONE",
+  "VERIFIED",
+  "FULL_NAME",
+  "RAZORPAY_KEY_ID",
+  "RAZORPAY_KEY_SECRET",
 ] as const;
 
 // Define a type that enforces all required environment variables
@@ -41,6 +48,13 @@ const ENV_VARS: EnvVars = {
   CLIENT_URL: process.env.CLIENT_URL as string,
   EMAIL_USER: process.env.EMAIL_USER as string,
   EMAIL_PASS: process.env.EMAIL_PASS as string,
+  SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL as string,
+  SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD as string,
+  SUPER_ADMIN_PHONE: process.env.SUPER_ADMIN_PHONE as string,
+  VERIFIED: process.env.VERIFIED as string,
+  FULL_NAME: process.env.FULL_NAME as string,
+  RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID as string,
+  RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET as string,
 };
 
 export default ENV_VARS;

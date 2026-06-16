@@ -22,6 +22,10 @@ import { adminDashboardRoutes } from "./routes/adminDashboard.routes.js";
 import { branchAnalyticsRoutes } from "./routes/branchAnalytics.routes.js";
 import { storeAnalyticsRoutes } from "./routes/storeAnalytics.routes.js";
 import inventoryMovementRoutes from "./routes/inventoryMovement.route.js";
+import subscriptionPlanRoutes from "./routes/subscriptionPlan.routes.js";
+import subscriptionPaymentRoutes from "./routes/subscriptionPayment.routes.js";
+import storeSubscriptionRoutes from "./routes/storeSubscription.routes.js";
+import subscriptionInvoiceRoutes from "./routes/subscriptionInvoice.routes.js";
 
 const app = express();
 
@@ -74,6 +78,10 @@ app.use("/api/super-admin", adminDashboardRoutes);
 app.use("/api/branch-analytics", branchAnalyticsRoutes);
 app.use("/api/store/analytics", storeAnalyticsRoutes);
 app.use("/api/inventory-movements", inventoryMovementRoutes);
+app.use("/api/super-admin/subscription-plans", subscriptionPlanRoutes);
+app.use("/api/subscription-payments", subscriptionPaymentRoutes);
+app.use("/api/store-subscriptions", storeSubscriptionRoutes);
+app.use("/api/subscription-invoices", subscriptionInvoiceRoutes);
 // =========== 🚨 Global Error Handling Middleware ===========
 app.use(errorHandler);
 

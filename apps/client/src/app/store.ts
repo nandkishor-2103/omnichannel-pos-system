@@ -30,6 +30,9 @@ import storeAnalyticsReducer from "./store/storeAnalytics/storeAnalyticsSlice";
 import subscriptionPlanReducer from "./store/subscriptionPlan/subscriptionPlanSlice";
 import cartReducer from "./store/cart/cartSlice";
 import inventoryMovementReducer from "./store/inventoryMovement/inventoryMovementSlice";
+import subscriptionPaymentReducer from "./store/subscription-payment/subscriptionPaymentSlice";
+import storeSubscriptionReducer from "./store/store-subscription/storeSubscriptionSlice";
+import subscriptionInvoiceReducer from "./store/subscription-invoice/subscriptionInvoiceSlice";
 
 const storage =
   (storageModule as { default?: typeof storageModule }).default ?? storageModule;
@@ -52,6 +55,9 @@ const rootReducer = combineReducers({
   storeAnalytics: storeAnalyticsReducer,
   subscriptionPlan: subscriptionPlanReducer,
   inventoryMovement: inventoryMovementReducer,
+  subscriptionPayment: subscriptionPaymentReducer,
+  storeSubscription: storeSubscriptionReducer,
+  subscriptionInvoice: subscriptionInvoiceReducer,
 
   cart: cartReducer,
 });

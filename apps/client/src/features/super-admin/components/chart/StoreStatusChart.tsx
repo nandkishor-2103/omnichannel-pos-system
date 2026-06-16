@@ -1,3 +1,7 @@
+import { useMemo } from "react";
+
+import { useAppSelector } from "@/app/store/hooks";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import {
@@ -8,41 +12,58 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
-
-const data = [
-  {
-    name: "Active",
-    value: 50,
-    percentage: 57,
-  },
-  {
-    name: "Pending",
-    value: 18,
-    percentage: 21,
-  },
-  {
-    name: "Blocked",
-    value: 10,
-    percentage: 11,
-  },
-];
+import { Cell, Label, Pie, PieChart, ResponsiveContainer } from "recharts";
 
 const COLORS = ["#22c55e", "#f59e0b", "#ef4444"];
 
-const config = data.reduce<Record<string, { label: string; color: string }>>(
-  (acc, item, index) => {
-    acc[item.name] = {
-      label: item.name,
-      color: COLORS[index],
-    };
-
-    return acc;
-  },
-  {}
-);
-
 export default function StoreStatusChart() {
+  const stores = useAppSelector((state) => state.store.stores);
+
+  const chartData = useMemo(() => {
+    const activeCount = stores.filter((store) => store.status === "ACTIVE").length;
+
+    const pendingCount = stores.filter((store) => store.status === "PENDING").length;
+
+    const blockedCount = stores.filter((store) => store.status === "BLOCKED").length;
+
+    const total = activeCount + pendingCount + blockedCount;
+
+    return [
+      {
+        name: "Active",
+        value: activeCount,
+        percentage: total > 0 ? Math.round((activeCount / total) * 100) : 0,
+      },
+      {
+        name: "Pending",
+        value: pendingCount,
+        percentage: total > 0 ? Math.round((pendingCount / total) * 100) : 0,
+      },
+      {
+        name: "Blocked",
+        value: blockedCount,
+        percentage: total > 0 ? Math.round((blockedCount / total) * 100) : 0,
+      },
+    ];
+  }, [stores]);
+
+  const chartConfig = useMemo(() => {
+    return {
+      Active: {
+        label: "Active",
+        color: COLORS[0],
+      },
+      Pending: {
+        label: "Pending",
+        color: COLORS[1],
+      },
+      Blocked: {
+        label: "Blocked",
+        color: COLORS[2],
+      },
+    };
+  }, []);
+
   return (
     <Card className="rounded-2xl shadow-sm">
       <CardHeader>
@@ -54,25 +75,55 @@ export default function StoreStatusChart() {
       </CardHeader>
 
       <CardContent>
-        <ChartContainer config={config} className="h-[320px] w-full">
+        <ChartContainer config={chartConfig} className="h-[320px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={data}
+                data={chartData}
                 dataKey="value"
                 nameKey="name"
                 cx="50%"
                 cy="45%"
-                innerRadius={55}
-                outerRadius={90}
+                innerRadius={60}
+                outerRadius={95}
                 paddingAngle={4}
                 strokeWidth={0}
-                label={({ name, percentage }) => `${name} ${percentage}%`}
-                labelLine={false}
+                label={false}
               >
-                {data.map((_, index) => (
+                {chartData.map((_, index) => (
                   <Cell key={index} fill={COLORS[index]} />
                 ))}
+
+                <Label
+                  content={({ viewBox }) => {
+                    if (!viewBox || !("cx" in viewBox) || !("cy" in viewBox)) {
+                      return null;
+                    }
+
+                    const cx = viewBox.cx ?? 0;
+                    const cy = viewBox.cy ?? 0;
+
+                    return (
+                      <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle">
+                        <tspan
+                          x={cx}
+                          y={cy - 4}
+                          className="fill-foreground text-3xl font-bold"
+                        >
+                          {stores.length}
+                        </tspan>
+
+                        <tspan
+                          x={cx}
+                          y={cy + 22}
+                          className="fill-muted-foreground text-sm"
+                        >
+                          Stores
+                        </tspan>
+                      </text>
+                    );
+                  }}
+                />
               </Pie>
 
               <ChartTooltip
