@@ -142,3 +142,17 @@ export const verifyOtp = createAsyncThunk<
     return rejectWithValue(getErrorMessage(error));
   }
 });
+
+// ============== CHECK SESSION ==============
+export const checkSession = createAsyncThunk<boolean, void, { rejectValue: string }>(
+  "auth/checkSession",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/auth/session");
+
+      return response.data.payload.authenticated;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
