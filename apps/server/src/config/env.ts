@@ -10,8 +10,6 @@ const requiredEnvVars = [
   "JWT_SECRET",
   "NODE_ENV",
   "CLIENT_URL",
-  "EMAIL_USER",
-  "EMAIL_PASS",
   "SUPER_ADMIN_EMAIL",
   "SUPER_ADMIN_PASSWORD",
   "SUPER_ADMIN_PHONE",
@@ -19,6 +17,9 @@ const requiredEnvVars = [
   "FULL_NAME",
   "RAZORPAY_KEY_ID",
   "RAZORPAY_KEY_SECRET",
+  "BREVO_SMTP_USER",
+  "BREVO_SMTP_PASS",
+  "EMAIL_FROM",
 ] as const;
 
 // Define a type that enforces all required environment variables
@@ -46,8 +47,6 @@ const ENV_VARS: EnvVars = {
   JWT_SECRET: process.env.JWT_SECRET as string,
   NODE_ENV: process.env.NODE_ENV as string,
   CLIENT_URL: process.env.CLIENT_URL as string,
-  EMAIL_USER: process.env.EMAIL_USER as string,
-  EMAIL_PASS: process.env.EMAIL_PASS as string,
   SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL as string,
   SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD as string,
   SUPER_ADMIN_PHONE: process.env.SUPER_ADMIN_PHONE as string,
@@ -55,6 +54,9 @@ const ENV_VARS: EnvVars = {
   FULL_NAME: process.env.FULL_NAME as string,
   RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID as string,
   RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET as string,
+  BREVO_SMTP_USER: process.env.BREVO_SMTP_USER as string,
+  BREVO_SMTP_PASS: process.env.BREVO_SMTP_PASS as string,
+  EMAIL_FROM: process.env.EMAIL_FROM as string,
 };
 
 export default ENV_VARS;

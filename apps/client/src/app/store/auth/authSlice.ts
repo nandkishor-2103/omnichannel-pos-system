@@ -6,6 +6,7 @@ import {
   forgotPassword,
   verifyResetOtp,
   resetPassword,
+  checkSession,
 } from "./authThunk";
 import type { AuthState } from "./authTypes";
 import { getUserProfile } from "../user/userThunk";
@@ -95,6 +96,19 @@ const authSlice = createSlice({
 
       .addCase(getUserProfile.rejected, (state) => {
         state.loading = false;
+        state.initialized = true;
+        state.user = null;
+      })
+
+      // ========== CHECK SESSION ==========
+      .addCase(checkSession.fulfilled, (state, action) => {
+        if (!action.payload) {
+          state.initialized = true;
+          state.user = null;
+        }
+      })
+
+      .addCase(checkSession.rejected, (state) => {
         state.initialized = true;
         state.user = null;
       })

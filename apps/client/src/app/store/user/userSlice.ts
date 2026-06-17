@@ -5,7 +5,6 @@ import {
   getAllCustomers,
   getUserById,
   getUserProfile,
-//   logout,
 } from "./userThunk";
 
 import type { UserState } from "../user/userTypes";
@@ -89,18 +88,7 @@ const userSlice = createSlice({
       .addCase(getUserById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload ?? "Failed to fetch user";
-      })
-
-      // Logout
-     /*  .addCase(logout.fulfilled, (state) => {
-        state.userProfile = null;
-        state.selectedUser = null;
-        state.users = [];
-        state.customers = [];
-        state.cashiers = [];
-        state.loading = false;
-        state.error = null;
-      }); */
+      });
   },
 });
 

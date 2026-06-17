@@ -28,6 +28,7 @@
     "pdfkit": "^0.19.1",
     "razorpay": "^2.9.6",
     "redis": "^5.12.1",
+    "resend": "^6.13.0",
     "validator": "^13.15.35"
   },
   "devDependencies": {
