@@ -14,14 +14,14 @@ const router = express.Router();
 router.get(
   "/current",
   isAuthenticated,
-  authorizeRoles("ROLE_STORE_ADMIN"),
+  authorizeRoles("ROLE_STORE_ADMIN", "ROLE_STORE_MANAGER"),
   getCurrentStoreSubscriptionController
 );
 
 router.get(
   "/my-subscriptions",
   isAuthenticated,
-  authorizeRoles("ROLE_STORE_ADMIN"),
+  authorizeRoles("ROLE_STORE_ADMIN", "ROLE_STORE_MANAGER"),
   getStoreSubscriptionHistoryController
 );
 

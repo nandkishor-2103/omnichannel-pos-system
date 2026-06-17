@@ -36,7 +36,7 @@ router.post(
 router.get(
   "/",
   isAuthenticated,
-  authorizeRoles("ROLE_ADMIN", "ROLE_STORE_ADMIN"),
+  authorizeRoles("ROLE_ADMIN", "ROLE_STORE_ADMIN", "ROLE_STORE_MANAGER"),
   getAllSubscriptionPlansController
 );
 
@@ -45,7 +45,7 @@ router.get(
 router.get(
   "/:planId",
   isAuthenticated,
-  authorizeRoles("ROLE_ADMIN", "ROLE_STORE_ADMIN"),
+  authorizeRoles("ROLE_ADMIN", "ROLE_STORE_ADMIN", "ROLE_STORE_MANAGER"),
   subscriptionPlanIdValidation,
   getSubscriptionPlanByIdController
 );
