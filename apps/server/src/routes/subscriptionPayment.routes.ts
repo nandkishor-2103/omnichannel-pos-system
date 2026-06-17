@@ -23,7 +23,7 @@ const router = express.Router();
 router.post(
   "/create-order",
   isAuthenticated,
-  authorizeRoles("ROLE_STORE_ADMIN"),
+  authorizeRoles("ROLE_STORE_ADMIN", "ROLE_STORE_MANAGER"),
   createSubscriptionPaymentOrderValidation,
   createSubscriptionPaymentOrderController
 );
@@ -35,7 +35,7 @@ router.post(
 router.post(
   "/verify",
   isAuthenticated,
-  authorizeRoles("ROLE_STORE_ADMIN"),
+  authorizeRoles("ROLE_STORE_ADMIN", "ROLE_STORE_MANAGER"),
   verifySubscriptionPaymentValidation,
   verifySubscriptionPaymentController
 );
@@ -46,7 +46,7 @@ router.post(
 router.get(
   "/history",
   isAuthenticated,
-  authorizeRoles("ROLE_STORE_ADMIN"),
+  authorizeRoles("ROLE_STORE_ADMIN", "ROLE_STORE_MANAGER"),
   getSubscriptionPaymentHistoryController
 );
 export default router;
