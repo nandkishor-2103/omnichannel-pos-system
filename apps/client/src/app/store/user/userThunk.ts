@@ -59,17 +59,3 @@ export const getUserById = createAsyncThunk<User, string, { rejectValue: string 
     }
   }
 );
-
-// ========== Logout ==========
-/* export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
-  "user/logout",
-  async (_, { rejectWithValue }) => {
-    try {
-      await api.post("/auth/logout");
-
-      return;
-    } catch (error) {
-      return rejectWithValue(getErrorMessage(error));
-    }
-  }
-); */

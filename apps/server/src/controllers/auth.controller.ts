@@ -169,6 +169,7 @@ export const forgotPassword = asyncHandler(async (req: Request, res: Response) =
   }
 
   const otp = generateOtp();
+  console.log("OTP:", otp);
 
   await storeOtp(`forgot:${email}`, otp);
 
@@ -372,6 +373,21 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
     new ApiResponse({
       statusCode: 200,
       message: "Logout successfully",
+    })
+  );
+});
+
+// ============================== CHECK SESSION ==============================
+export const checkSession = asyncHandler(async (req: Request, res: Response) => {
+  const token = req.cookies.infotactToken;
+
+  res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "Session checked",
+      payload: {
+        authenticated: !!token,
+      },
     })
   );
 });
