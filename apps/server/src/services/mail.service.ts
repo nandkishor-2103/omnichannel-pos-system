@@ -1,57 +1,100 @@
-/* import nodemailer from "nodemailer";
-import ENV_VAR from "../config/env.js";
+import brevo from "../config/brevo.js";
+import mailGenerator from "../config/mailgen.js";
+import verificationEmailTemplate from "../templates/emails/verification-email.template.js";
+import resetPasswordTemplate from "../templates/emails/reset-password.template.js";
+import ENV_VARS from "../config/env.js";
+import ApiError from "../utils/ApiError.js";
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-
-  auth: {
-    user: ENV_VAR.EMAIL_USER,
-    pass: ENV_VAR.EMAIL_PASS,
-  },
-});
-
-interface SendMailOptions {
+interface SendEmailProps {
   to: string;
   subject: string;
-  html: string;
+  template?: any;
+  html?: string;
 }
 
-export const sendMail = async ({ to, subject, html }: SendMailOptions) => {
-  await transporter.sendMail({
-    from: ENV_VAR.EMAIL_USER,
-    to,
-    subject,
-    html,
+export const sendEmail = async ({
+  to,
+  subject,
+  template,
+  html,
+}: SendEmailProps): Promise<void> => {
+  try {
+    if (!to) {
+      throw new ApiError({
+        statusCode: 400,
+        message: "Recipient email is required",
+      });
+    }
+
+    let htmlContent = html;
+    let textContent = subject;
+
+    if (template) {
+      htmlContent = mailGenerator.generate(template);
+      textContent = mailGenerator.generatePlaintext(template);
+    }
+
+    if (!htmlContent) {
+      throw new ApiError({
+        statusCode: 400,
+        message: "Either template or html is required",
+      });
+    }
+
+    await brevo.transactionalEmails.sendTransacEmail({
+      subject,
+      htmlContent,
+      textContent,
+
+      sender: {
+        name: ENV_VARS.EMAIL_FROM_NAME,
+        email: ENV_VARS.EMAIL_FROM,
+      },
+
+      to: [
+        {
+          email: to,
+        },
+      ],
+    });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to send email";
+
+    throw new ApiError({
+      statusCode: 500,
+      message,
+    });
+  }
+};
+
+export const sendVerificationEmail = async ({
+  fullName,
+  email,
+  otp,
+}: {
+  fullName: string;
+  email: string;
+  otp: string;
+}) => {
+  await sendEmail({
+    to: email,
+    subject: "Verify Your Email",
+    template: verificationEmailTemplate({ fullName, otp }),
   });
-}; */
+};
 
-import nodemailer from "nodemailer";
-import ENV_VAR from "../config/env.js";
-
-const transporter = nodemailer.createTransport({
-  host: "smtp-relay.brevo.com",
-  port: 587,
-  secure: false,
-
-  auth: {
-    user: ENV_VAR.BREVO_SMTP_USER,
-    pass: ENV_VAR.BREVO_SMTP_PASS,
-  },
-});
-
-interface SendMailOptions {
-  to: string;
-  subject: string;
-  html: string;
-}
-
-export const sendMail = async ({ to, subject, html }: SendMailOptions) => {
-  const info = await transporter.sendMail({
-    from: `"POS Pro" <${ENV_VAR.EMAIL_FROM}>`,
-    to,
-    subject,
-    html,
+export const sendResetPasswordEmail = async ({
+  fullName,
+  email,
+  otp,
+}: {
+  fullName: string;
+  email: string;
+  otp: string;
+}) => {
+  await sendEmail({
+    to: email,
+    subject: "Reset Password OTP",
+    template: resetPasswordTemplate({ fullName, otp }),
   });
-
-  console.log("Email sent:", info.messageId);
 };
