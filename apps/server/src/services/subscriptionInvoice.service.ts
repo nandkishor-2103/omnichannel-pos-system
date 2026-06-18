@@ -6,7 +6,7 @@ import { InvoiceStatus } from "../enums/invoiceStatus.enum.js";
 
 import { generateInvoiceNumber } from "../utils/generateInvoiceNumber.js";
 
-import { sendMail } from "../services/mail.service.js";
+import  { sendEmail } from "../services/mail.service.js";
 
 import ApiError from "../utils/ApiError.js";
 
@@ -91,7 +91,7 @@ export const createSubscriptionInvoiceService = async (paymentId: string) => {
 
   try {
     if (adminUser.email) {
-      await sendMail({
+      await sendEmail({
         to: adminUser.email,
 
         subject: `Invoice ${invoice.invoiceNumber}`,
@@ -171,7 +171,7 @@ export const resendSubscriptionInvoiceService = async (
     });
   }
 
-  await sendMail({
+  await sendEmail({
     to: invoice.customerEmail,
 
     subject: `Invoice ${invoice.invoiceNumber}`,

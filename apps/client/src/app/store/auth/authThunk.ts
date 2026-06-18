@@ -21,7 +21,7 @@ export const signup = createAsyncThunk<
       ...data,
       role: "ROLE_STORE_ADMIN",
     });
-
+    console.log("Sign Up", res.data);
     return res.data;
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));

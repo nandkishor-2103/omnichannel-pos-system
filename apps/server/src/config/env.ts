@@ -17,8 +17,8 @@ const requiredEnvVars = [
   "FULL_NAME",
   "RAZORPAY_KEY_ID",
   "RAZORPAY_KEY_SECRET",
-  "BREVO_SMTP_USER",
-  "BREVO_SMTP_PASS",
+  "BREVO_API_KEY",
+  "EMAIL_FROM_NAME",
   "EMAIL_FROM",
 ] as const;
 
@@ -54,8 +54,8 @@ const ENV_VARS: EnvVars = {
   FULL_NAME: process.env.FULL_NAME as string,
   RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID as string,
   RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET as string,
-  BREVO_SMTP_USER: process.env.BREVO_SMTP_USER as string,
-  BREVO_SMTP_PASS: process.env.BREVO_SMTP_PASS as string,
+  BREVO_API_KEY: process.env.BREVO_API_KEY as string,
+  EMAIL_FROM_NAME: process.env.EMAIL_FROM_NAME as string,
   EMAIL_FROM: process.env.EMAIL_FROM as string,
 };
 
