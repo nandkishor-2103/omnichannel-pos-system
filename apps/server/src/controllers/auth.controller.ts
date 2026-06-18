@@ -5,7 +5,10 @@ import ApiResponse from "../utils/ApiResponse.js";
 import ApiError from "../utils/ApiError.js";
 import User from "../models/user.model.js";
 import generateOtp from "../utils/generateOtp.js";
-import { sendMail } from "../services/mail.service.js";
+import {
+  sendResetPasswordEmail,
+  sendVerificationEmail,
+} from "../services/mail.service.js";
 import {
   storeOtp,
   getOtp,
@@ -33,7 +36,6 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 
-  // Validate required fields
   if (!fullName || !email || !password || !phone || !role) {
     throw new ApiError({
       statusCode: 400,
@@ -41,7 +43,6 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 
-  // Validate email format
   if (!validator.isEmail(email)) {
     throw new ApiError({
       statusCode: 400,
@@ -49,8 +50,8 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 
-  // Check if user already exists
   const existingUser = await User.findOne({ email });
+
   if (existingUser) {
     throw new ApiError({
       statusCode: 400,
@@ -58,30 +59,23 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 
-  // Generate and store OTP
   const otp = generateOtp();
-  console.log("OTP Generated:", otp);
+
   await storeOtp(email, otp);
 
-  // Send verification email
-  await sendMail({
-    to: email,
-    subject: "Verify Your Email",
-    html: `
-        <h2>Email Verification</h2>
-        <p>Your OTP is:</p>
-        <h1>${otp}</h1>
-        <p>This OTP is valid for <strong>5 minutes</strong> only.</p>
-    `,
+  await sendVerificationEmail({
+    fullName,
+    email,
+    otp,
   });
 
-  // Create new user
   const user = await User.create({
     fullName,
     email,
     password,
     phone,
     role,
+    verified: false,
   });
 
   res.status(201).json(
@@ -95,6 +89,7 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
           email: user.email,
           phone: user.phone,
           role: user.role,
+          verified: user.verified,
         },
       },
     })
@@ -109,7 +104,6 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
 export const verifyOtp = asyncHandler(async (req: Request, res: Response) => {
   const { email, otp } = req.body;
 
-  // Validate required fields
   if (!email || !otp) {
     throw new ApiError({
       statusCode: 400,
@@ -117,8 +111,8 @@ export const verifyOtp = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 
-  // Retrieve stored OTP
   const storedOtp = await getOtp(email);
+
   if (!storedOtp) {
     throw new ApiError({
       statusCode: 400,
@@ -126,7 +120,6 @@ export const verifyOtp = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 
-  // Compare OTPs
   if (storedOtp !== otp) {
     throw new ApiError({
       statusCode: 400,
@@ -134,10 +127,18 @@ export const verifyOtp = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 
-  // Mark user as verified
-  await User.findOneAndUpdate({ email }, { verified: true });
+  const user = await User.findOne({ email });
 
-  // Delete OTP from Redis
+  if (!user) {
+    throw new ApiError({
+      statusCode: 404,
+      message: "User not found",
+    });
+  }
+
+  user.verified = true;
+  await user.save();
+
   await deleteOtp(email);
 
   res.status(200).json(
@@ -173,15 +174,10 @@ export const forgotPassword = asyncHandler(async (req: Request, res: Response) =
 
   await storeOtp(`forgot:${email}`, otp);
 
-  await sendMail({
-    to: email,
-    subject: "Reset Password OTP",
-    html: `
-        <h2>Password Reset Request</h2>
-        <p>Your OTP is:</p>
-        <h1>${otp}</h1>
-        <p>This OTP is valid for 5 minutes.</p>
-      `,
+  await sendResetPasswordEmail({
+    fullName: user.fullName,
+    email,
+    otp,
   });
 
   res.status(200).json(
