@@ -46,11 +46,11 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 
 // ===========🧑‍⚕️👩‍⚕️👨‍⚕️ Health Check Routes ===========
-app.get("/api/health", (req: express.Request, res: express.Response) => {
+app.get("/api/v1/health", (req: express.Request, res: express.Response) => {
   res.status(200).json({
     success: true,
-    message: "Ding! Server is healthy",
-    status: "OK",
+    message: "POS API is healthy",
+    timestamp: new Date().toISOString(),
   });
 });
 
