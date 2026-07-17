@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   signup,
+  resendVerificationOtp,
   verifyOtp,
   login,
   logout,
@@ -13,6 +14,7 @@ import {
 const router = Router();
 
 router.post("/signup", signup);
+router.post("/resend-verification-otp", resendVerificationOtp);
 router.post("/verify-otp", verifyOtp);
 router.post("/forgot-password", forgotPassword);
 router.post("/verify-reset-otp", verifyResetOtp);

@@ -4,6 +4,7 @@ import {
   signup,
   logout,
   forgotPassword,
+  resendVerificationOtp,
   verifyResetOtp,
   resetPassword,
   checkSession,
@@ -125,6 +126,21 @@ const authSlice = createSlice({
       .addCase(forgotPassword.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload ?? "Failed to send OTP";
+      })
+
+      // ============== RESEND VERIFICATION OTP ============
+      .addCase(resendVerificationOtp.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+
+      .addCase(resendVerificationOtp.fulfilled, (state) => {
+        state.loading = false;
+      })
+
+      .addCase(resendVerificationOtp.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload ?? "Failed to send verification OTP";
       })
 
       // ============== VERIFY RESET OTP =================

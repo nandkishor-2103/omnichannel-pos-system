@@ -23,6 +23,7 @@ export interface BasicApiResponse {
   statusCode: number;
   success: boolean;
   message: string;
+  payload: null;
 }
 
 export interface AuthState {

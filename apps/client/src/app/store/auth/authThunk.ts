@@ -21,7 +21,7 @@ export const signup = createAsyncThunk<
       ...data,
       role: "ROLE_STORE_ADMIN",
     });
-    console.log("Sign Up", res.data);
+
     return res.data;
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
@@ -68,6 +68,27 @@ export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
 type ForgotPasswordPayload = {
   email: string;
 };
+
+type ResendVerificationOtpPayload = {
+  email: string;
+};
+
+export const resendVerificationOtp = createAsyncThunk<
+  BasicApiResponse,
+  ResendVerificationOtpPayload,
+  { rejectValue: string }
+>("auth/resendVerificationOtp", async (data, { rejectWithValue }) => {
+  try {
+    const response = await api.post<BasicApiResponse>(
+      "/auth/resend-verification-otp",
+      data
+    );
+
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
 
 export const forgotPassword = createAsyncThunk<
   BasicApiResponse,
