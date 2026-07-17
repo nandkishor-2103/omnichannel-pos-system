@@ -13,6 +13,7 @@ import { Toaster } from "./components/ui/sonner";
 import NotFound from "./components/shared/NotFound";
 import Signup from "./features/auth/Signup";
 import VerifyOtp from "./features/auth/VerifyOtp";
+import ResendVerificationOtp from "./features/auth/ResendVerificationOtp";
 import Home from "./pages/Home";
 import CreateStore from "./features/store/CreateStore";
 import ContactSales from "./features/home/components/ContactSales";
@@ -30,6 +31,8 @@ export default function App() {
         <Route path="/signup" element={<Signup />} />
 
         <Route path="/verify-otp" element={<VerifyOtp />} />
+
+        <Route path="/resend-verification-otp" element={<ResendVerificationOtp />} />
 
         <Route path="/contact-sales" element={<ContactSales />} />
 

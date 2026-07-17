@@ -1,5 +1,5 @@
 import { ArrowLeftIcon, ShoppingCartIcon, Eye, EyeOff, Home } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -19,8 +19,6 @@ import { useNavigate } from "react-router-dom";
 import type { UserRole } from "./types/types";
 
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
-import { getStoreStatusMessage } from "@/lib/storeStatus";
-import { toast } from "sonner";
 
 const roleRoutes: Record<UserRole, string> = {
   ROLE_ADMIN: "/super-admin/dashboard",
@@ -337,6 +335,21 @@ export default function Login() {
                       onClick={() => navigate("/signup")}
                     >
                       Create Store
+                    </Button>
+                  </div>
+
+                  <div className="text-center text-sm">
+                    <span className="text-muted-foreground">
+                      Didn't receive your verification OTP?
+                    </span>
+
+                    <Button
+                      type="button"
+                      variant="link"
+                      className="p-0 ml-1 cursor-pointer"
+                      onClick={() => navigate("/resend-verification-otp")}
+                    >
+                      Request a new OTP
                     </Button>
                   </div>
                 </form>

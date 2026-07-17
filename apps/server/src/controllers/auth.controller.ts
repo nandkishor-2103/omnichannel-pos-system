@@ -121,6 +121,64 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
 });
 
 /**
+ * @desc    Resend OTP for email verification
+ * @route   POST /api/auth/resend-verification-otp
+ * @access  Public
+ */
+export const resendVerificationOtp = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { email } = req.body;
+
+    if (!email) {
+      throw new ApiError({
+        statusCode: 400,
+        message: "Email is required",
+      });
+    }
+
+    if (!validator.isEmail(email)) {
+      throw new ApiError({
+        statusCode: 400,
+        message: "Invalid email",
+      });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      throw new ApiError({
+        statusCode: 404,
+        message: "User not found",
+      });
+    }
+
+    if (user.verified) {
+      throw new ApiError({
+        statusCode: 400,
+        message: "Email is already verified",
+      });
+    }
+
+    const otp = generateOtp();
+
+    await storeOtp(email, otp);
+
+    await sendVerificationEmail({
+      fullName: user.fullName,
+      email,
+      otp,
+    });
+
+    res.status(200).json(
+      new ApiResponse({
+        statusCode: 200,
+        message: "Verification OTP sent successfully",
+      })
+    );
+  }
+);
+
+/**
  * @desc    Verify OTP for email verification
  * @route   POST /api/auth/verify-otp
  * @access  Public
@@ -194,7 +252,6 @@ export const forgotPassword = asyncHandler(async (req: Request, res: Response) =
   }
 
   const otp = generateOtp();
-  console.log("OTP:", otp);
 
   await storeOtp(`forgot:${email}`, otp);
 
