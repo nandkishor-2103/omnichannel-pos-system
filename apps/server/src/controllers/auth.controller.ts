@@ -43,10 +43,34 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 
+  if (fullName.trim().length < 2) {
+    throw new ApiError({
+      statusCode: 400,
+      message: "Full name must be at least 2 characters long",
+    });
+  }
+
   if (!validator.isEmail(email)) {
     throw new ApiError({
       statusCode: 400,
       message: "Invalid email",
+    });
+  }
+
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  if (!passwordRegex.test(password)) {
+    throw new ApiError({
+      statusCode: 400,
+      message:
+        "Password must be at least 8 characters long and example (MyPassword@456)",
+    });
+  }
+
+  if (!validator.isMobilePhone(phone)) {
+    throw new ApiError({
+      statusCode: 400,
+      message: "Invalid phone number format",
     });
   }
 
