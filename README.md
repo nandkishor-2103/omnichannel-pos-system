@@ -1,99 +1,107 @@
-# Omnichannel POS System
+# Omnichannel POS Pro
 
-A full-stack Point of Sale (POS) and Inventory Management System for modern retail businesses.
+A full-stack Point of Sale (POS), inventory, and retail management platform for modern single-store and multi-branch businesses.
 
-Live Project: https://omnichannel-pos-system-rust.vercel.app  
-GitHub Repository: https://github.com/nandkishor-2103/omnichannel-pos-system
+[Live Demo](https://omnichannel-pos-system-rust.vercel.app/) | [GitHub Repository](https://github.com/nandkishor-2103/omnichannel-pos-system)
 
----
+## About the Project
 
-## About The Project
+Omnichannel POS Pro helps retail businesses manage their daily operations from one centralized dashboard.
 
-Omnichannel POS System is a web-based retail management platform built to help store owners run their business from one place.
+The platform brings sales, billing, products, inventory, customers, employees, branches, payments, refunds, subscriptions, shifts, and business reports into one system. Each user sees only the tools and information allowed for their role.
 
-In simple words, this project helps a retail business manage sales, products, stock, employees, customers, branches, payments, refunds, subscriptions, and reports through a single dashboard.
+It is designed for businesses that want to replace manual records and disconnected tools with a more organized digital workflow.
 
-The system is designed for businesses that have one store or multiple branches and want to move from manual work to a digital and organized workflow.
+## The Problem It Solves
 
----
+Small and medium retail businesses often manage billing, stock, employees, and reports manually or through separate applications. This can lead to:
 
-## Why I Built This Project
-
-Many small and medium retail businesses still manage billing, inventory, employee records, and sales reports manually or through separate tools. This can create problems like:
-
-- Wrong stock count
-- Slow billing process
+- Incorrect stock counts
+- Slow checkout and billing
 - Difficulty managing multiple branches
-- No clear sales reports
-- Manual refund tracking
-- Poor visibility of daily business performance
+- Limited visibility into sales performance
+- Manual payment and refund tracking
+- Inconsistent employee and shift records
 
-This project solves these problems by providing a centralized POS system where every role has its own dashboard and permissions.
+Omnichannel POS Pro provides one platform for managing these operations with role-based access and branch-level visibility.
 
----
+## Project Status
 
-## Main Users Of The System
+The main business workflows are implemented, including:
 
-### Super Admin
+- Authentication and role-based access
+- Store and branch management
+- Product and category management
+- Branch-wise inventory tracking
+- POS billing and order management
+- Customer management
+- Payments and refunds
+- Cashier shift reports
+- Subscription plans, upgrades, and invoices
+- Role-based dashboards and analytics
 
-The super admin can manage the overall platform, approve stores, monitor registered businesses, and manage subscription plans.
+Future improvements are listed in the [Roadmap](#roadmap).
 
-### Store Admin / Store Manager
+## User Roles
 
-Store users can manage branches, products, categories, employees, sales reports, subscription upgrades, and store-level analytics.
-
-### Branch Admin / Branch Manager
-
-Branch users can monitor branch performance, manage inventory, view orders, track employees, and check reports.
-
-### Cashier
-
-Cashiers can create orders, manage cart items, accept payments, handle customers, process refunds, and generate shift reports.
-
----
+| Role                          | Main Responsibilities                                                                                      |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Super Admin                   | Manages the platform, reviews stores, monitors registered businesses, and controls subscription plans.     |
+| Store Admin / Store Manager   | Manages store details, branches, products, categories, employees, subscriptions, and store-level reports.  |
+| Branch Admin / Branch Manager | Manages branch inventory, orders, employees, performance, and branch-level reports.                        |
+| Cashier                       | Creates orders, manages carts and customers, accepts payments, processes refunds, and manages work shifts. |
 
 ## Key Features
 
-### Authentication And Security
+### Authentication and Security
 
 - User signup and login
 - OTP-based email verification
 - JWT-based authentication
-- Protected routes
+- Secure password hashing
+- Protected frontend and backend routes
 - Role-based access control
-- Secure password handling
+- Request validation and centralized error handling
 
-### Store And Branch Management
+### Store and Branch Management
 
 - Create and manage stores
 - Add and manage multiple branches
-- Approve or block stores from the admin panel
-- Manage store and branch details
+- Approve, block, or review stores from the admin panel
+- Maintain store and branch information
+- Separate business data by store and branch
 
-### Product And Category Management
+### Product and Category Management
 
-- Add, update, and delete products
-- Organize products by category
-- Search and view products easily
+- Add, update, view, and remove products
+- Organize products into categories
+- Search and filter the product catalog
 - Connect products with branch inventory
 
 ### Inventory Management
 
-- Track available stock
-- Manage branch-wise inventory
+- Track available stock by branch
 - Record inventory movements
-- Help reduce stock mismatch and overselling
+- Monitor stock changes caused by sales and adjustments
+- Reduce stock mismatch and overselling risks
 
-### POS And Billing
+### POS and Billing
 
-- Cashier-friendly POS screen
-- Product selection and cart management
+- Cashier-friendly POS interface
+- Product search and selection
+- Cart quantity management
 - Customer selection
 - Discount and payment handling
-- Order creation
-- Invoice/bill support
+- Order creation and bill support
 
-### Payment And Subscription
+### Order and Customer Management
+
+- View and manage orders
+- Add and manage customers
+- Review customer details
+- Track customer orders and purchase history
+
+### Payments and Subscriptions
 
 - Razorpay payment integration
 - Subscription plan management
@@ -101,37 +109,44 @@ Cashiers can create orders, manage cart items, accept payments, handle customers
 - Payment history
 - Subscription invoice generation and download
 
-### Customer Management
-
-- Add and manage customers
-- View customer details
-- Track customer orders and purchase history
-
 ### Refund Management
 
 - Process product returns
-- Track refund amount and reason
-- Connect refunds with orders and cashier activity
+- Record refund amounts and reasons
+- Link refunds to orders and cashier activity
+- Track refund history
 
-### Shift Reports
+### Cashier Shift Reports
 
-- Start, pause, resume, and close cashier shifts
-- Track sales during a shift
-- View payment summary
-- View refunds and recent orders
-- Generate cashier performance summary
+- Start, pause, resume, and close shifts
+- Track sales completed during a shift
+- View payment summaries
+- Review refunds and recent orders
+- Generate cashier performance summaries
 
-### Analytics And Reports
+### Analytics and Reports
 
+- Super admin dashboard
 - Store dashboard
 - Branch dashboard
-- Super admin dashboard
-- Sales charts
-- Revenue summary
-- Payment method breakdown
+- Sales and revenue summaries
+- Payment-method breakdowns
 - Product and branch performance insights
+- Interactive charts and business reports
 
----
+## Core Business Flow
+
+```text
+Store setup
+-> Branch creation
+-> Product and category setup
+-> Branch inventory assignment
+-> Cashier shift starts
+-> Customer and products are added to the cart
+-> Payment is completed
+-> Order and inventory are updated
+-> Sales data appears in reports and dashboards
+```
 
 ## Tech Stack
 
@@ -141,11 +156,11 @@ Cashiers can create orders, manage cart items, accept payments, handle customers
 - TypeScript
 - Vite
 - Tailwind CSS
-- Shadcn UI
+- shadcn/ui
 - Redux Toolkit
 - React Router
-- Recharts
 - Axios
+- Recharts
 
 ### Backend
 
@@ -158,61 +173,61 @@ Cashiers can create orders, manage cart items, accept payments, handle customers
 - JWT
 - bcryptjs
 - Razorpay
-- Nodemailer / email services
+- Email services
 - PDF invoice generation
 
-### DevOps And Tools
+### DevOps and Development Tools
 
 - Docker
 - Docker Compose
+- Git and GitHub
 - GitHub Actions
 - Vercel
-- Render / cloud deployment ready setup
+- Render / cloud-ready deployment
+- Postman
 - ESLint
 - TypeScript build checks
 
----
+## Architecture
 
-## Project Architecture
-
-The project follows a clean full-stack structure with separate frontend and backend applications.
-
-```bash
-omnichannel-pos-system/
-|
-|-- apps/
-|   |-- client/        # React frontend
-|   |-- server/        # Node.js and Express backend
-|
-|-- docs/              # Project documents and schema references
-|-- docker/            # Docker related files
-|-- .github/           # GitHub Actions workflow
-|-- docker-compose.yml # Local Docker setup
-|-- README.md
-```
-
-### Simple Flow
+The project uses a decoupled monorepo with separate frontend and backend applications.
 
 ```text
 User
-  |
-React Frontend
-  |
-REST APIs
-  |
-Node.js + Express Backend
-  |
-MongoDB + Redis
+-> React frontend
+-> REST API
+-> Node.js and Express backend
+-> MongoDB and Redis
 ```
 
----
+### Architecture Goals
+
+- Keep frontend and backend responsibilities separate
+- Organize business logic into clear modules
+- Protect features using authentication and role permissions
+- Keep store and branch data properly scoped
+- Reuse shared types, utilities, and UI components
+- Support local and cloud-based deployments
+
+## Project Structure
+
+```text
+omnichannel-pos-system/
+|-- apps/
+|   |-- client/                 # React, TypeScript, and Vite frontend
+|   `-- server/                 # Node.js, Express, and TypeScript backend
+|-- docs/                       # Project documents and schema references
+|-- docker/                     # Docker-related configuration
+|-- .github/                    # GitHub Actions workflows
+|-- docker-compose.yml          # Local multi-container setup
+|-- package.json
+`-- README.md
+```
 
 ## Backend Modules
 
-The backend is divided into clear modules so the code is easier to understand and maintain.
-
 - Authentication
-- User profile
+- User profiles
 - Store management
 - Branch management
 - Product management
@@ -232,65 +247,39 @@ The backend is divided into clear modules so the code is easier to understand an
 - Subscription payments
 - Subscription invoices
 
----
-
 ## Frontend Modules
 
-The frontend is organized by user role and business area.
-
 - Landing page
-- Login and signup pages
-- OTP verification
+- Login, signup, and OTP verification
 - Super admin dashboard
 - Store dashboard
 - Branch dashboard
 - Cashier POS dashboard
-- Product management screens
-- Category management screens
-- Employee management screens
+- Product and category management
+- Employee management
 - Inventory screens
-- Customer lookup screens
-- Order history screens
-- Refund screens
-- Shift report screens
+- Customer lookup and management
+- Order history
+- Refund workflows
+- Shift reports
 - Subscription and upgrade screens
-- Analytics and report pages
+- Analytics and reporting pages
 
----
+## Getting Started
 
-## My Contribution
+### Prerequisites
 
-This project was fully developed by me.
+Install the following tools before running the project:
 
-### Responsibilities
+- Node.js and npm
+- MongoDB or a MongoDB Atlas account
+- Redis
+- Git
+- Docker Desktop (optional)
 
-- Planned the complete project structure
-- Designed the frontend and backend architecture
-- Built the React frontend with role-based dashboards
-- Developed REST APIs using Node.js and Express.js
-- Created MongoDB models using Mongoose
-- Implemented authentication and authorization
-- Added Redux Toolkit for frontend state management
-- Built POS billing, cart, order, refund, and shift report flows
-- Integrated Razorpay payments
-- Added subscription and invoice features
-- Created dashboards, charts, and reports
-- Added Docker setup for local development
-- Configured GitHub Actions for build and TypeScript checks
+You will also need Razorpay credentials if you want to test payment features.
 
-### Technologies Used By Me
-
-React.js, TypeScript, Tailwind CSS, Redux Toolkit, Node.js, Express.js, MongoDB, Mongoose, Redis, JWT, Razorpay, Docker, GitHub Actions, and Vercel.
-
-### Parts Developed Personally
-
-I personally developed the complete frontend, backend, database models, API routes, authentication system, role-based access, dashboards, POS order flow, inventory flow, payment flow, refund flow, subscription flow, invoice flow, and deployment setup.
-
----
-
-## How To Run The Project Locally
-
-### 1. Clone The Repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/nandkishor-2103/omnichannel-pos-system.git
@@ -311,120 +300,163 @@ cd ../server
 npm install
 ```
 
-### 4. Create Backend Environment File
+### 4. Configure Backend Environment Variables
 
-Create a `.env` file inside `apps/server`.
-
-Example:
+Create an `.env` file inside `apps/server`.
 
 ```env
 PORT=5000
 NODE_ENV=development
 CLIENT_URL=http://localhost:5173
 MONGO_URI=mongodb://localhost:27017/pos-system
-JWT_SECRET=your_jwt_secret
+JWT_SECRET=replace_with_a_strong_secret
 REDIS_URL=redis://localhost:6379
-RAZORPAY_KEY_ID=your_razorpay_key
-RAZORPAY_KEY_SECRET=your_razorpay_secret
+RAZORPAY_KEY_ID=your_razorpay_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_key_secret
 ```
 
-### 5. Start Backend Server
+Use the repository's `.env.example`, if available, as the final source of truth for all required variables.
+
+Never commit real secrets or production credentials to GitHub.
+
+### 5. Configure Frontend Environment Variables
+
+Create an `.env` file inside `apps/client` and set the backend API URL used by the frontend.
+
+```env
+VITE_API_BASE_URL=http://localhost:5000/api
+```
+
+Confirm the exact variable name and API prefix in the frontend configuration before running the application.
+
+### 6. Start the Backend
+
+From `apps/server`:
 
 ```bash
 npm run dev
 ```
 
-### 6. Start Frontend Server
+### 7. Start the Frontend
 
-Open another terminal:
+Open another terminal and run:
 
 ```bash
 cd apps/client
 npm run dev
 ```
 
-Frontend will run on:
+The applications normally run at:
 
 ```text
-http://localhost:5173
+Frontend: http://localhost:5173
+Backend:  http://localhost:5000
 ```
 
-Backend will run on:
+## Run with Docker
 
-```text
-http://localhost:5000
-```
-
----
-
-## Run With Docker
-
-You can also run the project using Docker Compose.
+From the repository root:
 
 ```bash
 docker compose up -d
 ```
 
-This starts the frontend and backend in containers for local development.
+View running containers:
 
----
+```bash
+docker compose ps
+```
+
+View service logs:
+
+```bash
+docker compose logs -f
+```
+
+Stop the application:
+
+```bash
+docker compose down
+```
 
 ## CI/CD
 
-This project includes a GitHub Actions workflow that checks the project on push and pull request.
+The repository includes GitHub Actions workflows for automated checks on pushes and pull requests.
 
-The workflow:
+The pipeline checks the frontend and backend by:
 
-- Installs frontend dependencies
-- Builds the frontend
-- Runs TypeScript checks for the frontend
-- Installs backend dependencies
-- Builds the backend
-- Runs TypeScript checks for the backend
-
-This helps keep the codebase clean and reduces the chance of broken code being merged.
-
----
+- Installing dependencies
+- Running TypeScript checks
+- Building the applications
+- Detecting build failures before changes are merged
 
 ## Deployment
 
-The frontend is deployed on Vercel.
+- Frontend: Vercel
+- Backend: Render or another Node.js-compatible cloud service
+- Database: MongoDB Atlas
+- Cache: Managed Redis or a cloud Redis provider
 
-Live Link: https://omnichannel-pos-system-rust.vercel.app
+Production deployment requires the frontend API URL, backend client origin, database connection, Redis connection, cookie/security settings, and payment credentials to match the deployed domains.
 
-The backend is prepared for cloud deployment using services like Render or AWS.
+Live demo: [https://omnichannel-pos-system-rust.vercel.app](https://omnichannel-pos-system-rust.vercel.app/)
 
----
+## My Contribution
 
-## What This Project Shows
+I worked across the complete full-stack development lifecycle, including:
 
-This project shows my ability to:
+- Planning the project structure and module boundaries
+- Designing frontend and backend architecture
+- Building role-based dashboards with React and TypeScript
+- Developing REST APIs using Node.js and Express
+- Creating MongoDB models with Mongoose
+- Implementing authentication and authorization
+- Managing frontend state with Redux Toolkit
+- Building POS, cart, order, inventory, refund, and shift workflows
+- Integrating Razorpay payments
+- Developing subscription and invoice features
+- Creating dashboards, charts, and business reports
+- Adding Docker-based local development
+- Configuring GitHub Actions for build and TypeScript checks
+- Preparing the frontend and backend for cloud deployment
 
-- Build a complete full-stack MERN application
-- Work with TypeScript in both frontend and backend
-- Design role-based business software
-- Create real-world dashboards and reports
-- Manage complex state using Redux Toolkit
-- Build secure APIs with authentication and authorization
-- Work with MongoDB data modeling
-- Integrate payment and invoice workflows
-- Set up Docker and CI/CD workflow
-- Think like a product developer, not only a coder
+## What This Project Demonstrates
 
----
+- Full-stack MERN development with TypeScript
+- Role-based business application design
+- REST API development and frontend integration
+- Complex state management using Redux Toolkit
+- MongoDB data modeling for connected business workflows
+- Multi-branch inventory and access-control logic
+- Payment, refund, subscription, and invoice integration
+- Dashboard and reporting development
+- Docker and CI/CD fundamentals
+- Product-focused problem solving
 
-## Future Improvements
+## Roadmap
 
 - Add automated backend tests
 - Add automated frontend tests
 - Add barcode scanner support
 - Add advanced invoice templates
-- Add real-time stock updates using WebSockets
-- Add more detailed profit and loss reports
-- Add mobile-friendly cashier mode
+- Add real-time inventory updates with WebSockets
+- Add detailed profit-and-loss reports
+- Improve mobile and tablet support for cashiers
+- Add low-stock alerts and reorder suggestions
 
----
+## Disclaimer
+
+This project was created for learning, portfolio presentation, and internship evaluation. It should be reviewed and hardened further before being used for real financial or retail operations.
 
 ## License
 
-This project is developed for learning, portfolio, and internship evaluation purposes.
+This project is intended for educational and portfolio use. See the repository license, if included, for complete usage terms.
+
+## Author
+
+**Nandkishor Mandal**
+
+- [Portfolio](https://devcanvas-portfolio.vercel.app/)
+- [LinkedIn](https://www.linkedin.com/in/nandkishormandal/)
+- [GitHub](https://github.com/nandkishor-2103)
+- [Email](mailto:mandalnandkishorbk@gmail.com)
